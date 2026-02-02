@@ -52,15 +52,6 @@ function treescope.outer_function()
     return nil
   end
 
-  -- Reject if nested inside another function
-  cur = candidate:parent()
-  while cur do
-    if provider.is_function(cur) then
-      return nil
-    end
-    cur = cur:parent()
-  end
-
   return provider.get_function_name(candidate, bufnr)
 end
 

@@ -11,7 +11,8 @@ function crumbs.setup()
 end
 
 function crumbs.get_toplevel_function_at_cursor()
-  local provider = require("crumbs.provider_locator").get_provider(vim.bo.filetype)
+  local provider_id = require("crumbs.provider_locator").get_provider_id(vim.bo.filetype)
+  local provider = require("crumbs.provider_locator").get_provider(provider_id)
 
   if provider == nil then
     return nil

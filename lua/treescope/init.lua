@@ -5,12 +5,12 @@ function treescope.setup()
   vim.api.nvim_create_autocmd("CursorMoved", {
     group = outline_config_augroup,
     callback = function()
-      vim.api.nvim_buf_set_var(0, "ts_outer_fn", treescope.get_toplevel_function_at_cursor() or "")
+      vim.api.nvim_buf_set_var(0, "treescope_outer_function", treescope.outer_function() or "")
     end
   })
 end
 
-function treescope.get_toplevel_function_at_cursor()
+function treescope.outer_function()
   local provider_id = require("treescope.provider_locator").get_provider_id(vim.bo.filetype)
   local provider = require("treescope.provider_locator").get_provider(provider_id)
 

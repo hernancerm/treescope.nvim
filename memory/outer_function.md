@@ -249,40 +249,35 @@ a
 
 ## Dynamic Language Handling
 
-The Tree-sitter parser language must **not** be hard-coded.
+The Tree-sitter parser language and language-specific logic are handled dynamically.
 
-Correct approach:
+1.  **Provider Discovery**: The `treescope.provider_locator` module identifies and loads the appropriate provider based on the buffer's `filetype`. Providers are located in `lua/treescope/providers/`.
+2.  **Parser Initialization**:
+    ```lua
+    local lang = vim.treesitter.language.get_lang(vim.bo[bufnr].filetype)
+    local parser = vim.treesitter.get_parser(bufnr, lang)
+    ```
 
-```lua
-local lang = vim.treesitter.language.get_lang(vim.bo[bufnr].filetype)
-local parser = vim.treesitter.get_parser(bufnr, lang)
-```
+Language-specific behavior is encapsulated in a `Provider` interface:
 
-Language-specific behavior is handled via dispatch:
-
-* Lua:
-
-  * `is_lua_function`
-  * `lua_function_name`
-* Java:
-
-  * `is_java_function`
-  * `java_function_name`
+* `is_function(node) -> boolean`
+* `get_function_name(node, bufnr) -> string?`
 
 ---
 
 ## Responsibility Split
 
-### Shared (Language-Agnostic)
+### Shared (Language-Agnostic) - `lua/treescope/init.lua`
 
-* Cursor → Tree-sitter node
-* Parent-walking
-* Tracking the **last function seen**
+* Provider lookup via `provider_locator`.
+* Cursor → Tree-sitter node resolution.
+* Parent-walking algorithm: iterate to root, keep the **last** valid function node.
+* Integration: `treescope.setup()` sets an autocmd on `CursorMoved` to update the `treescope_outer_function` buffer variable.
 
-### Language-Specific
+### Language-Specific - `lua/treescope/providers/*.lua`
 
-* What node types count as a function
-* How to extract the function/method name from a node
+* Definition of node types that qualify as "functions".
+* Logic for extracting the name (handling field names, positional children, or complex assignments).
 
 ---
 
@@ -309,10 +304,10 @@ Language-specific behavior is handled via dispatch:
 
 ## Status
 
-* Lua: ✔ fully working
+* Lua: ✔ fully working (handles `function_declaration` and assignments)
 * Java: ✔ fully working (nested types supported)
-* Algorithm: stable
-* Design: consistent across languages
+* Algorithm: stable & refactored (redundant nesting checks removed)
+* Design: consistent provider-based architecture
 
 ---
 

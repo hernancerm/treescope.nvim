@@ -21,7 +21,9 @@ function crumbs.get_toplevel_function_at_cursor()
   local row, col = unpack(vim.api.nvim_win_get_cursor(0))
   row = row - 1 -- Tree-sitter uses 0-based rows
 
-  local parser = vim.treesitter.get_parser(bufnr, "lua")
+  local lang = vim.treesitter.language.get_lang(vim.bo[bufnr].filetype)
+  local parser = vim.treesitter.get_parser(bufnr, lang)
+
   if not parser then
     return nil
   end

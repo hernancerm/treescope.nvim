@@ -4,7 +4,7 @@ local M = {}
 ---@field is_function fun(node: TSNode): boolean
 ---@field get_function_signature fun(node: TSNode, bufnr: integer): string
 
----@alias ProviderNames "lua"
+---@alias ProviderNames "lua" | "java"
 
 ---@param provider_name ProviderNames
 ---@return Provider?

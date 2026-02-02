@@ -1,18 +1,18 @@
-local crumbs = {}
+local treescope = {}
 
-function crumbs.setup()
-  local outline_config_augroup = vim.api.nvim_create_augroup("Crumbs", {})
+function treescope.setup()
+  local outline_config_augroup = vim.api.nvim_create_augroup("treescope", {})
   vim.api.nvim_create_autocmd("CursorMoved", {
     group = outline_config_augroup,
     callback = function()
-      vim.api.nvim_buf_set_var(0, "crumbs_fn_name", crumbs.get_toplevel_function_at_cursor() or "")
+      vim.api.nvim_buf_set_var(0, "ts_outer_fn", treescope.get_toplevel_function_at_cursor() or "")
     end
   })
 end
 
-function crumbs.get_toplevel_function_at_cursor()
-  local provider_id = require("crumbs.provider_locator").get_provider_id(vim.bo.filetype)
-  local provider = require("crumbs.provider_locator").get_provider(provider_id)
+function treescope.get_toplevel_function_at_cursor()
+  local provider_id = require("treescope.provider_locator").get_provider_id(vim.bo.filetype)
+  local provider = require("treescope.provider_locator").get_provider(provider_id)
 
   if provider == nil then
     return nil
@@ -64,4 +64,4 @@ function crumbs.get_toplevel_function_at_cursor()
   return provider.get_function_name(candidate, bufnr)
 end
 
-return crumbs
+return treescope

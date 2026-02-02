@@ -35,7 +35,7 @@ end
 
 ---@param node TSNode
 ---@param bufnr integer
-function M.get_function_signature(node, bufnr)
+function M.get_function_name(node, bufnr)
   local type_decl = enclosing_primary_type(node)
   if not type_decl then
     return nil
@@ -53,23 +53,17 @@ function M.get_function_signature(node, bufnr)
     return nil
   end
 
-  local name_node
   if node:type() == "method_declaration" then
-    name_node = node:field("name")[1]
-  elseif node:type() == "constructor_declaration" then
-    -- constructors only valid for class / record
-    name_node = type_name_node
+    local name_node = node:field("name")[1]
+    return name_node and ts.get_node_text(name_node, bufnr)
   end
 
-  local params_node = node:field("parameters")[1]
-  if not name_node or not params_node then
-    return nil
+  if node:type() == "constructor_declaration" then
+    -- constructor name == type name
+    return type_name
   end
 
-  local name = ts.get_node_text(name_node, bufnr)
-  local params = ts.get_node_text(params_node, bufnr)
-
-  return name .. params
+  return nil
 end
 
 return M

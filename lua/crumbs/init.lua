@@ -5,7 +5,7 @@ function crumbs.setup()
   vim.api.nvim_create_autocmd("CursorMoved", {
     group = outline_config_augroup,
     callback = function()
-      vim.api.nvim_buf_set_var(0, "crumbs_function", crumbs.get_toplevel_function_at_cursor() or "")
+      vim.api.nvim_buf_set_var(0, "crumbs_fn_name", crumbs.get_toplevel_function_at_cursor() or "")
     end
   })
 end
@@ -60,7 +60,7 @@ function crumbs.get_toplevel_function_at_cursor()
     cur = cur:parent()
   end
 
-  return provider.get_function_signature(candidate, bufnr)
+  return provider.get_function_name(candidate, bufnr)
 end
 
 return crumbs

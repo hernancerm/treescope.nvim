@@ -2,7 +2,7 @@ local M = {}
 
 ---@class Provider
 ---@field is_function fun(node: TSNode): boolean
----@field get_function_name fun(node: TSNode, bufnr: integer): string
+---@field get_function_name fun(node: TSNode, bufnr: integer): string?
 
 ---@enum ProviderIds
 M.ProviderIds = {

@@ -4,6 +4,7 @@ local M = {}
 local ts = vim.treesitter
 
 ---@param node TSNode
+---@return boolean
 function M.is_function(node)
   local t = node:type()
   return t == "function_declaration" or t == "function_definition"
@@ -11,6 +12,7 @@ end
 
 ---@param node TSNode
 ---@param bufnr integer
+---@return string?
 function M.get_function_name(node, bufnr)
   local name_node
 

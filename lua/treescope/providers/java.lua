@@ -1,4 +1,3 @@
----@class Provider
 local M = {}
 
 local ts = vim.treesitter
@@ -24,5 +23,8 @@ function M.get_function_name(node, bufnr)
   end
   return nil
 end
+
+---@type Provider
+local _ = M
 
 return M

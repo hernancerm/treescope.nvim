@@ -2,10 +2,6 @@ local const = require("treescope.const")
 
 local M = {}
 
----@class Provider
----@field is_function fun(node: TSNode): boolean
----@field get_function_name fun(node: TSNode, bufnr: integer): string?
-
 ---@param filetype string? Case-insensitive.
 ---@return const.ProviderIds?
 function M.get_provider_id(filetype)

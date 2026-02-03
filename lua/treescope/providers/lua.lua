@@ -1,4 +1,3 @@
----@class Provider
 local M = {}
 
 local ts = vim.treesitter
@@ -37,5 +36,8 @@ function M.get_function_name(node, bufnr)
 
   return ts.get_node_text(name_node, bufnr)
 end
+
+---@type Provider
+local _ = M
 
 return M

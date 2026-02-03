@@ -132,7 +132,7 @@ assign_default_config = function()
 end
 
 --- #tag treescope.config.buf_vars
---- `(string)`
+--- `(string[])`
 --- The valid values are scopes from |treescope-scopes|, e.g., `outer_function`.
 --- By default, Treescope does not create buf vars. This config key indicates to
 --- the plugin to create the buf var corresponding to the scope, and keep it up to

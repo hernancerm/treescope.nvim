@@ -7,7 +7,7 @@ Implement `outer_function() -> string | nil` returning the name of the outermost
 - Return nil if no enclosing function is found.
 - The implementation must be language-agnostic at the walker level.
 - Language-specific semantics are encapsulated in providers.
-- Currently supported: Lua, Java, Python.
+- Currently supported: Lua, Java, Python, Clojure.
 
 ## Core Algorithm (Language-Agnostic)
 1. Determine the Tree-sitter language from the buffer filetype.
@@ -45,13 +45,18 @@ The "outer function" is the highest function node in the syntax tree that still 
 - Name Extraction: Access the `name` field which points to the function's identifier.
 - Note: Methods are `function_definition` nodes nested inside a `class_definition`; the algorithm correctly identifies them as functions.
 
+### Clojure
+- Node Type: `list_lit` where the first child is a `sym_lit` with the text "defn".
+- Name Extraction: Extract the second child (a `sym_lit`) which contains the function name.
+- Limitation: Only `defn` definitions are supported; anonymous functions (`fn`) are not included even if assigned.
+
 ## Project Structure
 - `lua/treescope/init.lua`: Entry point; implements the shared walker logic.
 - `lua/treescope/const.lua`: Shared enums (`ProviderIds`, `ScopeIds`) and constants.
 - `lua/treescope/vars_service.lua`: Manages auto-updating buffer variables (`b:treescope_*`).
 - `lua/treescope/provider_locator.lua`: Maps filetypes to provider modules and handles dynamic loading.
 - `lua/treescope/provider_interface.lua`: Defines the interface for language providers.
-- `lua/treescope/providers/`: Directory for language-specific logic (e.g., `lua.lua`, `java.lua`, `python.lua`).
+- `lua/treescope/providers/`: Directory for language-specific logic (e.g., `lua.lua`, `java.lua`, `python.lua`, `clojure.lua`).
 
 ## Dynamic Language Handling
 1. Provider Discovery: `provider_locator` identifies the provider ID from `const.ProviderIds` based on filetype and loads the corresponding module from `lua/treescope/providers/`.

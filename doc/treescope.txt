@@ -111,6 +111,7 @@ Language  `outer_function`
 Lua       ✓
 Java      ✓
 Python    ✓
+Clojure   ✓
 
 ------------------------------------------------------------------------------
                                                            *treescope-functions*

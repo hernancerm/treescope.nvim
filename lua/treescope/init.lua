@@ -161,6 +161,7 @@ end
 --- Lua       ✓
 --- Java      ✓
 --- Python    ✓
+--- Clojure   ✓
 
 --- #delimiter
 --- #tag treescope-functions

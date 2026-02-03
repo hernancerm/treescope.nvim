@@ -139,8 +139,11 @@ end
 --- date as the cursor moves.
 ---
 --- The intended use case of buf vars is to be used in the statusline via an
---- expression, e.g.: `${get(b:,'treescope_outer_function','')}`. If you merely
+--- expression, e.g., `${get(b:,'treescope_outer_function','')}`. If you merely
 --- intend to use Treescope through its Lua API, you may ignore this config key.
+---
+--- The names of the buf vars are `treescope_` followed by the scope. For example,
+--- for the scope `outer_function` the buf var is `treescope_outer_function`.
 
 --- #delimiter
 --- #tag treescope-scopes

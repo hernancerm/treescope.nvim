@@ -4,7 +4,7 @@ local M = {}
 
 local valid_buf_var_names = nil
 
----@param scope_id const.scope_ids
+---@param scope_id const.ScopeIds
 ---@param treescope table
 local function create_buf_var_autocmd(scope_id, treescope)
   assert(scope_id)
@@ -21,18 +21,20 @@ local function create_buf_var_autocmd(scope_id, treescope)
   })
 end
 
----@param scope_name string
----@return const.scope_ids?
+---@param scope_name string? Case-insensitive.
+---@return const.ScopeIds?
 function M.get_scope_id(scope_name)
-  assert(scope_name)
-  return const.scope_ids[scope_name]
+  if not scope_name then
+    return nil
+  end
+  return const.ScopeIds[vim.fn.toupper(scope_name)]
 end
 
----@param scope_id const.scope_ids
+---@param scope_id const.ScopeIds
 ---@param treescope table
 function M.register_buf_var(scope_id, treescope)
-  assert(scope_id)
-  assert(treescope)
+  assert(scope_id, "scope_id is required")
+  assert(treescope, "treescope is required")
   create_buf_var_autocmd(scope_id, treescope)
 end
 
@@ -42,7 +44,7 @@ function M.get_valid_buf_var_names()
     return valid_buf_var_names
   end
   local result = {}
-  for _, scope_id in pairs(const.scope_ids) do
+  for _, scope_id in pairs(const.ScopeIds) do
     table.insert(result, scope_id)
   end
   valid_buf_var_names = result

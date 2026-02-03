@@ -184,20 +184,42 @@ end
 --- <
 ---@return string?
 function treescope.outer_function()
-  local provider_locator = require("treescope.provider_locator")
-  local provider_id = provider_locator.get_provider_id(vim.bo.filetype)
-  if provider_id == nil then
+  local bufnr = vim.api.nvim_get_current_buf()
+
+  -- Validate buffer.
+  if not vim.api.nvim_buf_is_valid(bufnr) then
     return nil
   end
+
+  -- Get filetype once.
+  local filetype = vim.bo[bufnr].filetype
+  if not filetype or filetype == "" then
+    return nil
+  end
+
+  -- Get provider.
+  local provider_locator = require("treescope.provider_locator")
+  local provider_id = provider_locator.get_provider_id(filetype)
+  if not provider_id then
+    return nil
+  end
+
   local provider = provider_locator.get_provider(provider_id)
+  if not provider then
+    return nil
+  end
 
-  local bufnr = vim.api.nvim_get_current_buf()
+  -- Get cursor position.
   local row, col = unpack(vim.api.nvim_win_get_cursor(0))
-  row = row - 1 -- Tree-sitter uses 0-based rows
+  row = row - 1
 
-  local lang = vim.treesitter.language.get_lang(vim.bo[bufnr].filetype)
+  -- Get Tree-sitter language.
+  local lang = vim.treesitter.language.get_lang(filetype)
+  if not lang then
+    return nil
+  end
+
   local parser = vim.treesitter.get_parser(bufnr, lang)
-
   if not parser then
     return nil
   end
@@ -210,10 +232,12 @@ function treescope.outer_function()
     return nil
   end
 
+  ---@type TSNode?
   local candidate = nil
+  ---@type TSNode?
   local cur = node
 
-  -- Walk up: remember the outermost function
+  -- Walk up: remember the outermost function.
   while cur do
     if provider.is_function(cur) then
       candidate = cur

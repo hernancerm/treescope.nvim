@@ -30,10 +30,10 @@
 ---
 --- * You may use the Lua API, |treescope-functions|, for any programmatic needs
 ---   you may have. For integrating the scopes to your statusline, I suggest you
----   enable the corresponding buf vars: |treescope.config.managed_buf_vars| and
----   reference the buf vars in your statusline with an expression like the
----   following: `${get(b:,'treescope_outer_function','')}`. This way the
----   statusline is automatically updated when the var gets a new value.
+---   enable the corresponding buf vars: |treescope.config.buf_vars| and reference
+---   the buf vars in your statusline with an expression like the following:
+---   `${get(b:,'treescope_outer_function','')}`. This way the statusline is
+---   automatically updated when the var gets a new value.
 
 --- #delimiter
 --- #tag treescope-quickstart
@@ -49,12 +49,11 @@
 ---     opts = {}
 ---   }
 ---<
+--- * To have a scope in your statusline, see |treescope.config.buf_vars|.
 ---
 --- * To get the scopes using the Lua API, see |treescope-functions|. E.g., to get
 ---   the outer function: `require("treescope").outer_function()`. In this case
 ---   there is no need to provide special configuration to the plugin.
----
---- * To have a scope in your statusline, see |treescope.config.managed_buf_vars|.
 
 local const = require("treescope.const")
 
@@ -80,8 +79,8 @@ function treescope.setup(config)
   if config ~= nil then
     -- Required configuration.
     vim.validate(
-      "config.managed_buf_vars",
-      config.managed_buf_vars,
+      "config.buf_vars",
+      config.buf_vars,
       "table",
       true
     )
@@ -100,13 +99,13 @@ function treescope.setup(config)
 
   -- Register buf vars from config (set auto-update with an autocmd).
   local vars_service = require("treescope.vars_service")
-  for _, managed_buf_var in ipairs(treescope.config.managed_buf_vars) do
+  for _, managed_buf_var in ipairs(treescope.config.buf_vars) do
     local scope_id = vars_service.get_scope_id(managed_buf_var)
     if scope_id ~= nil then
       vars_service.register_buf_var(scope_id, treescope)
     else
       error(
-        "Invalid value in config.managed_buf_vars: "
+        "Invalid value in config.buf_vars: "
           .. managed_buf_var
           .. ". Allowed values: "
           .. vim.fn.join(vars_service.get_valid_buf_var_names(), ", ")
@@ -126,21 +125,21 @@ assign_default_config = function()
   --minidoc_replace_start {
   treescope.default_config = {
     --minidoc_replace_end
-    managed_buf_vars = {},
+    buf_vars = {},
   }
   --minidoc_afterlines_end
 end
 
---- #tag treescope.config.managed_buf_vars
+--- #tag treescope.config.buf_vars
 --- `(string)`
 --- The valid values are scopes from |treescope-scopes|, e.g., `outer_function`.
 --- By default, Treescope does not create buf vars. This config key indicates to
 --- the plugin to create the buf var corresponding to the scope, and keep it up to
 --- date as the cursor moves.
 ---
---- The intended use case of buf vars is to be used in the statusline through an
---- expression: `${get(b:,'treescope_outer_function','')}`. If you only intend to
---- use Treescope through its Lua API then you may ignore this config key.
+--- The intended use case of buf vars is to be used in the statusline via an
+--- expression, e.g.: `${get(b:,'treescope_outer_function','')}`. If you merely
+--- intend to use Treescope through its Lua API, you may ignore this config key.
 
 --- #delimiter
 --- #tag treescope-scopes
@@ -148,7 +147,7 @@ end
 
 --- Each function in |treescope-functions| corresponds to a scope. The docs of
 --- each function explains what each scope means. Each scope can optionally be
---- exposed as a buf var. See: |treescope.config.managed_buf_vars|.
+--- exposed as a buf var. See: |treescope.config.buf_vars|.
 ---
 --- The complete list of scopes is as follows:
 ---

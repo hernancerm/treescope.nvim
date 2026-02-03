@@ -1,318 +1,82 @@
-# Memory Bank: `outer_function` (Neovim + Tree-sitter)
+# Memory Bank: outer_function (Neovim + Tree-sitter)
 
 ## Goal
+Implement `outer_function() -> string | nil` returning the name of the outermost enclosing function/method at the cursor position using Tree-sitter.
 
-Implement a Neovim Lua function:
-
-```lua
-outer_function() -> string | nil
-```
-
-that returns **the name of the outermost enclosing function/method** at the cursor position, using **Tree-sitter**.
-
-* The return value is **only the function/method name** (no parameter list).
-* If there is no enclosing function, return `nil`.
-* The implementation is **language-agnostic at the walker level**, with **language-specific semantics** encapsulated in helper functions.
-* Currently supported languages: **Lua** and **Java**.
-
----
+- Return only the function/method name (no parameter list).
+- Return nil if no enclosing function is found.
+- The implementation must be language-agnostic at the walker level.
+- Language-specific semantics are encapsulated in providers.
+- Currently supported: Lua, Java, Python.
 
 ## Core Algorithm (Language-Agnostic)
+1. Determine the Tree-sitter language from the buffer filetype.
+2. Get the Tree-sitter node at the current cursor position.
+3. Walk upwards through parent nodes until the root is reached.
+4. Each time a node qualifies as a "function" for the current language, record it as the current `candidate`.
+5. Return the name from the last function node encountered (the outermost one).
 
-1. Determine the Tree-sitter language dynamically from the buffer filetype.
-2. Get the Tree-sitter node at the cursor position.
-3. Walk **upwards through parent nodes**.
-4. Each time a node qualifies as a “function” for the current language:
-
-   * record it as `candidate`
-5. Continue walking until the root.
-6. Return the **last function seen** (the outermost one).
-
-**Key rule:**
-
-> “Outer function” = the *last* function encountered while walking upward from the cursor.
-
-This rule is **shared by Lua and Java**.
-
----
+Key rule: Outer function = last function encountered while walking upward from the cursor.
 
 ## Why Parent-Walking (Not Queries)
-
-* Tree-sitter queries are good at *finding nodes*, not at expressing:
-
-  * “outermost ancestor”
-  * “last enclosing construct”
-* Parent-walking is:
-
-  * universal across Tree-sitter grammars
-  * fast (tree height)
-  * robust to grammar changes
-* Queries were explored but rejected for this problem.
-
----
-
-## What “Outer Function” Means (Semantics)
-
-### General Definition
-
-Given a cursor position:
-
-* Walk up the syntax tree.
-* Every time you encounter a function/method node, remember it.
-* The **outer function** is the *highest* function node that still encloses the cursor.
-* Nested functions do **not** override outer ones.
-
-This is **syntactic**, not semantic or runtime scope.
-
----
-
-## Lua Semantics
-
-### What Counts as a Function
-
-Lua Tree-sitter nodes:
-
-* `function_declaration`
-
-  ```lua
-  function foo(x) end
-  function M.foo(x) end
-  ```
-* `function_definition`
-
-  ```lua
-  foo = function(x) end
-  M.foo = function(x) end
-  ```
-
-### How the Name Is Extracted
-
-* `function_declaration`
-
-  * name comes from `name` field
-* `function_definition`
-
-  * name comes from the **left-hand side of the enclosing assignment**
-  * requires walking:
-
-    ```
-    function_definition
-      → expression_list
-        → assignment_statement
-          → variable_list
-            → identifier | dot_index_expression
-    ```
-
-⚠️ Important Tree-sitter Lua details:
-
-* `variable_list` is **not a field**, it is a positional child.
-* `function_definition` is **not a direct child** of `assignment_statement`.
-
-### Lua Example
-
-```lua
-M.buffer_lines = function(opts)
-  local contents = function(cb)
-    local function add_entry(x, co)
-      print("hi")
-    end
-  end
-end
-```
-
-Cursor at `print("hi")`:
-
-* Functions encountered (bottom → top):
-
-  * `add_entry`
-  * `contents`
-  * `M.buffer_lines`
-
-✅ Returned value:
-
-```
-M.buffer_lines
-```
-
----
-
-## Java Semantics (Final, Corrected Model)
-
-### What Counts as a Function
-
-Java Tree-sitter nodes:
-
-* `method_declaration`
-* `constructor_declaration`
-
-Lambdas, static initializers, etc. are **not included**.
-
----
-
-## Key Java Design Decision (Very Important)
-
-❌ **Rejected approach**
-“Toplevel = belongs to the type matching the file name”
-
-✅ **Final rule (same as Lua):**
-
-> The outermost enclosing method is the **last method encountered while walking upward from the cursor**, regardless of which class, enum, interface, or record it belongs to.
-
-This rule:
-
-* matches the Lua semantics
-* handles nested types naturally
-* reflects how Java code is structured syntactically
-
----
-
-## Java Example: Nested Types
-
-```java
-public record GitRemote(
-        Platform platform,
-        String repositoryName,
-        String ownerName) {
-
-    public enum Platform {
-        BITBUCKET_ORG,
-        GITHUB_COM;
-
-        public static Platform from(String host) {
-            return switch (host) {
-                case "bitbucket.org" -> BITBUCKET_ORG;
-                case "github.com" -> GITHUB_COM;
-                default -> null;
-            };
-        }
-    }
-}
-```
-
-Cursor at:
-
-```java
-default -> null;
-```
-
-Ancestor chain includes:
-
-```
-switch_expression
-→ block
-→ method_declaration (from)
-→ enum_declaration
-→ record_declaration
-→ source_file
-```
-
-Only one method encountered.
-
-✅ Returned value:
-
-```
-from
-```
-
----
-
-## Java Example: Multiple Enclosing Methods
-
-```java
-class Outer {
-  void a() {
-    class Inner {
-      void b() {
-        System.out.println("hi");
-      }
-    }
-  }
-}
-```
-
-Cursor inside `println`:
-
-* Functions encountered:
-
-  * `b`
-  * `a`
-
-✅ Returned value:
-
-```
-a
-```
-
-(`a` is the **outermost** enclosing method)
-
----
+- Universal: Works across different Tree-sitter grammars.
+- Performance: O(tree height), which is very fast.
+- Robust: Less sensitive to grammar changes than complex queries.
+- Limitations of Queries: Tree-sitter queries excel at finding nodes but struggle to express "outermost ancestor" or "last enclosing construct" logic naturally.
+
+## Semantics
+The "outer function" is the highest function node in the syntax tree that still encloses the cursor. Nested functions do not override outer ones. This is a purely syntactic definition, not a semantic or runtime scope resolution.
+
+## Language Semantics Reference
+
+### Lua
+- Nodes: `function_declaration`, `function_definition`.
+- Name Extraction: 
+    - For declarations, use the `name` field.
+    - For definitions (assignments), walk up to the `assignment_statement` and locate the left-hand side identifier/expression.
+
+### Java
+- Nodes: `method_declaration`, `constructor_declaration`.
+- Exclusions: Lambdas and static initializers are currently ignored.
+- Rule: The outermost method is the last method encountered upward, regardless of whether it belongs to a nested class, enum, or record.
+
+### Python
+- Nodes: `function_definition`, `async_function_definition`.
+- Name Extraction: Access the `name` field which points to the function's identifier.
+- Note: Methods are `function_definition` nodes nested inside a `class_definition`; the algorithm correctly identifies them as functions.
+
+## Project Structure
+- `lua/treescope/init.lua`: Entry point; implements the shared walker logic.
+- `lua/treescope/const.lua`: Shared enums (`ProviderIds`, `ScopeIds`) and constants.
+- `lua/treescope/vars_service.lua`: Manages auto-updating buffer variables (`b:treescope_*`).
+- `lua/treescope/provider_locator.lua`: Maps filetypes to provider modules and handles dynamic loading.
+- `lua/treescope/provider_interface.lua`: Defines the interface for language providers.
+- `lua/treescope/providers/`: Directory for language-specific logic (e.g., `lua.lua`, `java.lua`, `python.lua`).
 
 ## Dynamic Language Handling
+1. Provider Discovery: `provider_locator` identifies the provider ID from `const.ProviderIds` based on filetype and loads the corresponding module from `lua/treescope/providers/`.
+2. Parser Initialization: Uses `vim.treesitter.get_parser(bufnr, lang)` to handle the syntax tree.
 
-The Tree-sitter parser language and language-specific logic are handled dynamically.
-
-1.  **Provider Discovery**: The `treescope.provider_locator` module identifies and loads the appropriate provider based on the buffer's `filetype`. Providers are located in `lua/treescope/providers/`.
-2.  **Parser Initialization**:
-    ```lua
-    local lang = vim.treesitter.language.get_lang(vim.bo[bufnr].filetype)
-    local parser = vim.treesitter.get_parser(bufnr, lang)
-    ```
-
-Language-specific behavior is encapsulated in a `Provider` interface:
-
-* `is_function(node) -> boolean`
-* `get_function_name(node, bufnr) -> string?`
-
----
+Provider Interface Requirements:
+- `is_function(node) -> boolean`: Predicate to identify function-like nodes.
+- `get_function_name(node, bufnr) -> string?`: Logic to extract the display name from a node.
 
 ## Responsibility Split
+- Shared (Global): Walker logic, cursor-to-node resolution, integration with Neovim (autocmds/vars), and provider discovery.
+- Specific (Provider): Defining which node types count as functions and how to extract their names.
 
-### Shared (Language-Agnostic) - `lua/treescope/init.lua`
-
-* Provider lookup via `provider_locator`.
-* Cursor → Tree-sitter node resolution.
-* Parent-walking algorithm: iterate to root, keep the **last** valid function node.
-* Integration: `treescope.setup()` sets an autocmd on `CursorMoved` to update the `treescope_outer_function` buffer variable.
-
-### Language-Specific - `lua/treescope/providers/*.lua`
-
-* Definition of node types that qualify as "functions".
-* Logic for extracting the name (handling field names, positional children, or complex assignments).
-
----
-
-## Final Mental Model (Invariant)
-
-* Tree-sitter is **syntactic**
-* “Outer function” means:
-
-  * *structurally outer*, not semantically “main”
-* Same walker algorithm for all languages
-* Only the function predicate and name extraction differ
-
----
+## Final Mental Model
+- Tree-sitter logic is syntactic.
+- "Outer" means structurally outermost in the file.
+- The walker algorithm is invariant; only the function predicate and name extraction logic vary by language.
 
 ## Explicit Non-Goals
+- No semantic analysis or runtime scope resolution.
+- No overload disambiguation.
+- No lambda support for Java.
+- No anonymous Lua functions unless assigned to a variable.
 
-* No semantic analysis
-* No runtime scope resolution
-* No overload disambiguation
-* No lambda support (Java)
-* No anonymous Lua functions unless assigned
-
----
-
-## Status
-
-* Lua: ✔ fully working (handles `function_declaration` and assignments)
-* Java: ✔ fully working (nested types supported)
-* Algorithm: stable & refactored (redundant nesting checks removed)
-* Design: consistent provider-based architecture
-
----
-
-### ⚠️ Important Warning for Future Changes
-
-* Do **not** reintroduce filename-based logic for Java
-* Do **not** try to replace parent-walking with Tree-sitter queries
-* The invariant is: **walk upward, last function wins**
+## Invariants for Future Support
+- Do not reintroduce filename-based logic for Java or similar languages.
+- Do not replace parent-walking with Tree-sitter queries.
+- The invariant is: walk upward, last function wins.

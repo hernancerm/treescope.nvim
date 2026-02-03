@@ -4,6 +4,7 @@ return {
   ProviderIds = {
     LUA = "lua",
     JAVA = "java",
+    PYTHON = "python",
   },
   ---@enum const.ScopeIds
   ScopeIds = {

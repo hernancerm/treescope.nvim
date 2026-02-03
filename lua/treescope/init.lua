@@ -160,6 +160,7 @@ end
 --- --------  ---------------
 --- Lua       ✓
 --- Java      ✓
+--- Python    ✓
 
 --- #delimiter
 --- #tag treescope-functions

@@ -79,12 +79,7 @@ function treescope.setup(config)
   -- Validate config.
   if config ~= nil then
     -- Required configuration.
-    vim.validate(
-      "config.buf_vars",
-      config.buf_vars,
-      "table",
-      true
-    )
+    vim.validate("config.buf_vars", config.buf_vars, "table", true)
     -- The validity of each buf var is checked during registration.
   end
 
@@ -203,15 +198,17 @@ function treescope.outer_function()
   if not provider_id then
     return nil
   end
-
   local provider = provider_locator.get_provider(provider_id)
-  if not provider then
-    return nil
-  end
 
   -- Get cursor position.
-  local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+  local win = vim.api.nvim_get_current_win()
+  local row, col = unpack(vim.api.nvim_win_get_cursor(win))
   row = row - 1
+
+  -- Verify buffer hasn't changed.
+  if vim.api.nvim_win_get_buf(win) ~= bufnr then
+    return nil
+  end
 
   -- Get Tree-sitter language.
   local lang = vim.treesitter.language.get_lang(filetype)
@@ -224,8 +221,16 @@ function treescope.outer_function()
     return nil
   end
 
-  local tree = parser:parse()[1]
+  local trees = parser:parse()
+  if not trees or #trees == 0 then
+    return nil
+  end
+
+  local tree = trees[1]
   local root = tree:root()
+  if not root then
+    return nil
+  end
 
   local node = root:named_descendant_for_range(row, col, row, col)
   if not node then

@@ -8,7 +8,8 @@ Contents:
 2. Quickstart                                             |treescope-quickstart|
 3. Configuration                                       |treescope-configuration|
 4. Scopes                                                     |treescope-scopes|
-5. Functions                                               |treescope-functions|
+5. Language support                                     |treescope-lang-support|
+6. Functions                                               |treescope-functions|
 
 ==============================================================================
                                                         *treescope-introduction*
@@ -97,6 +98,15 @@ exposed as a buf var. See: |treescope.config.buf_vars|.
 The complete list of scopes is as follows:
 
 • `outer_function`
+
+------------------------------------------------------------------------------
+                                                        *treescope-lang-support*
+Language support ~
+
+Language  `outer_function`
+--------  ---------------
+Lua       ✓
+Java      ✓
 
 ------------------------------------------------------------------------------
                                                            *treescope-functions*

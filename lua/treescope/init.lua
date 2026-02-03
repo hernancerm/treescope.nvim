@@ -8,7 +8,8 @@
 --- 2. Quickstart                                             |treescope-quickstart|
 --- 3. Configuration                                       |treescope-configuration|
 --- 4. Scopes                                                     |treescope-scopes|
---- 5. Functions                                               |treescope-functions|
+--- 5. Language support                                     |treescope-lang-support|
+--- 6. Functions                                               |treescope-functions|
 ---
 --- ==============================================================================
 --- #tag treescope-introduction
@@ -152,6 +153,15 @@ end
 --- The complete list of scopes is as follows:
 ---
 --- * `outer_function`
+
+--- #delimiter
+--- #tag treescope-lang-support
+--- Language support ~
+
+--- Language  `outer_function`
+--- --------  ---------------
+--- Lua       ✓
+--- Java      ✓
 
 --- #delimiter
 --- #tag treescope-functions

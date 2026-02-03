@@ -156,12 +156,13 @@ end
 --- #tag treescope-lang-support
 --- Language support ~
 
---- Language  `outer_function`
---- --------  ---------------
---- Lua       ✓
---- Java      ✓
---- Python    ✓
---- Clojure   ✓
+--- Language    `outer_function`
+--- ----------  ---------------
+--- Lua         ✓
+--- Java        ✓
+--- Python      ✓
+--- Clojure     ✓
+--- JavaScript  ✓
 
 --- #delimiter
 --- #tag treescope-functions

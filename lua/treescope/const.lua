@@ -6,6 +6,7 @@ return {
     JAVA = "java",
     PYTHON = "python",
     CLOJURE = "clojure",
+    JAVASCRIPT = "javascript",
   },
   ---@enum const.ScopeIds
   ScopeIds = {

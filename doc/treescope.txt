@@ -106,12 +106,13 @@ The complete list of scopes is as follows:
                                                         *treescope-lang-support*
 Language support ~
 
-Language  `outer_function`
---------  ---------------
-Lua       ✓
-Java      ✓
-Python    ✓
-Clojure   ✓
+Language    `outer_function`
+----------  ---------------
+Lua         ✓
+Java        ✓
+Python      ✓
+Clojure     ✓
+JavaScript  ✓
 
 ------------------------------------------------------------------------------
                                                            *treescope-functions*

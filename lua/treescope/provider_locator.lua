@@ -4,31 +4,24 @@ local M = {}
 ---@field is_function fun(node: TSNode): boolean
 ---@field get_function_name fun(node: TSNode, bufnr: integer): string?
 
----@enum ProviderIds
-M.ProviderIds = {
-  lua = 0,
-  java = 1
+---@enum provider_ids
+M.provider_ids = {
+  lua = "lua",
+  java = "java",
 }
 
 ---@param filetype string
----@return ProviderIds?
+---@return provider_ids?
 function M.get_provider_id(filetype)
-  return M.ProviderIds[filetype]
+  assert(filetype)
+  return M.provider_ids[filetype]
 end
 
----@param provider_id ProviderIds?
----@return Provider?
+---@param provider_id provider_ids
+---@return Provider
 function M.get_provider(provider_id)
-  if provider_id == nil then
-    return nil
-  end
-  local filetype = vim.api.nvim_get_option_value("filetype", { buf = 0 })
-  local status, result = pcall(require, "treescope.providers." .. filetype)
-  if status then
-    return result
-  else
-    return nil
-  end
+  assert(provider_id)
+  return require("treescope.providers." .. provider_id)
 end
 
 return M

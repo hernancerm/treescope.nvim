@@ -1,0 +1,9 @@
+# <https://github.com/JohnnyMorganz/StyLua?tab=readme-ov-file#configuration>.
+
+# Align with the Vim help file hard wrap.
+# Although not all Lua files are used to generate docs this keeps consistency.
+column_width = 82
+
+collapse_simple_statement = "Never"
+indent_type = "Spaces"
+indent_width = 2

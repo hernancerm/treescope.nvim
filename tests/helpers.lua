@@ -29,10 +29,24 @@ end
 --- Ensure a Tree-sitter parser is installed, fail-fast if not available
 ---@param lang string The Tree-sitter language name (e.g., "javascript")
 ---@param child MiniTest.ChildNeovim The child Neovim instance
+---@return boolean True if parser was installed (child should be restarted), false if already present
 function h.ensure_parser_available(lang, child)
-  -- Attempt to install the parser synchronously with 60 second timeout
-  -- This is a no-op if the parser is already installed
+  -- Check if parser is already installed by setting a global variable we can read
+  child.lua(
+    string.format(
+      "_treescope_parser_installed = vim.list_contains(require('nvim-treesitter.config').get_installed('parsers'), %q)",
+      lang
+    )
+  )
+  local is_installed = child.lua_get("_treescope_parser_installed")
+
+  if is_installed then
+    return false -- Parser already installed, no need to restart
+  end
+
+  -- Install the parser synchronously with 60 second timeout
   child.lua(string.format("require('nvim-treesitter').install({'%s'}):wait(60000)", lang))
+  return true -- Parser was just installed, restart needed
 end
 
 return h

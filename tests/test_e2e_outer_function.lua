@@ -25,7 +25,14 @@ T["e2e"]["javascript"] = new_set({
   hooks = {
     pre_case = function()
       -- Ensure JavaScript parser is available
-      h.ensure_parser_available("javascript", child)
+      local parser_was_installed = h.ensure_parser_available("javascript", child)
+
+      -- If parser was just installed, restart child to reload it
+      if parser_was_installed then
+        child.restart({ "-u", "scripts/minimal_init.lua" })
+        child.lua([[treescope = require("treescope")]])
+        child.lua([[treescope.setup()]])
+      end
 
       -- Open test file and set filetype explicitly
       local js_file = vim.fs.joinpath(h.resources_dir, "javascript.js")

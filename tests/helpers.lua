@@ -1,12 +1,13 @@
 local h = {}
 
-local eq = MiniTest.expect.equality
+local mini_test = require("test")
+local eq = mini_test.expect.equality
 
 h.resources_dir = vim.fs.joinpath(vim.fn.getcwd(), "tests", "resources")
 
---- Handle nil comparison properly.
----@param actual_scope string?
+--- Assert expected vs. actual handling nil comparison properly.
 ---@param expected_scope string?
+---@param actual_scope string?
 function h.assert_scope(expected_scope, actual_scope)
   if expected_scope == nil then
     eq(true, actual_scope == nil or actual_scope == vim.NIL)
@@ -27,9 +28,9 @@ function h.map_test_cases_to_parameterize_data(test_cases)
   return parametrize_data
 end
 
---- Set cursor position from a marker comment in the child instance
----@param marker_id string The alphanumeric string after "cursor-" (e.g., "3f7a2b1c")
----@param child MiniTest.ChildNeovim The child Neovim instance
+--- Set cursor position from a marker comment in the child instance.
+---@param marker_id string The alphanumeric string after "cursor-" (e.g., "3f7a2b1c").
+---@param child MiniTest.child The child Neovim instance.
 function h.set_cursor_from_marker(marker_id, child)
   child.lua(string.format(
     [[
@@ -51,27 +52,29 @@ function h.set_cursor_from_marker(marker_id, child)
   ))
 end
 
---- Ensure a Tree-sitter parser is installed, fail-fast if not available
----@param lang string The Tree-sitter language name (e.g., "javascript")
----@param child MiniTest.ChildNeovim The child Neovim instance
----@return boolean True if parser was installed (child should be restarted), false if already present
+--- Ensure a Tree-sitter parser is installed. Returns true if the parser was installed (in this case
+--- the client needs to restart the child); false, if the parser was already installed.
+---@param lang string The Tree-sitter language name (e.g., "javascript").
+---@param child MiniTest.child The child Neovim instance.
+---@return boolean
 function h.ensure_parser_available(lang, child)
-  -- Check if parser is already installed by setting a global variable we can read
-  child.lua(
-    string.format(
-      "_treescope_parser_installed = vim.list_contains(require('nvim-treesitter.config').get_installed('parsers'), %q)",
-      lang
-    )
-  )
-  local is_installed = child.lua_get("_treescope_parser_installed")
-
-  if is_installed then
-    return false -- Parser already installed, no need to restart
+  -- Check if parser is already installed.
+  child.lua(string.format(
+    [[
+      _treescope_parser_installed = vim.list_contains(
+        require('nvim-treesitter.config').get_installed('parsers'),
+        %q)
+  ]],
+    lang
+  ))
+  if child.lua_get("_treescope_parser_installed") then
+    -- Parser already installed. No need to install.
+    return false
   end
-
-  -- Install the parser synchronously with 60 second timeout
-  child.lua(string.format("require('nvim-treesitter').install({'%s'}):wait(60000)", lang))
-  return true -- Parser was just installed, restart needed
+  -- Install the parser synchronously with 45 seconds timeout.
+  child.lua(string.format("require('nvim-treesitter').install({'%s'}):wait(45000)", lang))
+  -- Parser was installed.
+  return true
 end
 
 return h

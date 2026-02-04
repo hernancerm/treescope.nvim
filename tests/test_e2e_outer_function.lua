@@ -1,16 +1,15 @@
----@diagnostic disable: undefined-field, undefined-global
-
 local h = dofile("tests/helpers.lua")
 
-local new_set = MiniTest.new_set
-local child = MiniTest.new_child_neovim()
+local mini_test = require("test")
+local new_set = mini_test.new_set
+local child = mini_test.new_child_neovim()
 
 local T = new_set({
   hooks = {
     pre_case = function()
       child.restart({ "-u", "scripts/minimal_init.lua" })
       child.lua([[treescope = require("treescope")]])
-      child.lua([[treescope.setup()]])
+      child.lua("treescope.setup()")
     end,
     post_once = function()
       child.stop()
@@ -50,11 +49,11 @@ T["e2e"]["javascript"] = new_set({
 
     post_case = function()
       -- Add case note but only when test fails so that successful tests are not printed.
-      local case = MiniTest.current.case
+      local case = mini_test.current.case
       if #case.exec.fails > 0 then
         local marker = case.args[1]
         if javascript_test_cases[marker] then
-          MiniTest.add_note("Case: " .. javascript_test_cases[marker].note)
+          mini_test.add_note("Case: " .. javascript_test_cases[marker].note)
         end
       end
     end,

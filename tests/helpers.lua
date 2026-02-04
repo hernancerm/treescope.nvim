@@ -1,6 +1,19 @@
 local h = {}
 
+local eq = MiniTest.expect.equality
+
 h.resources_dir = vim.fs.joinpath(vim.fn.getcwd(), "tests", "resources")
+
+--- Handle nil comparison properly.
+---@param actual_scope string?
+---@param expected_scope string?
+function h.assert_scope(expected_scope, actual_scope)
+  if expected_scope == nil then
+    eq(true, actual_scope == nil or actual_scope == vim.NIL)
+  else
+    eq(expected_scope, actual_scope)
+  end
+end
 
 --- Set cursor position from a marker comment in the child instance
 ---@param marker_id string The alphanumeric string after "cursor-" (e.g., "3f7a2b1c")

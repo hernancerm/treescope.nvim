@@ -4,6 +4,7 @@ ECHASNOVSKI_GH_BASE_URL := https://raw.githubusercontent.com/echasnovski
 CMD_MINI_DOC_GENERATE := @$(CMD_NVIM) -u ./scripts/testdocs_init.lua && echo ''
 MINI_DOC_GIT_HASH := 28d1d8172a463460131c3ae929498abe78937382
 MINI_TEST_GIT_HASH := 5b319ef8e6b368970f51119663943f7b75385b83
+NVIM_TREESITTER_GIT_HASH := 4967fa48b0fe7a7f92cee546c76bb4bb61bb14d5
 STYLUA_VERSION := $(shell grep stylua .tool-versions | awk '{ print $$2 }')
 STYLUA := $(HOME)/.asdf/installs/stylua/$(STYLUA_VERSION)/bin/stylua
 
@@ -21,7 +22,7 @@ testdocs: deps/lua/doc.lua
 
 # Run mini.test tests.
 .PHONY: test
-test: deps/lua/test.lua
+test: deps/lua/test.lua deps/lua/nvim-treesitter/init.lua
 	$(CMD_NVIM) -u ./scripts/minimal_init.lua -c "lua MiniTest.run()"
 
 # Run CI tests.
@@ -45,6 +46,13 @@ deps/lua/test.lua:
 deps/lua/doc.lua:
 	@mkdir -p deps/lua
 	curl $(ECHASNOVSKI_GH_BASE_URL)/mini.doc/$(MINI_DOC_GIT_HASH)/lua/mini/doc.lua -o $@
+
+deps/lua/nvim-treesitter/init.lua:
+	@mkdir -p deps/lua
+	curl -L https://github.com/nvim-treesitter/nvim-treesitter/archive/$(NVIM_TREESITTER_GIT_HASH).tar.gz -o /tmp/nvim-treesitter.tar.gz
+	cd /tmp && tar -xzf nvim-treesitter.tar.gz
+	cp -r /tmp/nvim-treesitter-$(NVIM_TREESITTER_GIT_HASH)/lua/nvim-treesitter deps/lua/
+	rm -rf /tmp/nvim-treesitter.tar.gz /tmp/nvim-treesitter-$(NVIM_TREESITTER_GIT_HASH)
 
 $(STYLUA):
 	asdf plugin add stylua

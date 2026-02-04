@@ -21,20 +21,18 @@ local T = new_set({
 T["e2e"] = new_set({})
 
 local javascript_test_cases = {
-  { marker = "3f7a2b1c", expected = nil, note = "top-level" },
-  { marker = "5k9m1p4x", expected = "greet", note = "function declaration" },
-  { marker = "8l1o3c5a", expected = "fetchData", note = "async function declaration" },
-  { marker = "2q8r6t9v", expected = "salute", note = "arrow function assigned to variable" },
-  { marker = "4e6g9s2u", expected = "asyncFetch", note = "async arrow function" },
-  { marker = "7w2d4f8h", expected = "processData", note = "nested function" },
-  { marker = "1n3b5j7c", expected = "processData", note = "deeply nested function" },
-  { marker = "6i4p8v2w", expected = "foo", note = "function expression assigned to variable" },
+  ["3f7a2b1c"] = { expected = nil, note = "top-level" },
+  ["5k9m1p4x"] = { expected = "greet", note = "function declaration" },
+  ["8l1o3c5a"] = { expected = "fetchData", note = "async function declaration" },
+  ["2q8r6t9v"] = { expected = "salute", note = "arrow function assigned to variable" },
+  ["4e6g9s2u"] = { expected = "asyncFetch", note = "async arrow function" },
+  ["7w2d4f8h"] = { expected = "processData", note = "nested function" },
+  ["1n3b5j7c"] = { expected = "processData", note = "deeply nested function" },
+  ["6i4p8v2w"] = { expected = "foo", note = "function expression assigned to variable" },
 }
 
 T["e2e"]["javascript"] = new_set({
-  parametrize = vim.tbl_map(function(case)
-    return { case.marker, case.expected }
-  end, javascript_test_cases),
+  parametrize = h.map_test_cases_to_parameterize_data(javascript_test_cases),
   hooks = {
     pre_case = function()
       -- Ensure JavaScript parser is available.
@@ -54,12 +52,9 @@ T["e2e"]["javascript"] = new_set({
       -- Add case note but only when test fails so that successful tests are not printed.
       local case = MiniTest.current.case
       if #case.exec.fails > 0 then
-        local marker, expected = case.args[1], case.args[2]
-        for _, test_case in ipairs(javascript_test_cases) do
-          if test_case.marker == marker and test_case.expected == expected then
-            MiniTest.add_note("Case: " .. test_case.note)
-            break
-          end
+        local marker = case.args[1]
+        if javascript_test_cases[marker] then
+          MiniTest.add_note("Case: " .. javascript_test_cases[marker].note)
         end
       end
     end,

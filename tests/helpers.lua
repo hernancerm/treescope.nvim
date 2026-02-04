@@ -15,6 +15,18 @@ function h.assert_scope(expected_scope, actual_scope)
   end
 end
 
+--- Map test case data with the following structure:
+---     { ["3f7a2b1c"] = { expected = nil, note = "top-level" }, ... }
+--- To this structure for use by the `parametrize` key of a mini.test test set.
+---    { { "3f7a2b1c", nil }, ... }
+function h.map_test_cases_to_parameterize_data(test_cases)
+  local parametrize_data = {}
+  for marker, case_data in pairs(test_cases) do
+    table.insert(parametrize_data, { marker, case_data.expected })
+  end
+  return parametrize_data
+end
+
 --- Set cursor position from a marker comment in the child instance
 ---@param marker_id string The alphanumeric string after "cursor-" (e.g., "3f7a2b1c")
 ---@param child MiniTest.ChildNeovim The child Neovim instance

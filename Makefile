@@ -1,6 +1,7 @@
 HELP_FILE := ./doc/treescope.txt
 CMD_NVIM := nvim --headless --noplugin
 ECHASNOVSKI_GH_BASE_URL := https://raw.githubusercontent.com/echasnovski
+NVIM_TREESITTER_GH_BASE_URL := https://github.com/nvim-treesitter/nvim-treesitter
 CMD_MINI_DOC_GENERATE := @$(CMD_NVIM) -u ./scripts/testdocs_init.lua && echo ''
 MINI_DOC_GIT_HASH := 28d1d8172a463460131c3ae929498abe78937382
 MINI_TEST_GIT_HASH := 5b319ef8e6b368970f51119663943f7b75385b83
@@ -49,10 +50,11 @@ deps/lua/doc.lua:
 
 deps/lua/nvim-treesitter/init.lua:
 	@mkdir -p deps/lua
-	curl -L https://github.com/nvim-treesitter/nvim-treesitter/archive/$(NVIM_TREESITTER_GIT_HASH).tar.gz -o /tmp/nvim-treesitter.tar.gz
-	cd /tmp && tar -xzf nvim-treesitter.tar.gz
-	cp -r /tmp/nvim-treesitter-$(NVIM_TREESITTER_GIT_HASH)/lua/nvim-treesitter deps/lua/
-	rm -rf /tmp/nvim-treesitter.tar.gz /tmp/nvim-treesitter-$(NVIM_TREESITTER_GIT_HASH)
+	curl -L $(NVIM_TREESITTER_GH_BASE_URL)/archive/$(NVIM_TREESITTER_GIT_HASH).tar.gz \
+	-o deps/nvim-treesitter.tar.gz
+	cd deps && tar -xzf nvim-treesitter.tar.gz
+	cp -r deps/nvim-treesitter-$(NVIM_TREESITTER_GIT_HASH)/lua/nvim-treesitter deps/lua/
+	rm -rf deps/nvim-treesitter.tar.gz deps/nvim-treesitter-$(NVIM_TREESITTER_GIT_HASH)
 
 $(STYLUA):
 	asdf plugin add stylua

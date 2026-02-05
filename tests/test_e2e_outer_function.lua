@@ -157,4 +157,28 @@ local lua_test_cases = {
 
 T["e2e"]["lua"] = create_language_test_set("lua", "lua.lua", "lua", lua_test_cases)
 
+local java_test_cases = {
+  ["3f7a2b1c"] = { expected = nil, note = "top-level" },
+  ["8l1o3c5a"] = { expected = "MyClass", note = "constructor declaration" },
+  ["4e6g9s2u"] = {
+    expected = "MyClass",
+    note = "constructor declaration - cursor on identifier",
+  },
+  ["5k9m1p4x"] = { expected = "greet", note = "method declaration" },
+  ["2q8r6t9v"] = {
+    expected = "sayHello",
+    note = "method declaration - cursor on identifier",
+  },
+  ["7w2d4f8h"] = { expected = "staticMethod", note = "static method" },
+  ["1n3b5j7c"] = { expected = "genericMethod", note = "generic method" },
+  ["6i4p8v2w"] = { expected = "withAnonymousInner", note = "anonymous inner class method" },
+  ["9z8y7x6w"] = { expected = "withInnerClass", note = "named inner class method" },
+  ["5a4b3c2d"] = {
+    expected = "innerMethod",
+    note = "named inner class method - cursor on identifier",
+  },
+}
+
+T["e2e"]["java"] = create_language_test_set("java", "java.java", "java", java_test_cases)
+
 return T

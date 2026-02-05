@@ -29,10 +29,10 @@ function h.map_test_cases_to_parameterize_data(test_cases)
 end
 
 --- Set cursor position from a marker comment in the child instance.
---- Supports optional [keys] suffix to execute normal mode keys after positioning.
---- Example: cursor-9z8y7x6w[Ww] positions at marker end, then executes 'Ww' in normal mode.
---- Assumption: Keys provided in [...] are valid normal mode movement keys.
----@param marker_id string The alphanumeric string after "cursor-" (e.g., "3f7a2b1c").
+--- Supports optional `[keys]` suffix to execute normal mode keys after positioning.
+--- Example: `cursor-9z8y7x6w[Ww]` positions at marker end, then executes `Ww` in normal mode.
+--- Assumption: Keys provided in `[...]` are valid normal mode movement keys.
+---@param marker_id string The string after "cursor-", e.g., "3f7a2b1c".
 ---@param child MiniTest.child The child Neovim instance.
 function h.set_cursor_from_marker(marker_id, child)
   child.lua(string.format(

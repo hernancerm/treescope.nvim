@@ -1,13 +1,9 @@
 # cursor-3f7a2b1c
 
 
+# cursor-2q8r6t9v[Ww]
 def greet(name):
     # cursor-5k9m1p4x
-    return f"Hello, {name}!"
-
-
-# cursor-2q8r6t9v[jw]
-def sayHello(name):
     return f"Hello, {name}!"
 
 
@@ -29,20 +25,15 @@ def outer():
         def deepest():
             # cursor-5y6z7a8b
             return "deep"
-
         return deepest()
-
     return middle()
 
 
 class MyClass:
+    # cursor-a7cp3312[Ww]
     def method(self):
         # cursor-9i0j1k2l
         return "instance method"
-
-    # cursor-a7cp3312[jw]
-    def anotherMethod(self):
-        return "another method"
 
     async def asyncMethod(self):
         # cursor-1n3b5j7c

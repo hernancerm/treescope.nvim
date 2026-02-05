@@ -195,7 +195,7 @@ local python_test_cases = {
   ["3f7a2b1c"] = { expected = nil, note = "top-level" },
   ["5k9m1p4x"] = { expected = "greet", note = "function definition" },
   ["2q8r6t9v"] = {
-    expected = "sayHello",
+    expected = "greet",
     note = "function definition - cursor on identifier",
   },
   ["8l1o3c5a"] = { expected = "asyncFetch", note = "async function" },
@@ -203,7 +203,7 @@ local python_test_cases = {
   ["5y6z7a8b"] = { expected = "outer", note = "deeply nested function" },
   ["9i0j1k2l"] = { expected = "method", note = "instance method" },
   ["a7cp3312"] = {
-    expected = "anotherMethod",
+    expected = "method",
     note = "instance method - cursor on identifier",
   },
   ["1n3b5j7c"] = { expected = "asyncMethod", note = "async instance method" },

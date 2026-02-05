@@ -93,4 +93,18 @@ local clojure_test_cases = {
 T["e2e"]["clojure"] =
   create_language_test_set("clojure", "clojure.clj", "clojure", clojure_test_cases)
 
+local typescript_test_cases = {
+  ["3f7a2b1c"] = { expected = nil, note = "top-level" },
+  ["5k9m1p4x"] = { expected = "greet", note = "function declaration" },
+  ["8l1o3c5a"] = { expected = "fetchData", note = "async function declaration" },
+  ["2q8r6t9v"] = { expected = "salute", note = "arrow function assigned to variable" },
+  ["4e6g9s2u"] = { expected = "asyncFetch", note = "async arrow function" },
+  ["7w2d4f8h"] = { expected = "processData", note = "nested function" },
+  ["1n3b5j7c"] = { expected = "processData", note = "deeply nested function" },
+  ["6i4p8v2w"] = { expected = "foo", note = "function assigned to variable" },
+}
+
+T["e2e"]["typescript"] =
+  create_language_test_set("typescript", "typescript.ts", "typescript", typescript_test_cases)
+
 return T

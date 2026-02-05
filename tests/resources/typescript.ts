@@ -1,0 +1,43 @@
+// cursor-3f7a2b1c
+function greet(name: string): string {
+  // cursor-5k9m1p4x
+  return `Hello, ${name}!`;
+}
+
+const salute = (name: string): string => {
+  // cursor-2q8r6t9v
+  return `Hello, ${name}!`;
+}
+
+function processData(data: number[]): number[] {
+  function filterPositive(nums: number[]): number[] {
+    return nums.filter(n => {
+      // cursor-1n3b5j7c
+      return n > 0;
+    });
+    // cursor-7w2d4f8h
+  }
+  function doubleValues(nums: number[]): number[] {
+    return nums.map(n => n * 2);
+  }
+  const filtered = filterPositive(data);
+  const doubled = doubleValues(filtered);
+  return doubled;
+}
+
+const asyncFetch = async (url: string): Promise<any> => {
+  // cursor-4e6g9s2u
+  const response = await fetch(url);
+  return response.json();
+};
+
+async function fetchData(url: string): Promise<any> {
+  // cursor-8l1o3c5a
+  const response = await fetch(url);
+  return response.json();
+}
+
+const foo = function(x: number): number {
+  // cursor-6i4p8v2w
+  return x * 2;
+}

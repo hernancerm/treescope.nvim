@@ -4,14 +4,10 @@ function greet(name: string): string {
   return `Hello, ${name}!`;
 }
 
+// cursor-9z8y7x6w[Ww]
 const salute = (name: string): string => {
   // cursor-2q8r6t9v
   return `Hello, ${name}!`;
-}
-
-// cursor-9z8y7x6w[Ww]
-const fetchUser = (id: number): string => {
-  return `User ${id}`;
 }
 
 function processData(data: number[]): number[] {
@@ -42,12 +38,8 @@ async function fetchData(url: string): Promise<any> {
   return response.json();
 }
 
+// cursor-5a4b3c2d[Ww]
 const foo = function(x: number): number {
   // cursor-6i4p8v2w
   return x * 2;
-}
-
-// cursor-5a4b3c2d[Ww]
-const calculate = function(num: number): number {
-  return num * 2;
 }

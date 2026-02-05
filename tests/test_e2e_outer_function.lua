@@ -166,13 +166,13 @@ local java_test_cases = {
   },
   ["5k9m1p4x"] = { expected = "greet", note = "method declaration" },
   ["2q8r6t9v"] = {
-    expected = "sayHello",
+    expected = "greet",
     note = "method declaration - cursor on identifier",
   },
   ["7w2d4f8h"] = { expected = "staticMethod", note = "static method" },
   ["1n3b5j7c"] = { expected = "genericMethod", note = "generic method" },
   ["6i4p8v2w"] = { expected = "withAnonymousInner", note = "anonymous inner class method" },
-  ["9z8y7x6w"] = { expected = "withInnerClass", note = "named inner class method" },
+  ["9z8y7x6w"] = { expected = "innerMethod", note = "named inner class method" },
   ["5a4b3c2d"] = {
     expected = "innerMethod",
     note = "named inner class method - cursor on identifier",

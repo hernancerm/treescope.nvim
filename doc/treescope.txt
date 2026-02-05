@@ -31,10 +31,10 @@ Solution:
 
 • You may use the Lua API, |treescope-functions|, for any programmatic needs
   you may have. For integrating the scopes to your statusline, I suggest you
-  enable the corresponding buf vars: |treescope.config.buf_vars| and reference
-  the buf vars in your statusline with an expression like the following:
-  `${get(b:,'treescope_outer_function','')}`. This way the statusline is
-  automatically updated when the var gets a new value.
+  enable the corresponding buf vars, see |treescope.config.buf_vars|, and
+  reference the buf vars in your statusline with an expression like the
+  following: `${get(b:,'treescope_outer_function','')}`. This way the
+  statusline is automatically updated when the var gets a new value.
 
 ------------------------------------------------------------------------------
                                                           *treescope-quickstart*

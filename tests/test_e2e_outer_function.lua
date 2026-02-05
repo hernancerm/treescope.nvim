@@ -146,7 +146,7 @@ local lua_test_cases = {
   },
   ["5s6t7u8v"] = { expected = "my_func", note = "function assigned to global variable" },
   ["axbpbq73"] = {
-    expected = "withAssignedInnerIdentifier",
+    expected = "my_func",
     note = "function assigned to global variable - cursor on identifier",
   },
   ["1u2v3w4x"] = { expected = "processData", note = "nested function" },
@@ -155,7 +155,6 @@ local lua_test_cases = {
   ["3g4h5i6j"] = { expected = "withTableFilter", note = "anonymous function in table.filter" },
 }
 
-T["e2e"]["lua"] =
-  create_language_test_set("lua", "lua.lua", "lua", lua_test_cases)
+T["e2e"]["lua"] = create_language_test_set("lua", "lua.lua", "lua", lua_test_cases)
 
 return T

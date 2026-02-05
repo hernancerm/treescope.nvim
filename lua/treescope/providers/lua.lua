@@ -6,35 +6,73 @@ local ts = vim.treesitter
 ---@return boolean
 function M.is_function(node)
   local t = node:type()
-  return t == "function_declaration" or t == "function_definition"
+
+  if t == "function_declaration" or t == "function_definition" then
+    return true
+  end
+
+  if t == "identifier" then
+    -- Case: Cursor on variable name in: local foo = function() end
+    -- or in: foo = function() end
+    local var_list = node:parent()
+    if not var_list or var_list:type() ~= "variable_list" then
+      return false
+    end
+
+    local assign = var_list:parent()
+    if not assign or assign:type() ~= "assignment_statement" then
+      return false
+    end
+
+    -- Check if the assignment has a function_definition as its value.
+    local expr_list = assign:named_child(1)
+    if not expr_list then
+      return false
+    end
+
+    local func_def = expr_list:named_child(0)
+    return func_def and func_def:type() == "function_definition"
+  end
+
+  return false
 end
 
 ---@param node TSNode
 ---@param bufnr integer
 ---@return string?
 function M.get_function_name(node, bufnr)
-  local name_node
+  local t = node:type()
 
-  if node:type() == "function_declaration" then
+  if t == "identifier" then
+    -- Case: Cursor on variable name in: local foo = function() end
+    -- or in: foo = function() end
+    return ts.get_node_text(node, bufnr)
+  end
+
+  if t == "function_declaration" then
     -- Case: function foo() end
-    name_node = node:field("name")[1]
-  elseif node:type() == "function_definition" then
+    local name_node = node:field("name")[1]
+    if name_node then
+      return ts.get_node_text(name_node, bufnr)
+    end
+  end
+
+  if t == "function_definition" then
     -- Case: foo = function() end
     local expr_list = node:parent()
     local assign = expr_list and expr_list:parent()
     if assign and assign:type() == "assignment_statement" then
       local var_list = assign:named_child(0)
       if var_list and var_list:type() == "variable_list" then
-        name_node = var_list:named_child(0)
+        local name_node = var_list:named_child(0)
+        if name_node then
+          return ts.get_node_text(name_node, bufnr)
+        end
       end
     end
   end
 
-  if not name_node then
-    return nil
-  end
-
-  return ts.get_node_text(name_node, bufnr)
+  return nil
 end
 
 ---@type Provider

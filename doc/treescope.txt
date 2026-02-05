@@ -113,6 +113,7 @@ Java        ✓
 Python      ✓
 Clojure     ✓
 JavaScript  ✓
+TypeScript  ✓
 
 ------------------------------------------------------------------------------
                                                            *treescope-functions*

@@ -163,6 +163,7 @@ end
 --- Python      ✓
 --- Clojure     ✓
 --- JavaScript  ✓
+--- TypeScript  ✓
 
 --- #delimiter
 --- #tag treescope-functions

@@ -9,6 +9,11 @@ const salute = (name: string): string => {
   return `Hello, ${name}!`;
 }
 
+// cursor-9z8y7x6w[Ww]
+const fetchUser = (id: number): string => {
+  return `User ${id}`;
+}
+
 function processData(data: number[]): number[] {
   function filterPositive(nums: number[]): number[] {
     return nums.filter(n => {
@@ -40,4 +45,9 @@ async function fetchData(url: string): Promise<any> {
 const foo = function(x: number): number {
   // cursor-6i4p8v2w
   return x * 2;
+}
+
+// cursor-5a4b3c2d[Ww]
+const calculate = function(num: number): number {
+  return num * 2;
 }

@@ -72,10 +72,18 @@ local javascript_test_cases = {
   ["5k9m1p4x"] = { expected = "greet", note = "function declaration" },
   ["8l1o3c5a"] = { expected = "fetchData", note = "async function declaration" },
   ["2q8r6t9v"] = { expected = "salute", note = "arrow function assigned to variable" },
+  ["9z8y7x6w"] = {
+    expected = "fetchUser",
+    note = "arrow function assigned to variable - cursor on identifier",
+  },
   ["4e6g9s2u"] = { expected = "asyncFetch", note = "async arrow function" },
   ["7w2d4f8h"] = { expected = "processData", note = "nested function" },
   ["1n3b5j7c"] = { expected = "processData", note = "deeply nested function" },
-  ["6i4p8v2w"] = { expected = "foo", note = "function assigned to variable" },
+  ["6i4p8v2w"] = { expected = "foo", note = "function expression assigned to variable" },
+  ["5a4b3c2d"] = {
+    expected = "calculate",
+    note = "function expression assigned to variable - cursor on identifier",
+  },
 }
 
 T["e2e"]["javascript"] =
@@ -98,10 +106,18 @@ local typescript_test_cases = {
   ["5k9m1p4x"] = { expected = "greet", note = "function declaration" },
   ["8l1o3c5a"] = { expected = "fetchData", note = "async function declaration" },
   ["2q8r6t9v"] = { expected = "salute", note = "arrow function assigned to variable" },
+  ["9z8y7x6w"] = {
+    expected = "fetchUser",
+    note = "arrow function assigned to variable - cursor on identifier",
+  },
   ["4e6g9s2u"] = { expected = "asyncFetch", note = "async arrow function" },
   ["7w2d4f8h"] = { expected = "processData", note = "nested function" },
   ["1n3b5j7c"] = { expected = "processData", note = "deeply nested function" },
-  ["6i4p8v2w"] = { expected = "foo", note = "function assigned to variable" },
+  ["6i4p8v2w"] = { expected = "foo", note = "function expression assigned to variable" },
+  ["5a4b3c2d"] = {
+    expected = "calculate",
+    note = "function expression assigned to variable - cursor on identifier",
+  },
 }
 
 T["e2e"]["typescript"] =

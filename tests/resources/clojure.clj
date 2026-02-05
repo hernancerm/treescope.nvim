@@ -3,6 +3,7 @@
   ; cursor-1x2y3z4w
   (str "Hello, " name "!"))
 
+; cursor-7a1nko2i[6w]
 (def salute (fn [name]
   ; cursor-5m6n7o8p
   (str "Hello, " name "!")))

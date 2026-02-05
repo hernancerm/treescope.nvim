@@ -96,6 +96,10 @@ local clojure_test_cases = {
   ["8d9e0f1g"] = { expected = "process-data", note = "nested defn" },
   ["6g7h8i9j"] = { expected = "fetch-data", note = "deeply nested defn" },
   ["5m6n7o8p"] = { expected = "salute", note = "function assigned to variable" },
+  ["7a1nko2i"] = {
+    expected = "salute",
+    note = "function assigned to variable - cursor on identifier",
+  },
 }
 
 T["e2e"]["clojure"] =

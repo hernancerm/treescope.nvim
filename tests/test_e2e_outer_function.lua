@@ -153,6 +153,16 @@ local lua_test_cases = {
   ["5y6z7a8b"] = { expected = "outer", note = "deeply nested function" },
   ["9c0d1e2f"] = { expected = "withLocalNested", note = "nested local function" },
   ["3g4h5i6j"] = { expected = "withTableFilter", note = "anonymous function in table.filter" },
+  ["2k3l4m5n"] = { expected = "obj:method", note = "method syntax" },
+  ["1h3bfm6m"] = {
+    expected = "obj:method",
+    note = "method syntax - cursor on identifier",
+  },
+  ["1s2t3u4v"] = { expected = "outer.inner:method", note = "nested method syntax" },
+  ["912v4v4a"] = {
+    expected = "outer.inner:method",
+    note = "nested method syntax - cursor on identifier",
+  },
 }
 
 T["e2e"]["lua"] = create_language_test_set("lua", "lua.lua", "lua", lua_test_cases)

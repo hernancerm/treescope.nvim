@@ -56,3 +56,16 @@ function withTableFilter(items)
     return true
   end, items)
 end
+
+local obj = {}
+-- cursor-1h3bfm6m[Ww]
+function obj:method()
+  -- cursor-2k3l4m5n
+  return "obj method"
+end
+
+-- cursor-912v4v4a[Ww]
+function outer.inner:method()
+  -- cursor-1s2t3u4v
+  return "nested method"
+end

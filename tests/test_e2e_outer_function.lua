@@ -127,4 +127,35 @@ local typescript_test_cases = {
 T["e2e"]["typescript"] =
   create_language_test_set("typescript", "typescript.ts", "typescript", typescript_test_cases)
 
+local lua_test_cases = {
+  ["1a2b3c4d"] = { expected = nil, note = "top-level" },
+  ["5e6f7g8h"] = { expected = "greet", note = "function declaration" },
+  ["1o2p3q4r"] = {
+    expected = "greet",
+    note = "function declaration - cursor on identifier",
+  },
+  ["9i0j1k2l"] = { expected = "fetch_data", note = "local function declaration" },
+  ["a7cp3312"] = {
+    expected = "fetch_data",
+    note = "local function declaration - cursor on identifier",
+  },
+  ["3m4n5o6p"] = { expected = "calculate", note = "function assigned to variable" },
+  ["7q8r9s0t"] = {
+    expected = "calculate",
+    note = "function assigned to variable - cursor on identifier",
+  },
+  ["5s6t7u8v"] = { expected = "my_func", note = "function assigned to global variable" },
+  ["axbpbq73"] = {
+    expected = "withAssignedInnerIdentifier",
+    note = "function assigned to global variable - cursor on identifier",
+  },
+  ["1u2v3w4x"] = { expected = "processData", note = "nested function" },
+  ["5y6z7a8b"] = { expected = "outer", note = "deeply nested function" },
+  ["9c0d1e2f"] = { expected = "withLocalNested", note = "nested local function" },
+  ["3g4h5i6j"] = { expected = "withTableFilter", note = "anonymous function in table.filter" },
+}
+
+T["e2e"]["lua"] =
+  create_language_test_set("lua", "lua.lua", "lua", lua_test_cases)
+
 return T

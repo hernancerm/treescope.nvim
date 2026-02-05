@@ -1,2 +1,4 @@
 doc/tags
 deps/
+.lsp/
+.clj-kondo/

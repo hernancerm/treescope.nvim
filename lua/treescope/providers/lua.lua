@@ -31,7 +31,7 @@ function M.is_function(node)
     end
 
     local func_def = expr_list:named_child(0)
-    return func_def and func_def:type() == "function_definition"
+    return func_def ~= nil and func_def:type() == "function_definition"
   end
 
   return false

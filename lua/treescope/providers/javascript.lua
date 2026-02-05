@@ -24,6 +24,21 @@ function M.is_function(node)
     return parent and parent:type() == "variable_declarator" or false
   end
 
+  if t == "identifier" then
+    -- Case: Cursor on variable name in: const foo = () => {}
+    local parent = node:parent()
+    if not parent or parent:type() ~= "variable_declarator" then
+      return false
+    end
+    -- Check if the value field contains a function.
+    local value = parent:field("value")[1]
+    if not value then
+      return false
+    end
+    local value_type = value:type()
+    return value_type == "arrow_function" or value_type == "function_expression"
+  end
+
   return false
 end
 
@@ -32,6 +47,11 @@ end
 ---@return string?
 function M.get_function_name(node, bufnr)
   local t = node:type()
+
+  if t == "identifier" then
+    -- Case: Cursor on variable name in: const foo = () => {}
+    return ts.get_node_text(node, bufnr)
+  end
 
   if t == "function_declaration" then
     -- Case: function foo() {}

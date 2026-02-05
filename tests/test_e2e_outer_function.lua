@@ -191,4 +191,27 @@ local java_test_cases = {
 
 T["e2e"]["java"] = create_language_test_set("java", "java.java", "java", java_test_cases)
 
+local python_test_cases = {
+  ["3f7a2b1c"] = { expected = nil, note = "top-level" },
+  ["5k9m1p4x"] = { expected = "greet", note = "function definition" },
+  ["2q8r6t9v"] = {
+    expected = "sayHello",
+    note = "function definition - cursor on identifier",
+  },
+  ["8l1o3c5a"] = { expected = "asyncFetch", note = "async function" },
+  ["1u2v3w4x"] = { expected = "processData", note = "nested function" },
+  ["5y6z7a8b"] = { expected = "outer", note = "deeply nested function" },
+  ["9i0j1k2l"] = { expected = "method", note = "instance method" },
+  ["a7cp3312"] = {
+    expected = "anotherMethod",
+    note = "instance method - cursor on identifier",
+  },
+  ["1n3b5j7c"] = { expected = "asyncMethod", note = "async instance method" },
+  ["4e6g9s2u"] = { expected = "classMethod", note = "classmethod with decorator" },
+  ["7w2d4f8h"] = { expected = "staticMethod", note = "staticmethod with decorator" },
+  ["6i4p8v2w"] = { expected = "methodWithNested", note = "method with nested function definition" },
+}
+
+T["e2e"]["python"] = create_language_test_set("python", "python.py", "python", python_test_cases)
+
 return T

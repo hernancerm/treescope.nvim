@@ -87,7 +87,7 @@ local javascript_test_cases = {
 }
 
 T["e2e"]["javascript"] =
-  create_language_test_set("javascript", "javascript.js", "javascript", javascript_test_cases)
+  create_language_test_set("javascript", "javascript.txt", "javascript", javascript_test_cases)
 
 local clojure_test_cases = {
   ["9a3b5c7d"] = { expected = nil, note = "top-level" },
@@ -103,7 +103,7 @@ local clojure_test_cases = {
 }
 
 T["e2e"]["clojure"] =
-  create_language_test_set("clojure", "clojure.clj", "clojure", clojure_test_cases)
+  create_language_test_set("clojure", "clojure.txt", "clojure", clojure_test_cases)
 
 local typescript_test_cases = {
   ["3f7a2b1c"] = { expected = nil, note = "top-level" },
@@ -125,7 +125,7 @@ local typescript_test_cases = {
 }
 
 T["e2e"]["typescript"] =
-  create_language_test_set("typescript", "typescript.ts", "typescript", typescript_test_cases)
+  create_language_test_set("typescript", "typescript.txt", "typescript", typescript_test_cases)
 
 local lua_test_cases = {
   ["1a2b3c4d"] = { expected = nil, note = "top-level" },
@@ -165,7 +165,7 @@ local lua_test_cases = {
   },
 }
 
-T["e2e"]["lua"] = create_language_test_set("lua", "lua.lua", "lua", lua_test_cases)
+T["e2e"]["lua"] = create_language_test_set("lua", "lua.txt", "lua", lua_test_cases)
 
 local java_test_cases = {
   ["3f7a2b1c"] = { expected = nil, note = "top-level" },
@@ -189,7 +189,7 @@ local java_test_cases = {
   },
 }
 
-T["e2e"]["java"] = create_language_test_set("java", "java.java", "java", java_test_cases)
+T["e2e"]["java"] = create_language_test_set("java", "java.txt", "java", java_test_cases)
 
 local python_test_cases = {
   ["3f7a2b1c"] = { expected = nil, note = "top-level" },
@@ -212,6 +212,6 @@ local python_test_cases = {
   ["6i4p8v2w"] = { expected = "methodWithNested", note = "method with nested function definition" },
 }
 
-T["e2e"]["python"] = create_language_test_set("python", "python.py", "python", python_test_cases)
+T["e2e"]["python"] = create_language_test_set("python", "python.txt", "python", python_test_cases)
 
 return T

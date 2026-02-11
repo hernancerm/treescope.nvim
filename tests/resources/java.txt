@@ -44,3 +44,5 @@ class MyClass {
     }
   }
 }
+
+// vim:ft=java

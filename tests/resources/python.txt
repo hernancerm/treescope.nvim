@@ -55,5 +55,3 @@ class MyClass:
             return "nested in method"
 
         return nested()
-
-# vim:ft=python

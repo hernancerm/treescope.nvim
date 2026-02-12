@@ -43,5 +43,3 @@ const foo = function(x) {
   // cursor-6i4p8v2w
   return x * 2;
 }
-
-// vim:ft=javascript

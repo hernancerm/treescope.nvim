@@ -24,5 +24,3 @@
       (str "Fetching " url))
     (inner))
   (middle))
-
-; vim:ft=clojure

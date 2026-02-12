@@ -69,5 +69,3 @@ function outer.inner:method()
   -- cursor-1s2t3u4v
   return "nested method"
 end
-
--- vim:ft=lua

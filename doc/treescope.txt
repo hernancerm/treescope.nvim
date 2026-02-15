@@ -136,5 +136,22 @@ end
 Return ~
 `(string)` `(optional)`
 
+                                                 *treescope.clojure_namespace()*
+                        `treescope.clojure_namespace`()
+The "clojure namespace" is the name of the namespace at the present Clojure
+file. This scope only works in buffers with a `clojure` 'filetype'. For
+example, "fwpd.core-test" is the namespace given:
+>clojure
+(ns fwpd.core-test
+  (:require [clojure.test :refer :all]
+            [fwpd.core :refer :all]))
+(deftest a-test
+  (testing "FIXME, I fail."
+    ; <Cursor Here>.
+    (is (= 0 1))))
+<
+Return ~
+`(string)` `(optional)`
+
 
  vim:tw=78:ts=8:noet:ft=help:norl:

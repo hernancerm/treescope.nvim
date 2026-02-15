@@ -261,6 +261,18 @@ function treescope.outer_function()
   return provider.get_function_name(candidate, bufnr)
 end
 
+--- The "clojure namespace" is the name of the namespace at the present Clojure
+--- file. This scope only works in buffers with a `clojure` 'filetype'. For
+--- example, "fwpd.core-test" is the namespace given:
+--- >clojure
+--- (ns fwpd.core-test
+---   (:require [clojure.test :refer :all]
+---             [fwpd.core :refer :all]))
+--- (deftest a-test
+---   (testing "FIXME, I fail."
+---     ; <Cursor Here>.
+---     (is (= 0 1))))
+--- <
 ---@return string?
 function treescope.clojure_namespace()
   local bufnr = vim.api.nvim_get_current_buf()

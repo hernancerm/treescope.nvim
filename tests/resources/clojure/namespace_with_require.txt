@@ -1,0 +1,2 @@
+; cursor-5k9m1p4x
+(ns my.namespace (:require [clojure.io]))

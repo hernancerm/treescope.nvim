@@ -1,0 +1,2 @@
+; cursor-3f7a2b1c
+(ns my.namespace)

@@ -1,0 +1,5 @@
+; cursor-2q8r6t9v
+(ns my.app
+  (:require [clojure.io]
+            [clojure.string])
+  (:import [java.io File]))

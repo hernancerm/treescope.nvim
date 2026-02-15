@@ -59,7 +59,7 @@ local function create_language_test_set(lang, filename, filetype, test_cases)
       post_case = create_language_post_case(test_cases),
     },
   })
-  test_set["returns correct outer function name"] = function(marker, expected)
+  test_set["parametrized"] = function(marker, expected)
     h.set_cursor_from_marker(marker, child)
     local scope = child.lua_get("treescope.outer_function()")
     h.assert_scope(expected, scope)

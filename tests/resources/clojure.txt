@@ -24,3 +24,9 @@
       (str "Fetching " url))
     (inner))
   (middle))
+
+; cursor-3h4i5j6k[6w]
+(deftest a-test
+  (testing "test description"
+    ; cursor-1q2w3e4r
+    (is (= 0 1))))

@@ -100,6 +100,14 @@ local clojure_test_cases = {
     expected = "salute",
     note = "function assigned to variable - cursor on identifier",
   },
+  ["3h4i5j6k"] = {
+    expected = "a-test",
+    note = "deftest - cursor on identifier",
+  },
+  ["1q2w3e4r"] = {
+    expected = "a-test",
+    note = "deftest",
+  },
 }
 
 T["e2e"]["clojure"] =

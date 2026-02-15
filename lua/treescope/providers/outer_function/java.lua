@@ -24,7 +24,7 @@ function M.get_function_name(node, bufnr)
   return nil
 end
 
----@type Provider
+---@type OuterFunctionProvider
 local _ = M
 
 return M

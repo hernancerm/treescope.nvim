@@ -15,8 +15,8 @@ function M.is_function(node)
   end
   local sym_text = ts.get_node_text(first_child, 0)
 
-  -- Case: (defn name ...)
-  if sym_text == "defn" then
+  -- Case: (defn name ...) or (deftest name ...)
+  if sym_text == "defn" or sym_text == "deftest" then
     return true
   end
 
@@ -49,8 +49,8 @@ function M.get_function_name(node, bufnr)
   end
   local sym_text = ts.get_node_text(first_child, 0)
 
-  -- Case: (defn name ...)
-  if sym_text == "defn" then
+  -- Case: (defn name ...) or (deftest name ...)
+  if sym_text == "defn" or sym_text == "deftest" then
     local name_node = node:named_child(1)
     if not name_node or name_node:type() ~= "sym_lit" then
       return nil
@@ -70,7 +70,7 @@ function M.get_function_name(node, bufnr)
   return nil
 end
 
----@type Provider
+---@type OuterFunctionProvider
 local _ = M
 
 return M

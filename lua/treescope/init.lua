@@ -198,11 +198,11 @@ function treescope.outer_function()
 
   -- Get provider.
   local provider_locator = require("treescope.provider_locator")
-  local provider_id = provider_locator.get_provider_id(filetype)
-  if not provider_id then
+  local language_id = provider_locator.get_language_id(filetype)
+  if not language_id then
     return nil
   end
-  local provider = provider_locator.get_provider(provider_id)
+  local provider = provider_locator.get_outer_function_provider(language_id)
 
   -- Get cursor position.
   local win = vim.api.nvim_get_current_win()
@@ -259,6 +259,28 @@ function treescope.outer_function()
   end
 
   return provider.get_function_name(candidate, bufnr)
+end
+
+---@return string?
+function treescope.clojure_namespace()
+  local bufnr = vim.api.nvim_get_current_buf()
+
+  -- Validate buffer.
+  if not vim.api.nvim_buf_is_valid(bufnr) then
+    return nil
+  end
+
+  -- Check filetype is Clojure.
+  local filetype = vim.bo[bufnr].filetype
+  if not filetype or filetype ~= "clojure" then
+    return nil
+  end
+
+  -- Get provider.
+  local provider_locator = require("treescope.provider_locator")
+  local provider = provider_locator.get_clojure_namespace_provider()
+
+  return provider.get_namespace(bufnr)
 end
 
 return treescope

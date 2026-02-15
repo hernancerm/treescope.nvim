@@ -1,7 +1,7 @@
 return {
   AUGROUP_NAME = "Treescope",
-  ---@enum const.ProviderIds
-  ProviderIds = {
+  ---@enum const.LanguageIds
+  LanguageId = {
     LUA = "lua",
     JAVA = "java",
     PYTHON = "python",
@@ -12,5 +12,6 @@ return {
   ---@enum const.ScopeIds
   ScopeIds = {
     OUTER_FUNCTION = "outer_function",
+    CLOJURE_NAMESPACE = "clojure_namespace",
   },
 }

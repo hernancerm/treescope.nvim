@@ -48,3 +48,9 @@ summary: >
   This is a folded
   multiline string.
   It will be folded into a single line.
+
+# cursor-6p7q8r9s[W]
+"my key with spaces": value
+nested:
+  # cursor-7q8r9s0t[W]
+  "another key with spaces": nested-value

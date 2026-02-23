@@ -128,6 +128,14 @@ local yaml_test_cases = {
     expected = ".summary",
     note = "multiline string (folded notation)",
   },
+  ["6p7q8r9s"] = {
+    expected = '.["my key with spaces"]',
+    note = "key with spaces (bracket notation)",
+  },
+  ["7q8r9s0t"] = {
+    expected = '.nested["another key with spaces"]',
+    note = "nested key with spaces (bracket notation)",
+  },
 }
 
 T["e2e_yq_path"]["yaml"] = create_language_test_set("yaml", "yaml.txt", "yaml", yaml_test_cases)

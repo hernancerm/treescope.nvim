@@ -110,13 +110,13 @@ function M.get_path(bufnr)
     current = current:parent()
   end
 
-  -- Return nil if no path segments were collected (cursor at root)
+  -- Return "." for root (when no path segments collected)
   if #segments == 0 then
-    return nil
+    return "."
   end
 
-  -- Join segments with dots
-  return table.concat(segments, ".")
+  -- Return yq filter with leading dot
+  return "." .. table.concat(segments, ".")
 end
 
 return M

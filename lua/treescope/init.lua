@@ -152,14 +152,14 @@ end
 ---
 --- * `outer_function`
 --- * `clojure_namespace`
---- * `yaml_path`
+--- * `yq_path`
 
 --- #delimiter
 --- #tag treescope-lang-support
 --- Language support ~
 
---- Language    `outer_function`  `clojure_namespace`  `yaml_path`
---- ----------  ----------------  -------------------  -----------
+--- Language    `outer_function`  `clojure_namespace`  `yq_path`
+--- ----------  ----------------  -------------------  ---------
 --- Lua         ✓                 n/a                  n/a
 --- Java        ✓                 n/a                  n/a
 --- Python      ✓                 n/a                  n/a
@@ -297,9 +297,9 @@ function treescope.clojure_namespace()
   return provider.get_namespace(bufnr)
 end
 
---- The "yaml path" is the dot-separated path to the cursor position in a YAML
---- file. This scope only works in buffers with a `yaml` 'filetype'. For
---- example, "spring.application.name" is the path given:
+--- The "yq path" is a yq filter expression for the cursor position in YAML
+--- files. This scope only works in buffers with a `yaml` 'filetype'. For
+--- example, ".spring.application.name" is the path given:
 --- >yaml
 --- spring:
 ---   application:
@@ -307,7 +307,7 @@ end
 ---     name: my-app
 --- <
 ---@return string?
-function treescope.yaml_path()
+function treescope.yq_path()
   local bufnr = vim.api.nvim_get_current_buf()
 
   -- Validate buffer.
@@ -315,15 +315,13 @@ function treescope.yaml_path()
     return nil
   end
 
-  -- Check filetype is YAML.
-  local filetype = vim.bo[bufnr].filetype
-  if not filetype or filetype ~= "yaml" then
-    return nil
-  end
-
   -- Get provider.
   local provider_locator = require("treescope.provider_locator")
-  local provider = provider_locator.get_yaml_path_provider()
+  local provider = provider_locator.get_yq_path_provider(bufnr)
+
+  if not provider then
+    return nil
+  end
 
   return provider.get_path(bufnr)
 end

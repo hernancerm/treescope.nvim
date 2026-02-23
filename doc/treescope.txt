@@ -102,14 +102,14 @@ The complete list of scopes is as follows:
 
 • `outer_function`
 • `clojure_namespace`
-• `yaml_path`
+• `yq_path`
 
 ------------------------------------------------------------------------------
                                                         *treescope-lang-support*
 Language support ~
 
-Language    `outer_function`  `clojure_namespace`  `yaml_path`
-----------  ----------------  -------------------  -----------
+Language    `outer_function`  `clojure_namespace`  `yq_path`
+----------  ----------------  -------------------  ---------
 Lua         ✓                 n/a                  n/a
 Java        ✓                 n/a                  n/a
 Python      ✓                 n/a                  n/a
@@ -156,11 +156,11 @@ example, "fwpd.core-test" is the namespace given:
 Return ~
 `(string)` `(optional)`
 
-                                                         *treescope.yaml_path()*
-                            `treescope.yaml_path`()
-The "yaml path" is the dot-separated path to the cursor position in a YAML
-file. This scope only works in buffers with a `yaml` 'filetype'. For
-example, "spring.application.name" is the path given:
+                                                           *treescope.yq_path()*
+                             `treescope.yq_path`()
+The "yq path" is a yq filter expression for the cursor position in YAML
+files. This scope only works in buffers with a `yaml` 'filetype'. For
+example, ".spring.application.name" is the path given:
 >yaml
 spring:
   application:

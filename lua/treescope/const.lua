@@ -4,6 +4,6 @@ return {
   ScopeIds = {
     OUTER_FUNCTION = "outer_function",
     CLOJURE_NAMESPACE = "clojure_namespace",
-    YAML_PATH = "yaml_path",
+    YQ_PATH = "yq_path",
   },
 }

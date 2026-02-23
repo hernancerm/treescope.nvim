@@ -27,9 +27,15 @@ function M.get_clojure_namespace_provider()
   return provider
 end
 
----@return table
-function M.get_yaml_path_provider()
-  local provider = require("treescope.providers.yaml.path")
+---@param bufnr number
+---@return table?
+function M.get_yq_path_provider(bufnr)
+  local filetype = vim.bo[bufnr].filetype
+  local supported_filetypes = { "yaml" }
+  if not vim.tbl_contains(supported_filetypes, filetype) then
+    return nil
+  end
+  local provider = require("treescope.providers.yq_path." .. filetype)
   return provider
 end
 

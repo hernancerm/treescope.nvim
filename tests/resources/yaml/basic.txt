@@ -1,0 +1,50 @@
+# cursor-1a2b3c4d
+# cursor-2b3c4d5e[W]
+server:
+  # cursor-3c4d5e6f[W]
+  port: 8080
+  host: localhost
+
+spring:
+  application:
+    # cursor-4d5e6f7g[W]
+    name: my-app
+    # cursor-2l3m4n5o[2W]
+    version: 1.0.0
+
+# cursor-5e6f7g8h[W]
+items:
+  # cursor-6f7g8h9i[2W]
+  - apple
+  # cursor-7g8h9i0j[2W]
+  - banana
+
+# cursor-8h9i0j1k[W]
+databases:
+  - # cursor-9i0j1k2l[W]
+    name: primary
+    config:
+      # cursor-1k2l3m4n[W]
+      timeout: 30
+  - # cursor-0j1k2l3m[W]
+    host: db2.example.com
+
+api:
+  v1:
+    endpoints:
+      users:
+        get:
+          # cursor-3m4n5o6p[W]
+          enabled: true
+
+# cursor-4n5o6p7q[W++]
+description: |
+  This is a multiline
+  string using pipe notation.
+  Each line is preserved.
+
+# cursor-5o6p7q8r[W++]
+summary: >
+  This is a folded
+  multiline string.
+  It will be folded into a single line.

@@ -30,4 +30,10 @@ function M.get_clojure_namespace_provider()
   return provider
 end
 
+---@return table
+function M.get_yaml_path_provider()
+  local provider = require("treescope.providers.yaml.path")
+  return provider
+end
+
 return M

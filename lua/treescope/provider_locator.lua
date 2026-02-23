@@ -1,27 +1,24 @@
-local const = require("treescope.const")
-
 local M = {}
 
----@param filetype string? Case-insensitive.
----@return const.LanguageIds?
-function M.get_language_id(filetype)
-  if not filetype then
+---@param filetype string
+---@return OuterFunctionProvider?
+function M.get_outer_function_provider(filetype)
+  if filetype == nil then
     return nil
   end
-  return const.LanguageId[vim.fn.toupper(filetype)]
-end
-
----@param language_id const.LanguageIds
----@return OuterFunctionProvider
-function M.get_outer_function_provider(language_id)
-  assert(language_id, "provider_id is required")
-  local status, result =
-    pcall(require, "treescope.providers.outer_function." .. language_id)
-  assert(
-    status,
-    string.format("Outer function provider for lang '%s' not found.", language_id)
-  )
-  return result
+  local supported_filetypes = {
+    "lua",
+    "java",
+    "python",
+    "clojure",
+    "javascript",
+    "typescript",
+  }
+  if not vim.tbl_contains(supported_filetypes, filetype) then
+    return nil
+  end
+  local provider = require("treescope.providers.outer_function." .. filetype)
+  return provider
 end
 
 ---@return table

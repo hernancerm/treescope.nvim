@@ -160,13 +160,13 @@ end
 
 --- Language    `outer_function`  `clojure_namespace`  `yaml_path`
 --- ----------  ----------------  -------------------  -----------
---- Lua         ✓
---- Java        ✓
---- Python      ✓
---- Clojure     ✓                 ✓
---- JavaScript  ✓
---- TypeScript  ✓
---- YAML                                               ✓
+--- Lua         ✓                 n/a                  n/a
+--- Java        ✓                 n/a                  n/a
+--- Python      ✓                 n/a                  n/a
+--- Clojure     ✓                 ✓                    n/a
+--- JavaScript  ✓                 n/a                  n/a
+--- TypeScript  ✓                 n/a                  n/a
+--- YAML        n/a               n/a                  ✓
 
 --- #delimiter
 --- #tag treescope-functions
@@ -201,11 +201,10 @@ function treescope.outer_function()
 
   -- Get provider.
   local provider_locator = require("treescope.provider_locator")
-  local language_id = provider_locator.get_language_id(filetype)
-  if not language_id then
+  local provider = provider_locator.get_outer_function_provider(filetype)
+  if provider == nil then
     return nil
   end
-  local provider = provider_locator.get_outer_function_provider(language_id)
 
   -- Get cursor position.
   local win = vim.api.nvim_get_current_win()
@@ -304,11 +303,9 @@ end
 --- >yaml
 --- spring:
 ---   application:
----     # <Cursor Here>.
+---     # <Cursor On 'name' Key Below>.
 ---     name: my-app
 --- <
---- List items use bracket notation. For example, "items[0]" for the first item,
---- or "databases[1].host" for a nested property in the second list item.
 ---@return string?
 function treescope.yaml_path()
   local bufnr = vim.api.nvim_get_current_buf()

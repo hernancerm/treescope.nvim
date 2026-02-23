@@ -197,7 +197,8 @@ local java_test_cases = {
   },
 }
 
-T["e2e_outer_function"]["java"] = create_language_test_set("java", "java.txt", "java", java_test_cases)
+T["e2e_outer_function"]["java"] =
+  create_language_test_set("java", "java.txt", "java", java_test_cases)
 
 local python_test_cases = {
   ["3f7a2b1c"] = { expected = nil, note = "top-level" },
@@ -220,6 +221,7 @@ local python_test_cases = {
   ["6i4p8v2w"] = { expected = "methodWithNested", note = "method with nested function definition" },
 }
 
-T["e2e_outer_function"]["python"] = create_language_test_set("python", "python.txt", "python", python_test_cases)
+T["e2e_outer_function"]["python"] =
+  create_language_test_set("python", "python.txt", "python", python_test_cases)
 
 return T

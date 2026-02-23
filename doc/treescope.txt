@@ -101,19 +101,22 @@ exposed as a buf var. See: |treescope.config.buf_vars|.
 The complete list of scopes is as follows:
 
 • `outer_function`
+• `clojure_namespace`
+• `yaml_path`
 
 ------------------------------------------------------------------------------
                                                         *treescope-lang-support*
 Language support ~
 
-Language    `outer_function`
-----------  ---------------
-Lua         ✓
-Java        ✓
-Python      ✓
-Clojure     ✓
-JavaScript  ✓
-TypeScript  ✓
+Language    `outer_function`  `clojure_namespace`  `yaml_path`
+----------  ----------------  -------------------  -----------
+Lua         ✓                 n/a                  n/a
+Java        ✓                 n/a                  n/a
+Python      ✓                 n/a                  n/a
+Clojure     ✓                 ✓                    n/a
+JavaScript  ✓                 n/a                  n/a
+TypeScript  ✓                 n/a                  n/a
+YAML        n/a               n/a                  ✓
 
 ------------------------------------------------------------------------------
                                                            *treescope-functions*
@@ -149,6 +152,20 @@ example, "fwpd.core-test" is the namespace given:
   (testing "FIXME, I fail."
     ; <Cursor Here>.
     (is (= 0 1))))
+<
+Return ~
+`(string)` `(optional)`
+
+                                                         *treescope.yaml_path()*
+                            `treescope.yaml_path`()
+The "yaml path" is the dot-separated path to the cursor position in a YAML
+file. This scope only works in buffers with a `yaml` 'filetype'. For
+example, "spring.application.name" is the path given:
+>yaml
+spring:
+  application:
+    # <Cursor On 'name' Key Below>.
+    name: my-app
 <
 Return ~
 `(string)` `(optional)`

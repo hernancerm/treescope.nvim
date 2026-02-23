@@ -104,6 +104,7 @@ function M.get_path(bufnr)
 
   -- Walk up the tree collecting path segments.
   local segments = {}
+  ---@type TSNode?
   local current = node
   local pending_index = nil
 

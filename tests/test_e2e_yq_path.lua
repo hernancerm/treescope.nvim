@@ -70,71 +70,71 @@ end
 local yaml_object_root_test_cases = {
   ["1a2b3c4d"] = {
     expected = ".",
-    note = "root level",
+    note = "root level - object root",
   },
   ["2b3c4d5e"] = {
     expected = ".server",
-    note = "top-level key",
+    note = "top-level key - object root",
   },
   ["3c4d5e6f"] = {
     expected = ".server.port",
-    note = "one level nested",
+    note = "one level nested - object root",
   },
   ["4d5e6f7g"] = {
     expected = ".spring.application.name",
-    note = "two levels nested",
+    note = "two levels nested - object root",
   },
   ["5e6f7g8h"] = {
     expected = ".items",
-    note = "list parent key",
+    note = "list parent key - object root",
   },
   ["6f7g8h9i"] = {
     expected = ".items[0]",
-    note = "first list item",
+    note = "first list item - object root",
   },
   ["7g8h9i0j"] = {
     expected = ".items[1]",
-    note = "second list item",
+    note = "second list item - object root",
   },
   ["8h9i0j1k"] = {
     expected = ".databases",
-    note = "list of objects parent",
+    note = "list of objects parent - object root",
   },
   ["9i0j1k2l"] = {
     expected = ".databases[0].name",
-    note = "key in first object of list",
+    note = "key in first object of list - object root",
   },
   ["0j1k2l3m"] = {
     expected = ".databases[1].host",
-    note = "key in second object of list",
+    note = "key in second object of list - object root",
   },
   ["1k2l3m4n"] = {
     expected = ".databases[0].config.timeout",
-    note = "nested key inside list object",
+    note = "nested key inside list object - object root",
   },
   ["2l3m4n5o"] = {
     expected = ".spring.application.version",
-    note = "cursor on value (not key)",
+    note = "cursor on value (not key) - object root",
   },
   ["3m4n5o6p"] = {
     expected = ".api.v1.endpoints.users.get.enabled",
-    note = "deeply nested (5 levels)",
+    note = "deeply nested (5 levels) - object root",
   },
   ["4n5o6p7q"] = {
     expected = ".description",
-    note = "multiline string (pipe notation)",
+    note = "multiline string (pipe notation) - object root",
   },
   ["5o6p7q8r"] = {
     expected = ".summary",
-    note = "multiline string (folded notation)",
+    note = "multiline string (folded notation) - object root",
   },
   ["6p7q8r9s"] = {
     expected = '.["my key with spaces"]',
-    note = "key with spaces (bracket notation)",
+    note = "key with spaces (bracket notation) - object root",
   },
   ["7q8r9s0t"] = {
     expected = '.nested["another key with spaces"]',
-    note = "nested key with spaces (bracket notation)",
+    note = "nested key with spaces (bracket notation) - object root",
   },
 }
 
@@ -142,37 +142,41 @@ T["e2e_yq_path"]["yaml"] =
   create_language_test_set("yaml", "yaml_object_root.txt", "yaml", yaml_object_root_test_cases)
 
 local yaml_array_root_test_cases = {
+  ["129v4xsy"] = {
+    expected = ".",
+    note = "root level - array root",
+  },
   ["8s9t0u1v"] = {
     expected = ".[0]",
-    note = "first item in root array",
+    note = "first item - array root",
   },
   ["9t0u1v2w"] = {
     expected = ".[1]",
-    note = "second item in root array",
+    note = "second item - array root",
   },
   ["0u1v2w3x"] = {
     expected = ".[2]",
-    note = "third item in root array",
+    note = "third item - array root",
   },
   ["1v2w3x4y"] = {
     expected = ".[3].name",
-    note = "property in first object of root array",
+    note = "property in first object - array root",
   },
   ["2w3x4y5z"] = {
     expected = ".[3].value",
-    note = "another property in first object of root array",
+    note = "another property in first object - array root",
   },
   ["3x4y5z6a"] = {
     expected = ".[4].name",
-    note = "property in second object of root array",
+    note = "property in second object - array root",
   },
   ["4y5z6a7b"] = {
     expected = ".[4].value",
-    note = "property in second object of root array",
+    note = "property in second object - array root",
   },
   ["5z6a7b8c"] = {
     expected = ".[4].nested.deep",
-    note = "nested property in root array object",
+    note = "nested property - array root",
   },
 }
 

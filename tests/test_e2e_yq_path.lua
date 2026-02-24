@@ -86,31 +86,31 @@ local yaml_object_root_test_cases = {
   },
   ["5e6f7g8h"] = {
     expected = ".items",
-    note = "list parent key - object root",
+    note = "array parent key - object root",
   },
   ["6f7g8h9i"] = {
     expected = ".items[0]",
-    note = "first list item - object root",
+    note = "first array item - object root",
   },
   ["7g8h9i0j"] = {
     expected = ".items[1]",
-    note = "second list item - object root",
+    note = "second array item - object root",
   },
   ["8h9i0j1k"] = {
     expected = ".databases",
-    note = "list of objects parent - object root",
+    note = "array of objects parent - object root",
   },
   ["9i0j1k2l"] = {
     expected = ".databases[0].name",
-    note = "key in first object of list - object root",
+    note = "key in first object of array - object root",
   },
   ["0j1k2l3m"] = {
     expected = ".databases[1].host",
-    note = "key in second object of list - object root",
+    note = "key in second object of array - object root",
   },
   ["1k2l3m4n"] = {
     expected = ".databases[0].config.timeout",
-    note = "nested key inside list object - object root",
+    note = "nested key inside array object - object root",
   },
   ["2l3m4n5o"] = {
     expected = ".spring.application.version",
@@ -206,31 +206,31 @@ local jsonc_object_root_test_cases = {
   },
   ["j5e6f7g8h"] = {
     expected = ".items",
-    note = "list parent key - object root",
+    note = "array parent key - object root",
   },
   ["j6f7g8h9i"] = {
     expected = ".items[0]",
-    note = "first list item - object root",
+    note = "first array item - object root",
   },
   ["j7g8h9i0j"] = {
     expected = ".items[1]",
-    note = "second list item - object root",
+    note = "second array item - object root",
   },
   ["j8h9i0j1k"] = {
     expected = ".databases",
-    note = "list of objects parent - object root",
+    note = "array of objects parent - object root",
   },
   ["j9i0j1k2l"] = {
     expected = ".databases[0].name",
-    note = "key in first object of list - object root",
+    note = "key in first object of array - object root",
   },
   ["j0j1k2l3m"] = {
     expected = ".databases[1].host",
-    note = "key in second object of list - object root",
+    note = "key in second object of array - object root",
   },
   ["j1k2l3m4n"] = {
     expected = ".databases[0].config.timeout",
-    note = "nested key inside list object - object root",
+    note = "nested key inside array object - object root",
   },
   ["j2l3m4n5o"] = {
     expected = ".spring.application.version",

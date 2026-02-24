@@ -144,11 +144,18 @@ function M.get_path(bufnr)
 
   -- Return "." for root (when no path segments collected).
   if #segments == 0 then
+    if pending_index ~= nil then
+      -- Root-level array item. Return: .[index]
+      return ".[" .. pending_index .. "]"
+    end
     return "."
   end
 
   -- Build yq filter path.
-  local path = "."
+  -- If pending_index is still set here, the array is at the root level (no
+  -- parent mapping pair consumed it), so prepend .[index] before the segments.
+  local path = pending_index ~= nil and ".[" .. pending_index .. "]" or "."
+
   for i, segment in ipairs(segments) do
     if segment:match('^%[".*"%]%[%d+%]$') then
       -- Bracket notation key with array index: use ["key"][index] notation.
@@ -158,7 +165,7 @@ function M.get_path(bufnr)
       path = path .. segment
     else
       -- Unquoted key (may have array index): use .key or .key[index] notation.
-      if i > 1 then
+      if i > 1 or pending_index ~= nil then
         path = path .. "."
       end
       path = path .. segment

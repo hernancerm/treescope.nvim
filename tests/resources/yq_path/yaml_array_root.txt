@@ -1,0 +1,17 @@
+# cursor-8s9t0u1v[2W]
+- one
+# cursor-9t0u1v2w[2W]
+- another item
+# cursor-0u1v2w3x[2W]
+- yet another
+# cursor-1v2w3x4y[2W]
+- name: first
+  # cursor-2w3x4y5z[W]
+  value: 100
+# cursor-3x4y5z6a[2W]
+- name: second
+  # cursor-4y5z6a7b[W]
+  value: 200
+  nested:
+    # cursor-5z6a7b8c[W]
+    deep: value

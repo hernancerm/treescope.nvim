@@ -67,7 +67,7 @@ local function create_language_test_set(lang, filename, filetype, test_cases)
   return test_set
 end
 
-local yaml_test_cases = {
+local yaml_object_root_test_cases = {
   ["1a2b3c4d"] = {
     expected = ".",
     note = "root level",
@@ -138,6 +138,45 @@ local yaml_test_cases = {
   },
 }
 
-T["e2e_yq_path"]["yaml"] = create_language_test_set("yaml", "yaml.txt", "yaml", yaml_test_cases)
+T["e2e_yq_path"]["yaml"] =
+  create_language_test_set("yaml", "yaml_object_root.txt", "yaml", yaml_object_root_test_cases)
+
+local yaml_array_root_test_cases = {
+  ["8s9t0u1v"] = {
+    expected = ".[0]",
+    note = "first item in root array",
+  },
+  ["9t0u1v2w"] = {
+    expected = ".[1]",
+    note = "second item in root array",
+  },
+  ["0u1v2w3x"] = {
+    expected = ".[2]",
+    note = "third item in root array",
+  },
+  ["1v2w3x4y"] = {
+    expected = ".[3].name",
+    note = "property in first object of root array",
+  },
+  ["2w3x4y5z"] = {
+    expected = ".[3].value",
+    note = "another property in first object of root array",
+  },
+  ["3x4y5z6a"] = {
+    expected = ".[4].name",
+    note = "property in second object of root array",
+  },
+  ["4y5z6a7b"] = {
+    expected = ".[4].value",
+    note = "property in second object of root array",
+  },
+  ["5z6a7b8c"] = {
+    expected = ".[4].nested.deep",
+    note = "nested property in root array object",
+  },
+}
+
+T["e2e_yq_path"]["yaml_array_root"] =
+  create_language_test_set("yaml", "yaml_array_root.txt", "yaml", yaml_array_root_test_cases)
 
 return T

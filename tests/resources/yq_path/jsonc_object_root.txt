@@ -1,0 +1,62 @@
+// cursor-j1a2b3c4d
+{
+  // cursor-j2b3c4d5e[W]
+  "server": {
+    // cursor-j3c4d5e6f[W]
+    "port": 8080,
+    "host": "localhost"
+  },
+
+  "spring": {
+    "application": {
+      // cursor-j4d5e6f7g[W]
+      "name": "my-app",
+      // cursor-j2l3m4n5o[2W]
+      "version": "1.0.0"
+    }
+  },
+
+  // cursor-j5e6f7g8h[W]
+  "items": [
+    // cursor-j6f7g8h9i[W]
+    "apple",
+    // cursor-j7g8h9i0j[W]
+    "banana"
+  ],
+
+  // cursor-j8h9i0j1k[W]
+  "databases": [
+    {
+      // cursor-j9i0j1k2l[W]
+      "name": "primary",
+      "config": {
+        // cursor-j1k2l3m4n[W]
+        "timeout": 30
+      }
+    },
+    {
+      // cursor-j0j1k2l3m[W]
+      "host": "db2.example.com"
+    }
+  ],
+
+  "api": {
+    "v1": {
+      "endpoints": {
+        "users": {
+          "get": {
+            // cursor-j3m4n5o6p[W]
+            "enabled": true
+          }
+        }
+      }
+    }
+  },
+
+  // cursor-j6p7q8r9s[W]
+  "my key with spaces": "value",
+  "nested": {
+    // cursor-j7q8r9s0t[W]
+    "another key with spaces": "nested-value"
+  }
+}

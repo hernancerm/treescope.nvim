@@ -31,7 +31,7 @@ end
 ---@return table?
 function M.get_yq_path_provider(bufnr)
   local filetype = vim.bo[bufnr].filetype
-  local supported_filetypes = { "yaml" }
+  local supported_filetypes = { "yaml", "json", "jsonc" }
   if not vim.tbl_contains(supported_filetypes, filetype) then
     return nil
   end

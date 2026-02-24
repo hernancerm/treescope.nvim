@@ -1,0 +1,25 @@
+// cursor-j129v4xsy
+[
+  // cursor-j8s9t0u1v[W]
+  "one",
+  // cursor-j9t0u1v2w[W]
+  "another item",
+  // cursor-j0u1v2w3x[W]
+  "yet another",
+  {
+    // cursor-j1v2w3x4y[W]
+    "name": "first",
+    // cursor-j2w3x4y5z[W]
+    "value": 100
+  },
+  {
+    // cursor-j3x4y5z6a[W]
+    "name": "second",
+    // cursor-j4y5z6a7b[W]
+    "value": 200,
+    "nested": {
+      // cursor-j5z6a7b8c[W]
+      "deep": "value"
+    }
+  }
+]

@@ -167,6 +167,8 @@ end
 --- JavaScript  ✓                 n/a                  n/a
 --- TypeScript  ✓                 n/a                  n/a
 --- YAML        n/a               n/a                  ✓
+--- JSON        n/a               n/a                  ✓
+--- JSONC       n/a               n/a                  ✓
 
 --- #delimiter
 --- #tag treescope-functions

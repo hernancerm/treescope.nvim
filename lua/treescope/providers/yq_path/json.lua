@@ -16,7 +16,7 @@ local function extract_key_text(pair_node, bufnr)
   return text
 end
 
--- Check if a key needs bracket notation for yq (contains spaces or special chars).
+-- Check if key needs bracket notation for yq (contains spaces or special chars).
 local function needs_quoting(key)
   if not key then
     return false
@@ -66,18 +66,26 @@ function M.get_path(bufnr)
   -- Always use the "json" parser for both json and jsonc buffers: the node
   -- types are identical, and "json" is reliably available via nvim-treesitter.
   local parser = vim.treesitter.get_parser(bufnr, "json")
-  if not parser then return nil end
+  if not parser then
+    return nil
+  end
 
   local trees = parser:parse()
-  if not trees or #trees == 0 then return nil end
+  if not trees or #trees == 0 then
+    return nil
+  end
 
   local tree = trees[1]
   local root = tree:root()
-  if not root then return nil end
+  if not root then
+    return nil
+  end
 
   -- Get node at cursor position.
   local node = root:named_descendant_for_range(row, col, row, col)
-  if not node then return nil end
+  if not node then
+    return nil
+  end
 
   -- Walk up the tree collecting path segments.
   local segments = {}
@@ -100,7 +108,11 @@ function M.get_path(bufnr)
           table.insert(segments, 1, formatted_key)
         end
       end
-    elseif node_type ~= "comment" and current:parent() and current:parent():type() == "array" then
+    elseif
+      node_type ~= "comment"
+      and current:parent()
+      and current:parent():type() == "array"
+    then
       -- This node is a direct child of an array; record its index.
       pending_index = get_array_item_index(current)
     elseif node_type == "document" then

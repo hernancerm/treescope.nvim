@@ -108,6 +108,14 @@ local clojure_test_cases = {
     expected = "a-test",
     note = "deftest",
   },
+  ["2a4i4k6b"] = {
+    expected = "backwards",
+    note = "defmacro - cursor on identifier",
+  },
+  ["1s2i8k6l"] = {
+    expected = "backwards",
+    note = "defmacro",
+  },
 }
 
 T["e2e_outer_function"]["clojure"] =

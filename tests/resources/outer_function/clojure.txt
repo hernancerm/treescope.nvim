@@ -30,3 +30,9 @@
   (testing "test description"
     ; cursor-1q2w3e4r
     (is (= 0 1))))
+
+; cursor-2a4i4k6b[6w]
+(defmacro backwards
+  [form]
+  ; cursor-1s2i8k6l
+  (reverse form))

@@ -224,8 +224,8 @@ function treescope.outer_function()
     return nil
   end
 
-  local parser = vim.treesitter.get_parser(bufnr, lang)
-  if not parser then
+  local ok, parser = pcall(vim.treesitter.get_parser, bufnr, lang)
+  if not ok or not parser then
     return nil
   end
 
@@ -292,11 +292,32 @@ function treescope.clojure_namespace()
     return nil
   end
 
+  -- Get Tree-sitter language.
+  local lang = vim.treesitter.language.get_lang(filetype)
+  if not lang then
+    return nil
+  end
+
+  local ok, parser = pcall(vim.treesitter.get_parser, bufnr, lang)
+  if not ok or not parser then
+    return nil
+  end
+
+  local trees = parser:parse()
+  if not trees or #trees == 0 then
+    return nil
+  end
+
+  local root = trees[1]:root()
+  if not root then
+    return nil
+  end
+
   -- Get provider.
   local provider_locator = require("treescope.provider_locator")
   local provider = provider_locator.get_clojure_namespace_provider()
 
-  return provider.get_namespace(bufnr)
+  return provider.get_namespace(root, bufnr)
 end
 
 --- The "yq path" is a yq filter expression for the cursor position in YAML
@@ -317,7 +338,8 @@ function treescope.yq_path()
     return nil
   end
 
-  -- Get provider.
+  -- Get filetype and provider (filetype validity check).
+  local filetype = vim.bo[bufnr].filetype
   local provider_locator = require("treescope.provider_locator")
   local provider = provider_locator.get_yq_path_provider(bufnr)
 
@@ -325,7 +347,45 @@ function treescope.yq_path()
     return nil
   end
 
-  return provider.get_path(bufnr)
+  -- Get Tree-sitter language.
+  -- jsonc reuses the json parser: node types are identical and using the jsonc
+  -- parser conflicts with the json parser nvim-treesitter auto-attaches.
+  local lang
+  if filetype == "jsonc" then
+    lang = "json"
+  else
+    lang = vim.treesitter.language.get_lang(filetype)
+  end
+  if not lang then
+    return nil
+  end
+
+  local ok, parser = pcall(vim.treesitter.get_parser, bufnr, lang)
+  if not ok or not parser then
+    return nil
+  end
+
+  local trees = parser:parse()
+  if not trees or #trees == 0 then
+    return nil
+  end
+
+  local root = trees[1]:root()
+  if not root then
+    return nil
+  end
+
+  -- Get cursor position.
+  local win = vim.api.nvim_get_current_win()
+  local row, col = unpack(vim.api.nvim_win_get_cursor(win))
+  row = row - 1
+
+  local node = root:named_descendant_for_range(row, col, row, col)
+  if not node then
+    return nil
+  end
+
+  return provider.get_path(node, bufnr)
 end
 
 return treescope

@@ -54,39 +54,10 @@ local function get_array_item_index(node)
   return 0
 end
 
+---@param node TSNode
 ---@param bufnr number
 ---@return string?
-function M.get_path(bufnr)
-  -- Get cursor position.
-  local win = vim.api.nvim_get_current_win()
-  local row, col = unpack(vim.api.nvim_win_get_cursor(win))
-  row = row - 1 -- Convert to 0-indexed.
-
-  -- Get Tree-sitter parser and tree.
-  -- Always use the "json" parser for both json and jsonc buffers: the node
-  -- types are identical, and "json" is reliably available via nvim-treesitter.
-  local parser = vim.treesitter.get_parser(bufnr, "json")
-  if not parser then
-    return nil
-  end
-
-  local trees = parser:parse()
-  if not trees or #trees == 0 then
-    return nil
-  end
-
-  local tree = trees[1]
-  local root = tree:root()
-  if not root then
-    return nil
-  end
-
-  -- Get node at cursor position.
-  local node = root:named_descendant_for_range(row, col, row, col)
-  if not node then
-    return nil
-  end
-
+function M.get_path(node, bufnr)
   -- Walk up the tree collecting path segments.
   local segments = {}
   ---@type TSNode?

@@ -8,13 +8,13 @@ local query = [[
              name: (sym_name) @clj_ns_value))
 ]]
 
+---@param root TSNode
+---@param bufnr integer
 ---@return string?
-function M.get_namespace()
+function M.get_namespace(root, bufnr)
   local ts_query = vim.treesitter.query.parse("clojure", query)
-  local tree = vim.treesitter.get_parser():parse()[1]
   local captures = {}
-  local bufnr = vim.fn.bufnr()
-  for _, node, _ in ts_query:iter_captures(tree:root(), 0) do
+  for _, node, _ in ts_query:iter_captures(root, bufnr) do
     table.insert(captures, vim.treesitter.get_node_text(node, bufnr))
   end
   if #captures == 2 and captures[1] == "ns" then

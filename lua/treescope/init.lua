@@ -347,7 +347,14 @@ function treescope.yq_path()
   end
 
   -- Get Tree-sitter language.
-  local lang = vim.treesitter.language.get_lang(filetype)
+  local lang
+  if filetype == "jsonc" then
+    -- The jsonc provider reuses the json provider, and the json provider expects
+    -- a json parser. Hence this special handling is necessary.
+    lang = "json"
+  else
+    lang = vim.treesitter.language.get_lang(filetype)
+  end
   if not lang then
     return nil
   end

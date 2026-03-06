@@ -148,27 +148,27 @@ end
 --- each function explains what each scope means. Each scope can optionally be
 --- exposed as a buf var. See: |treescope.config.buf_vars|.
 ---
---- The complete list of scopes is as follows:
----
---- * `outer_function`
---- * `clojure_namespace`
---- * `yq_path`
+--- For the list of scopes see |treescope-lang-support|.
 
 --- #delimiter
 --- #tag treescope-lang-support
 --- Language support ~
 
---- Language    `outer_function`  `clojure_namespace`  `yq_path`
---- ----------  ----------------  -------------------  ---------
---- Lua         ✓                 n/a                  n/a
---- Java        ✓                 n/a                  n/a
---- Python      ✓                 n/a                  n/a
---- Clojure     ✓                 ✓                    n/a
---- JavaScript  ✓                 n/a                  n/a
---- TypeScript  ✓                 n/a                  n/a
---- YAML        n/a               n/a                  ✓
---- JSON        n/a               n/a                  ✓
---- JSONC       n/a               n/a                  ✓
+--- * `outer_function`
+---   - lua
+---   - java
+---   - python
+---   - clojure
+---   - javascript
+---   - typescript
+---
+--- * `yq_path`
+---   - yaml
+---   - json
+---   - jsonc
+---
+--- * `clojure_namespace`
+---   - clojure
 
 --- #delimiter
 --- #tag treescope-functions
@@ -178,9 +178,9 @@ end
 --- level found from walking the Tree-sitter tree upwards from the cursor
 --- position. For example, "M.foo" is the outer function given:
 --- >lua
---- M.foo = function(opts)
----   local bar = function(cb)
----     local function baz(x, co)
+--- M.foo = function()
+---   local bar = function()
+---     local function baz()
 ---       -- <Cursor Here>.
 ---     end
 ---   end
@@ -265,67 +265,13 @@ function treescope.outer_function()
   return provider.get_function_name(candidate, bufnr)
 end
 
---- The "clojure namespace" is the name of the namespace at the present Clojure
---- file. This scope only works in buffers with a `clojure` 'filetype'. For
---- example, "fwpd.core-test" is the namespace given:
---- >clojure
---- (ns myapp.core-test)
---- (println "Hello World")
---- ; <Cursor Here>.
---- <
----@return string?
-function treescope.clojure_namespace()
-  local bufnr = vim.api.nvim_get_current_buf()
-
-  -- Validate buffer.
-  if not vim.api.nvim_buf_is_valid(bufnr) then
-    return nil
-  end
-
-  -- Check filetype is Clojure.
-  local filetype = vim.bo[bufnr].filetype
-  if not filetype or filetype ~= "clojure" then
-    return nil
-  end
-
-  -- Get Tree-sitter language.
-  local lang = vim.treesitter.language.get_lang(filetype)
-  if not lang then
-    return nil
-  end
-
-  local ok, parser = pcall(vim.treesitter.get_parser, bufnr, lang)
-  if not ok or not parser then
-    return nil
-  end
-
-  local trees = parser:parse()
-  if not trees or #trees == 0 then
-    return nil
-  end
-
-  local root = trees[1]:root()
-  if not root then
-    return nil
-  end
-
-  -- Get provider.
-  local provider_locator = require("treescope.provider_locator")
-  local provider = provider_locator.get_clojure_namespace_provider()
-  if not provider then
-    return nil
-  end
-
-  return provider.get_namespace(root, bufnr)
-end
-
 --- The "yq path" is a yq filter expression for the cursor position in YAML
 --- files. This scope only works in buffers with a `yaml` 'filetype'. For
 --- example, ".spring.application.name" is the path given:
 --- >yaml
 --- spring:
 ---   application:
----     # <Cursor On 'name' Key Below>.
+---     # <Cursor On Key Below>.
 ---     name: my-app
 --- <
 ---@return string?
@@ -385,6 +331,60 @@ function treescope.yq_path()
   end
 
   return provider.get_path(node, bufnr)
+end
+
+--- The "clojure namespace" is the name of the namespace at the present Clojure
+--- file. This scope only works in buffers with a `clojure` 'filetype'. For
+--- example, "myapp.core" is the namespace given:
+--- >clojure
+--- (ns myapp.core)
+--- (println "Hello World")
+--- ; <Cursor Here>.
+--- <
+---@return string?
+function treescope.clojure_namespace()
+  local bufnr = vim.api.nvim_get_current_buf()
+
+  -- Validate buffer.
+  if not vim.api.nvim_buf_is_valid(bufnr) then
+    return nil
+  end
+
+  -- Check filetype is Clojure.
+  local filetype = vim.bo[bufnr].filetype
+  if not filetype or filetype ~= "clojure" then
+    return nil
+  end
+
+  -- Get Tree-sitter language.
+  local lang = vim.treesitter.language.get_lang(filetype)
+  if not lang then
+    return nil
+  end
+
+  local ok, parser = pcall(vim.treesitter.get_parser, bufnr, lang)
+  if not ok or not parser then
+    return nil
+  end
+
+  local trees = parser:parse()
+  if not trees or #trees == 0 then
+    return nil
+  end
+
+  local root = trees[1]:root()
+  if not root then
+    return nil
+  end
+
+  -- Get provider.
+  local provider_locator = require("treescope.provider_locator")
+  local provider = provider_locator.get_clojure_namespace_provider()
+  if not provider then
+    return nil
+  end
+
+  return provider.get_namespace(root, bufnr)
 end
 
 return treescope

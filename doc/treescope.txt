@@ -98,27 +98,27 @@ Each function in |treescope-functions| corresponds to a scope. The docs of
 each function explains what each scope means. Each scope can optionally be
 exposed as a buf var. See: |treescope.config.buf_vars|.
 
-The complete list of scopes is as follows:
-
-• `outer_function`
-• `clojure_namespace`
-• `yq_path`
+For the list of scopes see |treescope-lang-support|.
 
 ------------------------------------------------------------------------------
                                                         *treescope-lang-support*
 Language support ~
 
-Language    `outer_function`  `clojure_namespace`  `yq_path`
-----------  ----------------  -------------------  ---------
-Lua         ✓                 n/a                  n/a
-Java        ✓                 n/a                  n/a
-Python      ✓                 n/a                  n/a
-Clojure     ✓                 ✓                    n/a
-JavaScript  ✓                 n/a                  n/a
-TypeScript  ✓                 n/a                  n/a
-YAML        n/a               n/a                  ✓
-JSON        n/a               n/a                  ✓
-JSONC       n/a               n/a                  ✓
+• `outer_function`
+  - lua
+  - java
+  - python
+  - clojure
+  - javascript
+  - typescript
+
+• `yq_path`
+  - yaml
+  - json
+  - jsonc
+
+• `clojure_namespace`
+  - clojure
 
 ------------------------------------------------------------------------------
                                                            *treescope-functions*
@@ -130,26 +130,13 @@ The "outer function" is the name of the function or method at the highest
 level found from walking the Tree-sitter tree upwards from the cursor
 position. For example, "M.foo" is the outer function given:
 >lua
-M.foo = function(opts)
-  local bar = function(cb)
-    local function baz(x, co)
+M.foo = function()
+  local bar = function()
+    local function baz()
       -- <Cursor Here>.
     end
   end
 end
-<
-Return ~
-`(string)` `(optional)`
-
-                                                 *treescope.clojure_namespace()*
-                        `treescope.clojure_namespace`()
-The "clojure namespace" is the name of the namespace at the present Clojure
-file. This scope only works in buffers with a `clojure` 'filetype'. For
-example, "fwpd.core-test" is the namespace given:
->clojure
-(ns myapp.core-test)
-(println "Hello World")
-; <Cursor Here>.
 <
 Return ~
 `(string)` `(optional)`
@@ -162,8 +149,21 @@ example, ".spring.application.name" is the path given:
 >yaml
 spring:
   application:
-    # <Cursor On 'name' Key Below>.
+    # <Cursor On Key Below>.
     name: my-app
+<
+Return ~
+`(string)` `(optional)`
+
+                                                 *treescope.clojure_namespace()*
+                        `treescope.clojure_namespace`()
+The "clojure namespace" is the name of the namespace at the present Clojure
+file. This scope only works in buffers with a `clojure` 'filetype'. For
+example, "myapp.core" is the namespace given:
+>clojure
+(ns myapp.core)
+(println "Hello World")
+; <Cursor Here>.
 <
 Return ~
 `(string)` `(optional)`

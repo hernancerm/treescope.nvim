@@ -316,6 +316,9 @@ function treescope.clojure_namespace()
   -- Get provider.
   local provider_locator = require("treescope.provider_locator")
   local provider = provider_locator.get_clojure_namespace_provider()
+  if not provider then
+    return nil
+  end
 
   return provider.get_namespace(root, bufnr)
 end
@@ -338,24 +341,15 @@ function treescope.yq_path()
     return nil
   end
 
-  -- Get filetype and provider (filetype validity check).
-  local filetype = vim.bo[bufnr].filetype
+  -- Get provider.
   local provider_locator = require("treescope.provider_locator")
   local provider = provider_locator.get_yq_path_provider(bufnr)
-
   if not provider then
     return nil
   end
 
   -- Get Tree-sitter language.
-  -- jsonc reuses the json parser: node types are identical and using the jsonc
-  -- parser conflicts with the json parser nvim-treesitter auto-attaches.
-  local lang
-  if filetype == "jsonc" then
-    lang = "json"
-  else
-    lang = vim.treesitter.language.get_lang(filetype)
-  end
+  local lang = vim.treesitter.language.get_lang(vim.bo[bufnr].filetype)
   if not lang then
     return nil
   end

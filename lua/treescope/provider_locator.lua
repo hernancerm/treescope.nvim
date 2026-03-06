@@ -27,10 +27,9 @@ function M.get_clojure_namespace_provider()
   return provider
 end
 
----@param bufnr number
+---@param filetype string
 ---@return table?
-function M.get_yq_path_provider(bufnr)
-  local filetype = vim.bo[bufnr].filetype
+function M.get_yq_path_provider(filetype)
   local supported_filetypes = { "yaml", "json", "jsonc" }
   if not vim.tbl_contains(supported_filetypes, filetype) then
     return nil

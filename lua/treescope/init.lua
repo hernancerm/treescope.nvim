@@ -269,13 +269,9 @@ end
 --- file. This scope only works in buffers with a `clojure` 'filetype'. For
 --- example, "fwpd.core-test" is the namespace given:
 --- >clojure
---- (ns fwpd.core-test
----   (:require [clojure.test :refer :all]
----             [fwpd.core :refer :all]))
---- (deftest a-test
----   (testing "FIXME, I fail."
----     ; <Cursor Here>.
----     (is (= 0 1))))
+--- (ns myapp.core-test)
+--- (println "Hello World")
+--- ; <Cursor Here>.
 --- <
 ---@return string?
 function treescope.clojure_namespace()
@@ -341,15 +337,17 @@ function treescope.yq_path()
     return nil
   end
 
+  local filetype = vim.bo[bufnr].filetype
+
   -- Get provider.
   local provider_locator = require("treescope.provider_locator")
-  local provider = provider_locator.get_yq_path_provider(bufnr)
+  local provider = provider_locator.get_yq_path_provider(filetype)
   if not provider then
     return nil
   end
 
   -- Get Tree-sitter language.
-  local lang = vim.treesitter.language.get_lang(vim.bo[bufnr].filetype)
+  local lang = vim.treesitter.language.get_lang(filetype)
   if not lang then
     return nil
   end

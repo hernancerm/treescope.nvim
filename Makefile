@@ -6,9 +6,9 @@ STYLUA_BIN := $(HOME)/.asdf/installs/stylua/$(STYLUA_VERSION)/bin/stylua
 
 # Neovim plugins versions.
 # These are dev dependencies.
-MINI_DOC_GIT_TAG := v0.17.0
-MINI_TEST_GIT_TAG := v0.17.0
-NVIM_TREESITTER_GIT_TAG := v0.10.0
+MINI_DOC_GIT_COMMIT := v0.17.0
+MINI_TEST_GIT_COMMIT := v0.17.0
+NVIM_TREESITTER_GIT_COMMIT := main
 
 # Check formatting.
 .PHONY: testmft
@@ -43,19 +43,19 @@ docs: deps/mini.doc
 
 deps/mini.test:
 	@mkdir -p deps
-	git clone --depth 1 --branch $(MINI_TEST_GIT_TAG) \
+	git clone --depth 1 --branch $(MINI_TEST_GIT_COMMIT) \
 	https://github.com/nvim-mini/mini.test \
 	$@
 
 deps/mini.doc:
 	@mkdir -p deps
-	git clone --depth 1 --branch $(MINI_DOC_GIT_TAG) \
+	git clone --depth 1 --branch $(MINI_DOC_GIT_COMMIT) \
 	https://github.com/nvim-mini/mini.doc \
 	$@
 
 deps/nvim-treesitter:
 	@mkdir -p deps
-	git clone --depth 1 --branch $(NVIM_TREESITTER_GIT_TAG) \
+	git clone --depth 1 --branch $(NVIM_TREESITTER_GIT_COMMIT) \
 	https://github.com/nvim-treesitter/nvim-treesitter \
 	$@
 

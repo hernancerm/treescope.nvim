@@ -94,6 +94,10 @@ function h.ensure_parser_available(lang, child)
   end
   -- Install the parser synchronously with 45 seconds timeout.
   child.lua(string.format("require('nvim-treesitter').install({'%s'}):wait(45000)", lang))
+  -- Additional parsers.
+  if lang == "jsonc" then
+    child.lua("require('nvim-treesitter').install({'json'}):wait(45000)")
+  end
   -- Parser was installed.
   return true
 end

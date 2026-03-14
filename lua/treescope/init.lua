@@ -7,9 +7,7 @@
 --- 1. Introduction                                         |treescope-introduction|
 --- 2. Quickstart                                             |treescope-quickstart|
 --- 3. Configuration                                       |treescope-configuration|
---- 4. Scopes                                                     |treescope-scopes|
---- 5. Language support                                     |treescope-lang-support|
---- 6. Functions                                               |treescope-functions|
+--- 4. Functions                                               |treescope-functions|
 ---
 --- ==============================================================================
 --- #tag treescope-introduction
@@ -141,38 +139,11 @@ end
 --- for the scope `outer_function` the buf var is `treescope_outer_function`.
 
 --- #delimiter
---- #tag treescope-scopes
---- Scopes ~
-
---- Each function in |treescope-functions| corresponds to a scope. The docs of
---- each function explains what each scope means. Each scope can optionally be
---- exposed as a buf var. See: |treescope.config.buf_vars|.
----
---- For the list of scopes see |treescope-lang-support|.
-
---- #delimiter
---- #tag treescope-lang-support
---- Language support ~
-
---- * `outer_function`
----   - lua
----   - java
----   - python
----   - clojure
----   - javascript
----   - typescript
----
---- * `yq_path`
----   - yaml
----   - json
----   - jsonc
----
---- * `clojure_namespace`
----   - clojure
-
---- #delimiter
 --- #tag treescope-functions
 --- Functions ~
+
+--- Each function in this section corresponds to a scope. Each scope can
+--- optionally be exposed as a buf var. See: |treescope.config.buf_vars|.
 
 --- The "outer function" is the name of the function or method at the highest
 --- level found from walking the Tree-sitter tree upwards from the cursor
@@ -186,6 +157,13 @@ end
 ---   end
 --- end
 --- <
+--- Languages supported:
+--- * lua
+--- * java
+--- * python
+--- * clojure
+--- * javascript
+--- * typescript
 ---@return string?
 function treescope.outer_function()
   local bufnr = vim.api.nvim_get_current_buf()
@@ -274,6 +252,10 @@ end
 ---     # <Cursor On Key Below>.
 ---     name: my-app
 --- <
+--- Languages supported:
+--- * yaml
+--- * json
+--- * jsonc
 ---@return string?
 function treescope.yq_path()
   local bufnr = vim.api.nvim_get_current_buf()
@@ -341,6 +323,8 @@ end
 --- (println "Hello World")
 --- ; <Cursor Here>.
 --- <
+--- Languages supported:
+--- * clojure
 ---@return string?
 function treescope.clojure_namespace()
   local bufnr = vim.api.nvim_get_current_buf()

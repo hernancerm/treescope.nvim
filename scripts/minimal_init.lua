@@ -12,14 +12,13 @@ vim.cmd([[let &rtp.=",".getcwd()]])
 -- Set up for headless Neovim. Intended for `make test`.
 -- Purpose: `mini.test` child Neovim instances can:
 -- - `require("nvim-treesitter")`
--- - `require("test")`
+-- - `require("mini.test")`
 -- Why `nvim_list_uis` condition: Headless Neovim instances (like the one spawned with `make`) use
--- the `mini.test` file (`test.lua`) from the `deps` dir, while non-headless Neovim instances (like
--- when user uses Neovim as usual) have access to whatever version of `mini.doc` they have
--- installed.
+-- the plugins from the `deps` dir, while non-headless Neovim instances (like when user uses Neovim
+-- as usual) do not have access to the plugins in the `deps` dir.
 if #vim.api.nvim_list_uis() == 0 then
-  -- Add `./deps/` dir to 'runtimepath' to be able to use `test.lua` and `nvim-treesitter`.
-  vim.cmd([[let &rtp.=",".getcwd()."/deps"]])
+  vim.cmd([[let &rtp.=",".getcwd()."/deps/nvim-treesitter"]])
+  vim.cmd([[let &rtp.=",".getcwd()."/deps/mini.test"]])
   -- Set up `nvim-treesitter`.
   -- This plugin significantly facilitates installing Tree-sitter parsers, which the tests need.
   -- There does not seem to be a way to download pre-built parsers for any arbitrary language, and
@@ -29,5 +28,5 @@ if #vim.api.nvim_list_uis() == 0 then
     install_dir = install_dir,
   })
   -- Set up `mini.test`.
-  require("test").setup()
+  require("mini.test").setup()
 end

@@ -1,6 +1,6 @@
 local h = {}
 
-local mini_test = require("test")
+local mini_test = require("mini.test")
 local eq = mini_test.expect.equality
 
 h.resources_dir = vim.fs.joinpath(vim.fn.getcwd(), "tests", "resources")
@@ -83,7 +83,7 @@ function h.ensure_parser_available(lang, child)
   child.lua(string.format(
     [[
       _treescope_parser_installed = vim.list_contains(
-        require('nvim-treesitter.config').get_installed('parsers'),
+        require('nvim-treesitter').get_installed('parsers'),
         %q)
   ]],
     lang

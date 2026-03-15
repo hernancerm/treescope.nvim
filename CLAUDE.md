@@ -45,11 +45,11 @@ All three public functions (`outer_function()`, `yq_path()`, `clojure_namespace(
 `lua/treescope/provider_locator.lua` maps filetypes to provider modules under `lua/treescope/providers/`.
 
 Provider directories:
-- `providers/outer_function/` — one file per language (`lua`, `java`, `python`, `clojure`, `javascript`, `typescript`). Each implements the `OuterFunctionProvider` interface (`is_function(node)` + `get_function_name(node, bufnr)`).
-- `providers/yq_path/` — `yaml`, `json`, `jsonc`. Each implements `get_path(node, bufnr)`. The `jsonc` provider reuses the `json` parser (special-cased in `init.lua`).
+- `providers/outer_function/` — one file per language (`lua`, `java`, `python`, `clojure`, `javascript`). Each implements the `OuterFunctionProvider` interface (`is_function(node)` + `get_function_name(node, bufnr)`).
+- `providers/yq_path/` — `yaml`, `json`. Each implements `get_path(node, bufnr)`.
 - `providers/clojure/namespace.lua` — implements `get_namespace(root, bufnr)`.
 
-The interface definition (for type checking only) lives in `lua/treescope/outer_function_provider_interface.lua`.
+Interface definitions (for type checking only) live in `lua/treescope/interfaces/`.
 
 ### Constants (`lua/treescope/const.lua`)
 

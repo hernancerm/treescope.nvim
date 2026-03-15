@@ -39,7 +39,8 @@
 --- Quickstart ~
 ---
 --- You need a Tree-sitter parser for the language you want this plugin to work
---- for. This plugin does not support all languages, see |treescope-lang-support|.
+--- for. This plugin does not support all languages, see supported languages per
+--- scope in |treescope-functions|.
 ---
 --- You need to call the |treescope.setup()| function to initialize the plugin.
 --- >lua
@@ -126,10 +127,10 @@ end
 
 --- #tag treescope.config.buf_vars
 --- `(string[])`
---- The valid values are scopes from |treescope-scopes|, e.g., `outer_function`.
---- By default, Treescope does not create buf vars. This config key indicates to
---- the plugin to create the buf var corresponding to the scope, and keep it up to
---- date as the cursor moves.
+--- The valid values are the names of the functions in |treescope-functions|,
+--- e.g., `outer_function`. By default, Treescope does not create buf vars. This
+--- config key indicates to the plugin to create the buf var corresponding to the
+--- scope, and keep it up to date as the cursor moves.
 ---
 --- The intended use case of buf vars is to be used in the statusline via an
 --- expression, e.g., `${get(b:,'treescope_outer_function','')}`. If you merely
@@ -249,7 +250,7 @@ end
 --- Languages supported:
 --- * yaml
 --- * json
---- * jsonc
+--- * jsonc (json Tree-sitter parser needed)
 ---@return string?
 function treescope.yq_path()
   local bufnr = vim.api.nvim_get_current_buf()

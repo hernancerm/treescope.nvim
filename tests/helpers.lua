@@ -89,7 +89,9 @@ function h.ensure_parser_available(lang, child)
     return false
   end
   -- Install the parser synchronously.
-  child.lua(string.format("require('nvim-treesitter').install({'%s'}):wait(10000)", effective_lang))
+  child.lua(
+    string.format("require('nvim-treesitter').install({'%s'}):wait(120000)", effective_lang)
+  )
   -- Parser was installed.
   return true
 end

@@ -8,7 +8,7 @@ STYLUA_BIN := $(HOME)/.asdf/installs/stylua/$(STYLUA_VERSION)/bin/stylua
 # These are dev dependencies.
 MINI_DOC_GIT_COMMIT := v0.17.0
 MINI_TEST_GIT_COMMIT := v0.17.0
-NVIM_TREESITTER_GIT_COMMIT := main
+NVIM_TREESITTER_GIT_COMMIT := 2f5d4c3f3c675962242096bcc8e586d76dd72eb2
 
 # Check formatting.
 .PHONY: testmft
@@ -55,9 +55,9 @@ deps/mini.doc:
 
 deps/nvim-treesitter:
 	@mkdir -p deps
-	git clone --depth 1 --branch $(NVIM_TREESITTER_GIT_COMMIT) \
-	https://github.com/nvim-treesitter/nvim-treesitter \
-	$@
+	git clone --depth 1 https://github.com/nvim-treesitter/nvim-treesitter $@
+	cd $@ && git fetch --depth 1 origin $(NVIM_TREESITTER_GIT_COMMIT) \
+	&& git checkout $(NVIM_TREESITTER_GIT_COMMIT)
 
 $(STYLUA_BIN):
 	asdf plugin add stylua

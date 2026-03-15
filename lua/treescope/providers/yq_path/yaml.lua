@@ -1,5 +1,11 @@
 local M = {}
 
+--- Get Tree-sitter language of the required parser.
+---@return string
+function M.get_lang()
+  return "yaml"
+end
+
 -- Extract text from a scalar node.
 -- Handles nested flow_node -> plain_scalar -> string_scalar.
 local function extract_scalar_text(node, bufnr)

@@ -30,11 +30,17 @@ end
 ---@param filetype string
 ---@return table?
 function M.get_yq_path_provider(filetype)
+  local base = "treescope.providers.yq_path."
   local supported_filetypes = { "yaml", "json", "jsonc" }
   if not vim.tbl_contains(supported_filetypes, filetype) then
     return nil
   end
-  local provider = require("treescope.providers.yq_path." .. filetype)
+  local provider
+  if filetype == "jsonc" then
+    provider = require(base .. "json")
+  else
+    provider = require(base .. filetype)
+  end
   return provider
 end
 

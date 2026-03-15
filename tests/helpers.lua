@@ -79,19 +79,21 @@ end
 ---@param child MiniTest.child The child Neovim instance.
 ---@return boolean
 function h.ensure_parser_available(lang, child)
-  local timeout = 4500
+  local effective_lang
+  if lang == "jsonc" then
+    -- The only scope that can handle jsonc is yq_path, and it handles it by using the json parser.
+    effective_lang = "json"
+  else
+    effective_lang = lang
+  end
   -- Check if parser is already installed.
   local parsers = child.lua_get("require('nvim-treesitter').get_installed('parsers')")
-  if vim.tbl_contains(parsers, lang) then
+  if vim.tbl_contains(parsers, effective_lang) then
     -- Parser already installed. No need to install.
     return false
   end
-  -- Install the parser synchronously with 45 seconds timeout.
-  child.lua(string.format("require('nvim-treesitter').install({'%s'}):wait(%d)", lang, timeout))
-  -- Install additional parsers.
-  if lang == "jsonc" and not vim.tbl_contains(parsers, "json") then
-    child.lua(string.format("require('nvim-treesitter').install({'json'}):wait(%d)", timeout))
-  end
+  -- Install the parser synchronously.
+  child.lua(string.format("require('nvim-treesitter').install({'%s'}):wait(4500)", effective_lang))
   -- Parser was installed.
   return true
 end

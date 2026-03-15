@@ -196,13 +196,7 @@ function treescope.outer_function()
     return nil
   end
 
-  -- Get Tree-sitter language.
-  local lang = vim.treesitter.language.get_lang(filetype)
-  if not lang then
-    return nil
-  end
-
-  local ok, parser = pcall(vim.treesitter.get_parser, bufnr, lang)
+  local ok, parser = pcall(vim.treesitter.get_parser, bufnr, provider.get_lang())
   if not ok or not parser then
     return nil
   end

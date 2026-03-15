@@ -3,6 +3,7 @@ local M = {}
 ---@param filetype string
 ---@return OuterFunctionProvider?
 function M.get_outer_function_provider(filetype)
+  local base = "treescope.providers.outer_function."
   if filetype == nil then
     return nil
   end
@@ -17,7 +18,12 @@ function M.get_outer_function_provider(filetype)
   if not vim.tbl_contains(supported_filetypes, filetype) then
     return nil
   end
-  local provider = require("treescope.providers.outer_function." .. filetype)
+  local provider
+  if filetype == "typescript" then
+    provider = require(base .. "javascript")
+  else
+    provider = require(base .. filetype)
+  end
   return provider
 end
 
@@ -31,6 +37,9 @@ end
 ---@return table?
 function M.get_yq_path_provider(filetype)
   local base = "treescope.providers.yq_path."
+  if filetype == nil then
+    return nil
+  end
   local supported_filetypes = { "yaml", "json", "jsonc" }
   if not vim.tbl_contains(supported_filetypes, filetype) then
     return nil

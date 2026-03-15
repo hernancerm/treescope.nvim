@@ -83,9 +83,6 @@ function h.ensure_parser_available(lang, child)
   if lang == "jsonc" then
     -- Only yq_path handles jsonc, and it does so by using the json parser.
     effective_lang = "json"
-  elseif lang == "typescript" then
-    -- Only outer_function handles typescript, and it does so by using the javascript parser.
-    effective_lang = "javascript"
   else
     effective_lang = lang
   end

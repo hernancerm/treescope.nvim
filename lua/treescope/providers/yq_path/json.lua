@@ -1,11 +1,5 @@
 local M = {}
 
---- Get Tree-sitter language of the required parser.
----@return string
-function M.get_lang()
-  return "json"
-end
-
 -- Extract the key text from a JSON pair node's key field.
 -- The key is always a string node; strip the surrounding double quotes.
 local function extract_key_text(pair_node, bufnr)
@@ -61,7 +55,7 @@ local function get_array_item_index(node)
 end
 
 ---@param node TSNode
----@param bufnr number
+---@param bufnr integer
 ---@return string?
 function M.get_path(node, bufnr)
   -- Walk up the tree collecting path segments.

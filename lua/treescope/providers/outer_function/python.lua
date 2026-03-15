@@ -2,11 +2,6 @@ local M = {}
 
 local ts = vim.treesitter
 
----@return string
-function M.get_lang()
-  return "python"
-end
-
 ---@param node TSNode
 ---@return boolean
 function M.is_function(node)

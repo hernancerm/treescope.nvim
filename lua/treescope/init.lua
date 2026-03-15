@@ -181,8 +181,8 @@ function treescope.outer_function()
 
   -- Get provider.
   local provider_locator = require("treescope.provider_locator")
-  local provider = provider_locator.get_outer_function_provider(filetype)
-  if provider == nil then
+  local provider, lang = provider_locator.get_outer_function_provider(filetype)
+  if not provider or not lang then
     return nil
   end
 
@@ -196,7 +196,7 @@ function treescope.outer_function()
     return nil
   end
 
-  local ok, parser = pcall(vim.treesitter.get_parser, bufnr, provider.get_lang())
+  local ok, parser = pcall(vim.treesitter.get_parser, bufnr, lang)
   if not ok or not parser then
     return nil
   end
@@ -263,13 +263,13 @@ function treescope.yq_path()
 
   -- Get provider.
   local provider_locator = require("treescope.provider_locator")
-  local provider = provider_locator.get_yq_path_provider(filetype)
-  if not provider then
+  local provider, lang = provider_locator.get_yq_path_provider(filetype)
+  if not provider or not lang then
     return nil
   end
 
   -- Get Tree-sitter parser.
-  local ok, parser = pcall(vim.treesitter.get_parser, bufnr, provider.get_lang())
+  local ok, parser = pcall(vim.treesitter.get_parser, bufnr, lang)
   if not ok or not parser then
     return nil
   end
@@ -316,15 +316,12 @@ function treescope.clojure_namespace()
     return nil
   end
 
-  -- Check filetype is Clojure.
   local filetype = vim.bo[bufnr].filetype
-  if not filetype or filetype ~= "clojure" then
-    return nil
-  end
 
-  -- Get Tree-sitter language.
-  local lang = vim.treesitter.language.get_lang(filetype)
-  if not lang then
+  -- Get provider.
+  local provider_locator = require("treescope.provider_locator")
+  local provider, lang = provider_locator.get_clojure_namespace_provider(filetype)
+  if not provider or not lang then
     return nil
   end
 
@@ -340,13 +337,6 @@ function treescope.clojure_namespace()
 
   local root = trees[1]:root()
   if not root then
-    return nil
-  end
-
-  -- Get provider.
-  local provider_locator = require("treescope.provider_locator")
-  local provider = provider_locator.get_clojure_namespace_provider()
-  if not provider then
     return nil
   end
 

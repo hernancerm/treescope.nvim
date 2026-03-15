@@ -1,11 +1,5 @@
 local M = {}
 
---- Get Tree-sitter language of the required parser.
----@return string
-function M.get_lang()
-  return "yaml"
-end
-
 -- Extract text from a scalar node.
 -- Handles nested flow_node -> plain_scalar -> string_scalar.
 local function extract_scalar_text(node, bufnr)
@@ -78,7 +72,7 @@ local function get_sequence_item_index(sequence_item_node)
 end
 
 ---@param node TSNode
----@param bufnr number
+---@param bufnr integer
 ---@return string?
 function M.get_path(node, bufnr)
   -- Walk up the tree collecting path segments.

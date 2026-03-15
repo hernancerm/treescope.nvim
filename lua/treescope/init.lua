@@ -56,6 +56,26 @@ local const = require("treescope.const")
 
 local treescope = {}
 
+-- Key: bufnr. Value: Table with keys:
+-- - changedtick: vim.api.nvim_buf_get_changedtick()
+-- - trees: Tree-sitter parser:parse()
+local parse_cache = {}
+
+local function get_trees(bufnr, lang)
+  local tick = vim.api.nvim_buf_get_changedtick(bufnr)
+  local cached = parse_cache[bufnr]
+  if cached and cached.changedtick == tick then
+    return cached.trees
+  end
+  local ok, parser = pcall(vim.treesitter.get_parser, bufnr, lang)
+  if not ok or not parser then
+    return nil
+  end
+  local trees = parser:parse()
+  parse_cache[bufnr] = { changedtick = tick, trees = trees }
+  return trees
+end
+
 treescope.config = {}
 
 local assign_default_config
@@ -88,6 +108,16 @@ function treescope.setup(config)
 
   -- Create clean augroup.
   vim.api.nvim_create_augroup(const.AUGROUP_NAME, { clear = true })
+
+  -- Free cached objects when a buf is deleted. This is a memory optimization.
+  -- Without this, the cache-related behavior would remain correct but GC would
+  -- not happen on the objects of deleted bufs.
+  vim.api.nvim_create_autocmd("BufDelete", {
+    group = const.AUGROUP_NAME,
+    callback = function(ev)
+      parse_cache[ev.buf] = nil
+    end,
+  })
 
   -- Register buf vars from config (set auto-update with an autocmd).
   local vars_service = require("treescope.vars_service")
@@ -215,18 +245,12 @@ function treescope.outer_function()
     return nil
   end
 
-  local ok, parser = pcall(vim.treesitter.get_parser, bufnr, lang)
-  if not ok or not parser then
-    return nil
-  end
-
-  local trees = parser:parse()
+  local trees = get_trees(bufnr, lang)
   if not trees or #trees == 0 then
     return nil
   end
 
-  local tree = trees[1]
-  local root = tree:root()
+  local root = trees[1]:root()
   if not root then
     return nil
   end
@@ -287,13 +311,7 @@ function treescope.yq_path()
     return nil
   end
 
-  -- Get Tree-sitter parser.
-  local ok, parser = pcall(vim.treesitter.get_parser, bufnr, lang)
-  if not ok or not parser then
-    return nil
-  end
-
-  local trees = parser:parse()
+  local trees = get_trees(bufnr, lang)
   if not trees or #trees == 0 then
     return nil
   end
@@ -344,12 +362,7 @@ function treescope.clojure_namespace()
     return nil
   end
 
-  local ok, parser = pcall(vim.treesitter.get_parser, bufnr, lang)
-  if not ok or not parser then
-    return nil
-  end
-
-  local trees = parser:parse()
+  local trees = get_trees(bufnr, lang)
   if not trees or #trees == 0 then
     return nil
   end

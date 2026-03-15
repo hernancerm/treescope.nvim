@@ -7,7 +7,8 @@ Contents:
 1. Introduction                                         |treescope-introduction|
 2. Quickstart                                             |treescope-quickstart|
 3. Configuration                                       |treescope-configuration|
-4. Functions                                               |treescope-functions|
+4. Statusline integration                                 |treescope-statusline|
+5. Functions                                               |treescope-functions|
 
 ==============================================================================
                                                         *treescope-introduction*
@@ -28,11 +29,7 @@ Solution:
   enough info for me to know where I am.
 
 • You may use the Lua API, |treescope-functions|, for any programmatic needs
-  you may have. For integrating the scopes to your statusline, I suggest you
-  enable the corresponding buf vars, see |treescope.config.buf_vars|, and
-  reference the buf vars in your statusline with an expression like the
-  following: `${get(b:,'treescope_outer_function','')}`. This way the
-  statusline is automatically updated when the var gets a new value.
+  you may have. For statusline integrating see |treescope-statusline|.
 
 ------------------------------------------------------------------------------
                                                           *treescope-quickstart*
@@ -46,10 +43,10 @@ You need to call the |treescope.setup()| function to initialize the plugin.
 >lua
   { -- For Lazy.nvim
     "hernancerm/treescope.nvim",
-    opts = {}
+    opts = {},
   }
 
-• To have a scope in your statusline, see |treescope.config.buf_vars|.
+• To have a scope in your statusline, see |treescope-statusline|.
 
 • To get the scopes using the Lua API, see |treescope-functions|. E.g., to get
   the outer function: `require("treescope").outer_function()`. In this case
@@ -80,14 +77,35 @@ default config is in `treescope.default_config`. Below is the default config:
 The valid values are the names of the functions in |treescope-functions|,
 e.g., `outer_function`. By default, Treescope does not create buf vars. This
 config key indicates to the plugin to create the buf var corresponding to the
-scope, and keep it up to date as the cursor moves.
+scope, and keep it up to date as the cursor moves. The intended use case of
+buf vars is statusline integration, see |treescope-statusline|. The buf vars
+created are prefixed with `treescope_`. For example, for `outer_function` its
+buf var is `treescope_outer_function`. You may ignore this opt if you intend
+to use Treescope merely through |treescope-functions|.
 
-The intended use case of buf vars is to be used in the statusline via an
-expression, e.g., `${get(b:,'treescope_outer_function','')}`. If you merely
-intend to use Treescope through its Lua API, you may ignore this config key.
+------------------------------------------------------------------------------
+                                                          *treescope-statusline*
+Statusline integration ~
 
-The names of the buf vars are `treescope_` followed by the scope. For example,
-for the scope `outer_function` the buf var is `treescope_outer_function`.
+Let's say you want the scope `outer_function` in your statusline. First of
+course you need the relevant Tree-sitter parsers installed. Then make sure
+your plugin config includes the desired scope:
+>lua
+  require("treescope").setup({
+    buf_vars = { "outer_function" },
+  })
+<
+Now you can reference the buf var in 'statusline' like this:
+>lua
+  ${get(b:,'treescope_outer_function','')}
+<
+Treescope keeps the value of the buf var updated as the cursor moves. Neovim
+automatically updates the statusline when a buf var referenced in 'statusline'
+changes, so there is no need for any custom refresh logic.
+
+This setup works nicely without a statusline plugin, it also works well with
+the plugin https://github.com/hernancerm/bareline.nvim and quite likely
+also plays well with many other statusline plugins.
 
 ------------------------------------------------------------------------------
                                                            *treescope-functions*

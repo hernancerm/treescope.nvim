@@ -44,7 +44,6 @@ function h.set_cursor_from_marker(marker_id, child)
       if line_content:find(marker_text, 1, true) then
         local start_pos = line_content:find(marker_text, 1, true)
         local cursor_col = start_pos + #marker_text - 1
-
         -- Check for optional [keys] suffix
         local bracket_start = line_content:find("[", start_pos + #marker_text, true)
         local keys = nil
@@ -54,20 +53,17 @@ function h.set_cursor_from_marker(marker_id, child)
             keys = line_content:sub(bracket_start + 1, bracket_end - 1)
           end
         end
-
         -- Position cursor at end of marker text (before the '[' if it exists)
         vim.api.nvim_win_set_cursor(0, {line_num, cursor_col})
-
         -- Execute keys in normal mode if present
         if keys then
           vim.api.nvim_feedkeys(keys, 'n', false)
         end
-
         return
       end
     end
     error("Marker 'cursor-%s' not found in buffer")
-   ]],
+    ]],
     marker_id,
     marker_id
   ))

@@ -1,6 +1,7 @@
 local h = {}
 
 local mini_test = require("mini.test")
+
 local eq = mini_test.expect.equality
 
 h.resources_dir = vim.fs.joinpath(vim.fn.getcwd(), "tests", "resources")

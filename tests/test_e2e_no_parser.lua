@@ -1,8 +1,8 @@
 local h = dofile("tests/helpers.lua")
-
 local mini_test = require("mini.test")
-local new_set = mini_test.new_set
+
 local child = mini_test.new_child_neovim()
+local new_set = mini_test.new_set
 
 local T = new_set({
   hooks = {

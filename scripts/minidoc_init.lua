@@ -7,7 +7,6 @@
 -- as usual) do not have access to the plugins in the `deps` dir.
 if #vim.api.nvim_list_uis() == 0 then
   vim.cmd([[let &rtp.=",".getcwd()."/deps/mini.doc"]])
-  -- Set up `mini.doc`.
   local mini_doc = require("mini.doc")
   mini_doc.setup()
   -- Generate help file(s).

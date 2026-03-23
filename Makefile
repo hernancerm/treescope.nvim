@@ -1,8 +1,6 @@
 HELP_FILE := ./doc/treescope.txt
 NVIM_CMD := nvim --headless --noplugin
 MINI_DOC_GENERATE_CMD := @$(NVIM_CMD) -u ./scripts/minidoc_init.lua && echo ''
-STYLUA_VERSION := $(shell grep stylua .tool-versions | awk '{ print $$2 }')
-STYLUA_BIN := $(HOME)/.asdf/installs/stylua/$(STYLUA_VERSION)/bin/stylua
 
 # Neovim plugins versions.
 # These are dev dependencies.
@@ -12,7 +10,7 @@ NVIM_TREESITTER_GIT_COMMIT := 2f5d4c3f3c675962242096bcc8e586d76dd72eb2
 
 # Check formatting.
 .PHONY: testmft
-testfmt: $(STYLUA_BIN)
+testfmt:
 	stylua --check lua/ scripts/ tests/
 
 # Check docs are up to date.
@@ -33,7 +31,7 @@ testci: testfmt testdocs test
 
 # Format.
 .PHONY: fmt
-fmt: $(STYLUA_BIN)
+fmt:
 	stylua lua/ scripts/ tests/
 
 # Update docs.
@@ -58,7 +56,3 @@ deps/nvim-treesitter:
 	git clone --depth 1 https://github.com/nvim-treesitter/nvim-treesitter $@
 	cd $@ && git fetch --depth 1 origin $(NVIM_TREESITTER_GIT_COMMIT) \
 	&& git checkout $(NVIM_TREESITTER_GIT_COMMIT)
-
-$(STYLUA_BIN):
-	asdf plugin add stylua
-	asdf install stylua

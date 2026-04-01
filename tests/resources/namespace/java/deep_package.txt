@@ -1,0 +1,8 @@
+package com.example.service.impl;
+
+public class ServiceImpl {
+    public String process() {
+        // cursor-2c8b5a3f
+        return "result";
+    }
+}

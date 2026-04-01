@@ -54,7 +54,7 @@ end
 ---@return string?
 function M.get_namespace_provider(filetype)
   local base = "treescope.providers.namespace."
-  local supported_filetypes = { "clojure" }
+  local supported_filetypes = { "clojure", "java" }
   if not vim.tbl_contains(supported_filetypes, filetype) then
     return
   end

@@ -167,6 +167,7 @@ of the present file. For example, "myapp.core" is the namespace given:
 <
 Languages supported:
 • clojure
+• java
 Return ~
 `(string)` `(optional)`
 

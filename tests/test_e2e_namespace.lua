@@ -20,10 +20,10 @@ local T = new_set({
 T["e2e_namespace"] = new_set({})
 
 -- Helper for pre_case hook.
-local function create_language_pre_case(test_cases)
+local function create_language_pre_case(lang, subdir, test_cases)
   return function()
     -- Ensure parser is available.
-    local parser_was_installed = h.ensure_parser_available("clojure", child)
+    local parser_was_installed = h.ensure_parser_available(lang, child)
     -- If parser was just installed, restart child to reload it.
     if parser_was_installed then
       child.restart({ "-u", "scripts/minimal_init.lua" })
@@ -33,9 +33,8 @@ local function create_language_pre_case(test_cases)
     -- Open test file and set filetype explicitly.
     local marker = mini_test.current.case.args[1]
     local case_data = test_cases[marker]
-    local resource_file =
-      vim.fs.joinpath(h.resources_dir, "namespace", "clojure", case_data.filename)
-    child.cmd(string.format("edit %s | set filetype=clojure", resource_file))
+    local resource_file = vim.fs.joinpath(h.resources_dir, "namespace", subdir, case_data.filename)
+    child.cmd(string.format("edit %s | set filetype=%s", resource_file, lang))
   end
 end
 
@@ -51,6 +50,23 @@ local function create_language_post_case(test_cases)
       end
     end
   end
+end
+
+-- Helper to create a language-specific test set.
+local function create_language_test_set(lang, subdir, test_cases)
+  local test_set = new_set({
+    parametrize = h.map_test_cases_to_parameterize_data(test_cases),
+    hooks = {
+      pre_case = create_language_pre_case(lang, subdir, test_cases),
+      post_case = create_language_post_case(test_cases),
+    },
+  })
+  test_set["parametrized"] = function(marker, expected)
+    h.set_cursor_from_marker(marker, child)
+    local scope = child.lua_get("treescope.namespace()")
+    h.assert_scope(expected, scope)
+  end
+  return test_set
 end
 
 local clojure_test_cases = {
@@ -86,18 +102,41 @@ local clojure_test_cases = {
   },
 }
 
-T["e2e_namespace"]["clojure"] = new_set({
-  parametrize = h.map_test_cases_to_parameterize_data(clojure_test_cases),
-  hooks = {
-    pre_case = create_language_pre_case(clojure_test_cases),
-    post_case = create_language_post_case(clojure_test_cases),
-  },
-})
+T["e2e_namespace"]["clojure"] = create_language_test_set("clojure", "clojure", clojure_test_cases)
 
-T["e2e_namespace"]["clojure"]["parametrized"] = function(marker, expected)
-  h.set_cursor_from_marker(marker, child)
-  local namespace = child.lua_get("treescope.namespace()")
-  h.assert_scope(expected, namespace)
-end
+local java_test_cases = {
+  ["7d4e1f9a"] = {
+    expected = "com.example",
+    note = "simple package",
+    filename = "simple_package.txt",
+  },
+  ["2c8b5a3f"] = {
+    expected = "com.example.service.impl",
+    note = "deep package",
+    filename = "deep_package.txt",
+  },
+  ["6e1d0c9b"] = {
+    expected = nil,
+    note = "no package declaration",
+    filename = "no_package.txt",
+  },
+  ["3a7f2e8d"] = {
+    expected = "com.example",
+    note = "cursor on package declaration",
+    filename = "cursor_on_package.txt",
+  },
+  ["9b4c6a1e"] = {
+    expected = "com.example",
+    note = "javadoc before package",
+    filename = "javadoc_before_package.txt",
+  },
+  ["5f2d8e4c"] = {
+    expected = "mypackage",
+    note = "single segment package",
+    filename = "single_segment_package.txt",
+  },
+}
+
+T["e2e_namespace"]["java"] = create_language_test_set("java", "java", java_test_cases)
 
 return T

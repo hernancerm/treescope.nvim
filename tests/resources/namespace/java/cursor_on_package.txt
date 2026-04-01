@@ -1,0 +1,6 @@
+// cursor-3a7f2e8d[WW]
+package com.example;
+
+public class MyClass {
+    public void run() {}
+}

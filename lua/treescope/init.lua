@@ -325,6 +325,7 @@ end
 --- <
 --- Languages supported:
 --- * clojure
+--- * java
 ---@return string?
 function treescope.namespace()
   local bufnr = vim.api.nvim_get_current_buf()

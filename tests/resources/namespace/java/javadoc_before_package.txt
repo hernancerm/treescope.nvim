@@ -1,0 +1,10 @@
+/**
+ * Module-level Javadoc.
+ */
+package com.example;
+
+public class Documented {
+    public void run() {
+        // cursor-9b4c6a1e
+    }
+}

@@ -27,11 +27,11 @@ T["no_parser"]["outer_function returns nil when parser not installed"] = functio
   h.assert_scope(nil, result)
 end
 
-T["no_parser"]["clojure_namespace returns nil when parser not installed"] = function()
+T["no_parser"]["namespace returns nil when parser not installed"] = function()
   child.cmd("enew | set filetype=clojure")
   child.api.nvim_buf_set_lines(0, 0, -1, false, { "(ns foo.bar)" })
   child.lua("vim.treesitter.get_parser = function() error('no parser') end")
-  local result = child.lua_get("treescope.clojure_namespace()")
+  local result = child.lua_get("treescope.namespace()")
   h.assert_scope(nil, result)
 end
 

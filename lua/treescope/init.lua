@@ -316,9 +316,8 @@ function treescope.yq_path()
   return provider.get_path(node, bufnr)
 end
 
---- The "clojure namespace" is the name of the namespace at the present Clojure
---- file. This scope only works in buffers with a `clojure` 'filetype'. For
---- example, "myapp.core" is the namespace given:
+--- The "namespace" is the name of the namespace or package declared at the top
+--- of the present file. For example, "myapp.core" is the namespace given:
 --- >clojure
 --- (ns myapp.core)
 --- (println "Hello World")
@@ -327,7 +326,7 @@ end
 --- Languages supported:
 --- * clojure
 ---@return string?
-function treescope.clojure_namespace()
+function treescope.namespace()
   local bufnr = vim.api.nvim_get_current_buf()
 
   -- Validate buffer.
@@ -339,7 +338,7 @@ function treescope.clojure_namespace()
 
   -- Get provider.
   local provider_locator = require("treescope.provider_locator")
-  local provider, lang = provider_locator.get_clojure_namespace_provider(filetype)
+  local provider, lang = provider_locator.get_namespace_provider(filetype)
   if not provider or not lang then
     return nil
   end

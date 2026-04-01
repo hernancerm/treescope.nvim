@@ -56,14 +56,17 @@ end
 
 --- Returns provider and Tree-sitter lang for required parser.
 ---@param filetype string
----@return table?
+---@return NamespaceProvider?
 ---@return string?
-function M.get_clojure_namespace_provider(filetype)
-  if filetype ~= "clojure" then
+function M.get_namespace_provider(filetype)
+  local providers = {
+    clojure = { mod = "treescope.providers.namespace.clojure", lang = "clojure" },
+  }
+  local entry = providers[filetype]
+  if not entry then
     return
   end
-  local provider = require("treescope.providers.clojure.namespace")
-  return provider, filetype
+  return require(entry.mod), entry.lang
 end
 
 return M

@@ -17,7 +17,7 @@ local T = new_set({
   },
 })
 
-T["e2e_clojure_namespace"] = new_set({})
+T["e2e_namespace"] = new_set({})
 
 -- Helper for pre_case hook.
 local function create_language_pre_case(test_cases)
@@ -33,7 +33,8 @@ local function create_language_pre_case(test_cases)
     -- Open test file and set filetype explicitly.
     local marker = mini_test.current.case.args[1]
     local case_data = test_cases[marker]
-    local resource_file = vim.fs.joinpath(h.resources_dir, "clojure", case_data.filename)
+    local resource_file =
+      vim.fs.joinpath(h.resources_dir, "namespace", "clojure", case_data.filename)
     child.cmd(string.format("edit %s | set filetype=clojure", resource_file))
   end
 end
@@ -85,7 +86,7 @@ local clojure_test_cases = {
   },
 }
 
-T["e2e_clojure_namespace"]["clojure"] = new_set({
+T["e2e_namespace"]["clojure"] = new_set({
   parametrize = h.map_test_cases_to_parameterize_data(clojure_test_cases),
   hooks = {
     pre_case = create_language_pre_case(clojure_test_cases),
@@ -93,9 +94,9 @@ T["e2e_clojure_namespace"]["clojure"] = new_set({
   },
 })
 
-T["e2e_clojure_namespace"]["clojure"]["parametrized"] = function(marker, expected)
+T["e2e_namespace"]["clojure"]["parametrized"] = function(marker, expected)
   h.set_cursor_from_marker(marker, child)
-  local namespace = child.lua_get("treescope.clojure_namespace()")
+  local namespace = child.lua_get("treescope.namespace()")
   h.assert_scope(expected, namespace)
 end
 

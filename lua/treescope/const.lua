@@ -3,7 +3,7 @@ return {
   ---@enum const.ScopeIds
   ScopeIds = {
     OUTER_FUNCTION = "outer_function",
-    CLOJURE_NAMESPACE = "clojure_namespace",
+    NAMESPACE = "namespace",
     YQ_PATH = "yq_path",
   },
 }

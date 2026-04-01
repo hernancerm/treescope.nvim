@@ -156,11 +156,10 @@ Languages supported:
 Return ~
 `(string)` `(optional)`
 
-                                                 *treescope.clojure_namespace()*
-                        `treescope.clojure_namespace`()
-The "clojure namespace" is the name of the namespace at the present Clojure
-file. This scope only works in buffers with a `clojure` 'filetype'. For
-example, "myapp.core" is the namespace given:
+                                                         *treescope.namespace()*
+                            `treescope.namespace`()
+The "namespace" is the name of the namespace or package declared at the top
+of the present file. For example, "myapp.core" is the namespace given:
 >clojure
 (ns myapp.core)
 (println "Hello World")

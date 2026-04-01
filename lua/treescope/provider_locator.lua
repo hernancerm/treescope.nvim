@@ -6,9 +6,6 @@ local M = {}
 ---@return string?
 function M.get_outer_function_provider(filetype)
   local base = "treescope.providers.outer_function."
-  if filetype == nil then
-    return
-  end
   local supported_filetypes = {
     "lua",
     "java",
@@ -35,9 +32,6 @@ end
 ---@return string?
 function M.get_yq_path_provider(filetype)
   local base = "treescope.providers.yq_path."
-  if filetype == nil then
-    return
-  end
   local supported_filetypes = { "yaml", "json", "jsonc" }
   if not vim.tbl_contains(supported_filetypes, filetype) then
     return
@@ -59,14 +53,12 @@ end
 ---@return NamespaceProvider?
 ---@return string?
 function M.get_namespace_provider(filetype)
-  local providers = {
-    clojure = { mod = "treescope.providers.namespace.clojure", lang = "clojure" },
-  }
-  local entry = providers[filetype]
-  if not entry then
+  local base = "treescope.providers.namespace."
+  local supported_filetypes = { "clojure" }
+  if not vim.tbl_contains(supported_filetypes, filetype) then
     return
   end
-  return require(entry.mod), entry.lang
+  return require(base .. filetype), filetype
 end
 
 return M

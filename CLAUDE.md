@@ -38,7 +38,7 @@ All three public functions (`outer_function()`, `yq_path()`, `clojure_namespace(
 3. Parse Tree-sitter tree and find the cursor node
 4. Delegate to the provider
 
-`treescope.setup()` registers `CursorMoved` autocmds (via `vars_service`) that keep buf vars like `b:treescope_outer_function` up to date.
+`treescope.setup()` registers `CursorMoved` autocmds (via `vars_service`) that keep buf vars like `b:treescope_outer_function` up to date. After setup, the module is also exported as `_G.Treescope` so statusline integrations can call it without a `require()`.
 
 ### Provider system
 
@@ -51,6 +51,8 @@ Provider directories:
 
 Interface definitions (for type checking only) live in `lua/treescope/interfaces/`.
 
+Two filetypes share existing providers rather than having their own files: TypeScript uses the JavaScript provider, and JSONC uses the JSON provider (with language name `"json"`). This is handled in `provider_locator.lua`.
+
 ### Constants (`lua/treescope/const.lua`)
 
 Defines the augroup name and the `ScopeIds` enum (`outer_function`, `yq_path`, `clojure_namespace`). Scope IDs must stay in sync with the public function names on the `treescope` table.
@@ -59,7 +61,7 @@ Defines the augroup name and the `ScopeIds` enum (`outer_function`, `yq_path`, `
 
 Tests use [mini.test](https://github.com/echasnovski/mini.test) and run in a child headless Neovim instance. Test files are in `tests/`, resource files (code snippets with cursor markers) are in `tests/resources/`.
 
-Cursor positions in resource files are marked with comments like `-- cursor-3f7a2b1c`. The marker ID is used as the parametrize key in test tables; `h.set_cursor_from_marker(marker_id, child)` in `tests/helpers.lua` positions the cursor at that marker before each assertion.
+Cursor positions in resource files are marked with comments like `-- cursor-3f7a2b1c`. The marker ID is used as the parametrize key in test tables; `h.set_cursor_from_marker(marker_id, child)` in `tests/helpers.lua` positions the cursor at that marker before each assertion. Markers can include an optional `[keys]` suffix (e.g., `-- cursor-3f7a2b1c[Ww]`) to execute normal-mode keystrokes after positioning.
 
 ### Docs
 

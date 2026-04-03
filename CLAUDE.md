@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - `outer_function` — name of the outermost function/method enclosing the cursor
 - `yq_path` — yq filter expression for the cursor position in YAML/JSON files
-- `clojure_namespace` — the `ns` name of the current Clojure file
+- `namespace` — the namespace/package declared at the top of the file (Clojure `ns`, Java `package`)
 
 ## Commands
 
@@ -47,7 +47,7 @@ All three public functions (`outer_function()`, `yq_path()`, `clojure_namespace(
 Provider directories:
 - `providers/outer_function/` — one file per language (`lua`, `java`, `python`, `clojure`, `javascript`). Each implements the `OuterFunctionProvider` interface (`is_function(node)` + `get_function_name(node, bufnr)`).
 - `providers/yq_path/` — `yaml`, `json`. Each implements `get_path(node, bufnr)`.
-- `providers/clojure/namespace.lua` — implements `get_namespace(root, bufnr)`.
+- `providers/namespace/` — `clojure.lua`, `java.lua`. Each implements `get_namespace(root, bufnr)`.
 
 Interface definitions (for type checking only) live in `lua/treescope/interfaces/`.
 
@@ -55,7 +55,7 @@ Two filetypes share existing providers rather than having their own files: TypeS
 
 ### Constants (`lua/treescope/const.lua`)
 
-Defines the augroup name and the `ScopeIds` enum (`outer_function`, `yq_path`, `clojure_namespace`). Scope IDs must stay in sync with the public function names on the `treescope` table.
+Defines the augroup name and the `ScopeIds` enum (`outer_function`, `yq_path`, `namespace`). Scope IDs must stay in sync with the public function names on the `treescope` table.
 
 ### Tests
 

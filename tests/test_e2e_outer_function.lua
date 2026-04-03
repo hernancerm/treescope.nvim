@@ -179,6 +179,14 @@ local lua_test_cases = {
     expected = "outer.inner:method",
     note = "nested method syntax - cursor on identifier",
   },
+  ["2sy24v56"] = {
+    expected = "field_with_function",
+    note = "field with function",
+  },
+  ["11y24v56"] = {
+    expected = "field_with_function",
+    note = "field with function - cursor on identifier",
+  },
 }
 
 T["e2e_outer_function"]["lua"] = create_language_test_set("lua", "lua.txt", "lua", lua_test_cases)

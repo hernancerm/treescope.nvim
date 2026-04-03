@@ -69,3 +69,11 @@ function outer.inner:method()
   -- cursor-1s2t3u4v
   return "nested method"
 end
+
+local things = {
+  -- cursor-11y24v56[W]
+  field_with_function = function()
+    -- cursor-2sy24v56
+    return "message"
+  end
+}

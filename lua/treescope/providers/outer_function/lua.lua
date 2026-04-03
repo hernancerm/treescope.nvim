@@ -12,26 +12,33 @@ function M.is_function(node)
   end
 
   if t == "identifier" then
+    local parent = node:parent()
+    if not parent then
+      return false
+    end
+
     -- Case: Cursor on variable name in: local foo = function() end
     -- or in: foo = function() end
-    local var_list = node:parent()
-    if not var_list or var_list:type() ~= "variable_list" then
-      return false
+    if parent:type() == "variable_list" then
+      local assign = parent:parent()
+      if not assign or assign:type() ~= "assignment_statement" then
+        return false
+      end
+      local expr_list = assign:named_child(1)
+      if not expr_list then
+        return false
+      end
+      local func_def = expr_list:named_child(0)
+      return func_def ~= nil and func_def:type() == "function_definition"
     end
 
-    local assign = var_list:parent()
-    if not assign or assign:type() ~= "assignment_statement" then
-      return false
+    -- Case: Cursor on field name in: { field_with_function = function() end }
+    if parent:type() == "field" then
+      local value = parent:field("value")[1]
+      return value ~= nil and value:type() == "function_definition"
     end
 
-    -- Check if the assignment has a function_definition as its value.
-    local expr_list = assign:named_child(1)
-    if not expr_list then
-      return false
-    end
-
-    local func_def = expr_list:named_child(0)
-    return func_def ~= nil and func_def:type() == "function_definition"
+    return false
   end
 
   return false
@@ -68,6 +75,15 @@ function M.get_function_name(node, bufnr)
         if name_node then
           return ts.get_node_text(name_node, bufnr)
         end
+      end
+    end
+
+    -- Case: { field_with_function = function() end }
+    local field = node:parent()
+    if field and field:type() == "field" then
+      local name_node = field:field("name")[1]
+      if name_node then
+        return ts.get_node_text(name_node, bufnr)
       end
     end
   end

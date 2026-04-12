@@ -9,14 +9,14 @@ Tree-sitter-powered scope discovery.
 ## Features
 
 - Programmatically retrieve scopes relative to the cursor position, powered by Tree-sitter.
-- Supported scopes: outer_function, yq_path and clojure_namespace.
+- Supported scopes: outermost_function, yq_path and clojure_namespace.
 - Easy integration of scopes in statusline through buf vars.
 
 ## Requirements
 
 - Neovim >= 0.11.0
 - Tree-sitter parsers (depends on scope used and specific language). For example, if using the
-  outer_function scope for lua, then the lua parser is required. The help file
+  outermost_function scope for lua, then the lua parser is required. The help file
   ([treescope.txt](./doc/treescope.txt)) documents the supported langs per scope.
 
 ## Installation

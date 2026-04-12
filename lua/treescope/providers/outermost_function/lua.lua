@@ -91,7 +91,7 @@ function M.get_function_name(node, bufnr)
   return nil
 end
 
----@type OuterFunctionProvider
+---@type OutermostFunctionProvider
 local _ = M
 
 return M

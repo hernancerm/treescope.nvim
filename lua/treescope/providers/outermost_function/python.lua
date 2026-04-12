@@ -17,7 +17,7 @@ function M.get_function_name(node, bufnr)
   return name_node and ts.get_node_text(name_node, bufnr)
 end
 
----@type OuterFunctionProvider
+---@type OutermostFunctionProvider
 local _ = M
 
 return M

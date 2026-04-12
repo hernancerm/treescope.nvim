@@ -25,7 +25,7 @@
 --- Solution:
 ---
 --- * This plugin. It uses Tree-sitter to get scopes. The scope which motivated me
----   to build this plugin is |treescope.outer_function()|, which concisely gives
+---   to build this plugin is |treescope.outermost_function()|, which concisely gives
 ---   enough info for me to know where I am.
 ---
 --- * You may use the Lua API, |treescope-functions|, for any programmatic needs
@@ -49,8 +49,8 @@
 --- * To have a scope in your statusline, see |treescope-statusline|.
 ---
 --- * To get the scopes using the Lua API, see |treescope-functions|. E.g., to get
----   the outer function: `require("treescope").outer_function()`. In this case
----   there is no need to provide special configuration to the plugin.
+---   the outermost function: `require("treescope").outermost_function()`. In this
+---   case there is no need to provide special configuration to the plugin.
 
 local treescope = {}
 
@@ -123,29 +123,29 @@ end
 --- #tag treescope.config.buf_vars
 --- `(string[])`
 --- The valid values are the names of the functions in |treescope-functions|,
---- e.g., `outer_function`. By default, Treescope does not create buf vars. This
+--- e.g., `outermost_function`. By default, Treescope does not create buf vars. This
 --- config key indicates to the plugin to create the buf var corresponding to the
 --- scope, and keep it up to date as the cursor moves. The intended use case of
 --- buf vars is statusline integration, see |treescope-statusline|. The buf vars
---- created are prefixed with `treescope_`. For example, for `outer_function` its
---- buf var is `treescope_outer_function`. You may ignore this opt if you intend
+--- created are prefixed with `treescope_`. For example, for `outermost_function` its
+--- buf var is `treescope_outermost_function`. You may ignore this opt if you intend
 --- to use Treescope merely through |treescope-functions|.
 
 --- #delimiter
 --- #tag treescope-statusline
 --- Statusline integration ~
 
---- Let's say you want the scope `outer_function` in your statusline. First of
+--- Let's say you want the scope `outermost_function` in your statusline. First of
 --- course you need the relevant Tree-sitter parsers installed. Then make sure
 --- your plugin config includes the desired scope:
 --- >
 ---   require("treescope").setup({
----     buf_vars = { "outer_function" },
+---     buf_vars = { "outermost_function" },
 ---   })
 --- <
 --- Now you can reference the buf var in 'statusline' like this:
 --- >
----   ${get(b:,'treescope_outer_function','')}
+---   ${get(b:,'treescope_outermost_function','')}
 --- <
 --- Treescope keeps the value of the buf var updated as the cursor moves. Neovim
 --- automatically updates the statusline when a buf var referenced in 'statusline'
@@ -162,9 +162,9 @@ end
 --- Each function in this section corresponds to a scope. Each scope can
 --- optionally be exposed as a buf var. See: |treescope.config.buf_vars|.
 
---- The "outer function" is the name of the function or method at the highest
+--- The "outermost function" is the name of the function or method at the highest
 --- level found from walking the Tree-sitter tree upwards from the cursor
---- position. For example, "M.foo" is the outer function given:
+--- position. For example, "M.foo" is the outermost function given:
 --- >lua
 --- M.foo = function()
 ---   local bar = function()
@@ -182,8 +182,8 @@ end
 --- * javascript
 --- * typescript
 ---@return string?
-function treescope.outer_function()
-  return require("treescope.scopes_service").outer_function()
+function treescope.outermost_function()
+  return require("treescope.scopes_service").outermost_function()
 end
 
 --- The "yq path" is a yq filter expression for the cursor position in YAML

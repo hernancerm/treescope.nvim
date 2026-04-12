@@ -2,10 +2,10 @@ local M = {}
 
 --- Returns provider and Tree-sitter lang for required parser.
 ---@param filetype string
----@return OuterFunctionProvider?
+---@return OutermostFunctionProvider?
 ---@return string?
-function M.get_outer_function_provider(filetype)
-  local base = "treescope.providers.outer_function."
+function M.get_outermost_function_provider(filetype)
+  local base = "treescope.providers.outermost_function."
   local supported_filetypes = {
     "lua",
     "java",

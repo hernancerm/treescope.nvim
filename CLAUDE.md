@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 `treescope.nvim` is a Neovim plugin that uses Tree-sitter to expose cursor scope information via a Lua API and optional buffer variables. The three scopes are:
 
-- `outer_function` — name of the outermost function/method enclosing the cursor
+- `outermost_function` — name of the outermost function/method enclosing the cursor
 - `yq_path` — yq filter expression for the cursor position in YAML/JSON files
 - `namespace` — the namespace/package declared at the top of the file (Clojure `ns`, Java `package`)
 
@@ -25,27 +25,27 @@ Dependencies (`deps/lua/`) are downloaded on first `make test` / `make docs`. Tr
 
 To run a single test file:
 ```sh
-nvim --headless --noplugin -u ./scripts/minimal_init.lua -c "lua MiniTest.run_file('tests/test_e2e_outer_function.lua')"
+nvim --headless --noplugin -u ./scripts/minimal_init.lua -c "lua MiniTest.run_file('tests/test_e2e_outermost_function.lua')"
 ```
 
 ## Architecture
 
 ### Public API (`lua/treescope/init.lua`)
 
-All three public functions (`outer_function()`, `yq_path()`, `clojure_namespace()`) follow the same pattern:
+All three public functions (`outermost_function()`, `yq_path()`, `clojure_namespace()`) follow the same pattern:
 1. Validate buffer and filetype
 2. Ask `provider_locator` for the right provider
 3. Parse Tree-sitter tree and find the cursor node
 4. Delegate to the provider
 
-`treescope.setup()` registers `CursorMoved` autocmds (via `vars_service`) that keep buf vars like `b:treescope_outer_function` up to date. After setup, the module is also exported as `_G.Treescope` so statusline integrations can call it without a `require()`.
+`treescope.setup()` registers `CursorMoved` autocmds (via `vars_service`) that keep buf vars like `b:treescope_outermost_function` up to date. After setup, the module is also exported as `_G.Treescope` so statusline integrations can call it without a `require()`.
 
 ### Provider system
 
 `lua/treescope/provider_locator.lua` maps filetypes to provider modules under `lua/treescope/providers/`.
 
 Provider directories:
-- `providers/outer_function/` — one file per language (`lua`, `java`, `python`, `clojure`, `javascript`). Each implements the `OuterFunctionProvider` interface (`is_function(node)` + `get_function_name(node, bufnr)`).
+- `providers/outermost_function/` — one file per language (`lua`, `java`, `python`, `clojure`, `javascript`). Each implements the `OutermostFunctionProvider` interface (`is_function(node)` + `get_function_name(node, bufnr)`).
 - `providers/yq_path/` — `yaml`, `json`. Each implements `get_path(node, bufnr)`.
 - `providers/namespace/` — `clojure.lua`, `java.lua`. Each implements `get_namespace(root, bufnr)`.
 
@@ -55,7 +55,7 @@ Two filetypes share existing providers rather than having their own files: TypeS
 
 ### Constants (`lua/treescope/const.lua`)
 
-Defines the augroup name and the `ScopeIds` enum (`outer_function`, `yq_path`, `namespace`). Scope IDs must stay in sync with the public function names on the `treescope` table.
+Defines the augroup name and the `ScopeIds` enum (`outermost_function`, `yq_path`, `namespace`). Scope IDs must stay in sync with the public function names on the `treescope` table.
 
 ### Tests
 

@@ -1,7 +1,7 @@
 return {
   ---@enum const.ScopeIds
   ScopeIds = {
-    OUTER_FUNCTION = "outer_function",
+    OUTERMOST_FUNCTION = "outermost_function",
     NAMESPACE = "namespace",
     YQ_PATH = "yq_path",
   },

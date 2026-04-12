@@ -1,7 +1,7 @@
 local M = {}
 
---- See docs for matching function in |treescope.outer_function()|.
-function M.outer_function()
+--- See docs for matching function in |treescope.outermost_function()|.
+function M.outermost_function()
   local bufnr = vim.api.nvim_get_current_buf()
 
   -- Validate buffer.
@@ -17,7 +17,8 @@ function M.outer_function()
 
   -- Get provider.
   local provider_locator = require("treescope.provider_locator")
-  local provider, lang = provider_locator.get_outer_function_provider(filetype)
+  local provider, lang =
+    provider_locator.get_outermost_function_provider(filetype)
   if not provider or not lang then
     return nil
   end

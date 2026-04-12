@@ -7,8 +7,8 @@ local valid_buf_var_names = nil
 ---@param scope_id const.ScopeIds
 ---@param treescope table
 local function create_buf_var_autocmd(scope_id, treescope)
-  assert(scope_id)
-  assert(treescope)
+  assert(scope_id, "scope_id is required")
+  assert(treescope, "treescope is required")
   vim.api.nvim_create_autocmd("CursorMoved", {
     group = "Treescope",
     callback = function()

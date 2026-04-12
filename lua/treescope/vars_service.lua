@@ -10,7 +10,7 @@ local function create_buf_var_autocmd(scope_id, treescope)
   assert(scope_id)
   assert(treescope)
   vim.api.nvim_create_autocmd("CursorMoved", {
-    group = const.AUGROUP_NAME,
+    group = "Treescope",
     callback = function()
       vim.api.nvim_buf_set_var(
         0,

@@ -52,8 +52,6 @@
 ---   the outer function: `require("treescope").outer_function()`. In this case
 ---   there is no need to provide special configuration to the plugin.
 
-local const = require("treescope.const")
-
 local treescope = {}
 
 treescope.config = {}
@@ -87,7 +85,7 @@ function treescope.setup(config)
   )
 
   -- Create clean augroup.
-  vim.api.nvim_create_augroup(const.AUGROUP_NAME, { clear = true })
+  vim.api.nvim_create_augroup("Treescope", { clear = true })
 
   -- Register buf vars from config (set auto-update with an autocmd).
   local vars_service = require("treescope.vars_service")

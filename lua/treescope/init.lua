@@ -16,20 +16,16 @@
 ---
 --- Problem:
 ---
---- * For a long time I've wanted to have the cursor "scope" in my statusline.
----   Typically this would be breadcrumbs, but I want the least amount of info
----   which still proves useful, as horizontal space is precious. I could not find
----   a plugin which returns scopes so each user can integrate them in their
----   statusline in whichever way they want.
+--- * I want to have the cursor "scope" in my statusline, but I do not like the
+---   typical solution of breadcrumbs as that takes too much space. Most of the
+---   time, the meaningful scope to me is the "outermost function".
 ---
 --- Solution:
 ---
---- * This plugin. It uses Tree-sitter to get scopes. The scope which motivated me
----   to build this plugin is |treescope.outermost_function()|, which concisely gives
----   enough info for me to know where I am.
----
---- * You may use the Lua API, |treescope-functions|, for any programmatic needs
----   you may have. For statusline integrating see |treescope-statusline|.
+--- * Get the "outermost function" (|treescope.outermost_function()|) through
+---   Tree-sitter, supporting multiple languages. Other scopes are supported too,
+---   refer to |treescope-scopes|. Statusline integration is supported via
+---   buffer-local variables, refer to |treescope-statusline|.
 
 --- #delimiter
 --- #tag treescope-quickstart
@@ -49,8 +45,7 @@
 --- * To have a scope in your statusline, see |treescope-statusline|.
 ---
 --- * To get the scopes using the Lua API, see |treescope-functions|. E.g., to get
----   the outermost function: `require("treescope").outermost_function()`. In this
----   case there is no need to provide special configuration to the plugin.
+---   the outermost function: `require("treescope").outermost_function()`.
 
 local treescope = {}
 
@@ -123,13 +118,9 @@ end
 --- #tag treescope.config.buf_vars
 --- `(string[])`
 --- The valid values are the names of the functions in |treescope-functions|,
---- e.g., `outermost_function`. By default, Treescope does not create buf vars. This
---- config key indicates to the plugin to create the buf var corresponding to the
---- scope, and keep it up to date as the cursor moves. The intended use case of
---- buf vars is statusline integration, see |treescope-statusline|. The buf vars
---- created are prefixed with `treescope_`. For example, for `outermost_function` its
---- buf var is `treescope_outermost_function`. You may ignore this opt if you intend
---- to use Treescope merely through |treescope-functions|.
+--- e.g., "outermost_function". For each item in this list, Treescope creates a
+--- buf-local var of the form treescope_<item>, e.g., treescope_outermost_function
+--- given the item "outermost_function".
 
 --- #delimiter
 --- #tag treescope-statusline
@@ -140,7 +131,9 @@ end
 --- your plugin config includes the desired scope:
 --- >
 ---   require("treescope").setup({
----     buf_vars = { "outermost_function" },
+---     buf_vars = {
+---       "outermost_function"
+---     },
 ---   })
 --- <
 --- Now you can reference the buf var in 'statusline' like this:
@@ -157,6 +150,7 @@ end
 
 --- #delimiter
 --- #tag treescope-functions
+--- #tag treescope-scopes
 --- Functions ~
 
 --- Each function in this section corresponds to a scope. Each scope can

@@ -1,6 +1,6 @@
 local M = {}
 
---- See docs for matching function in |treescope.outer_function|.
+--- See docs for matching function in |treescope.outer_function()|.
 function M.outer_function()
   local bufnr = vim.api.nvim_get_current_buf()
 
@@ -73,7 +73,7 @@ function M.outer_function()
   return provider.get_function_name(candidate, bufnr)
 end
 
---- See docs for matching function in |treescope.yq_path|.
+--- See docs for matching function in |treescope.yq_path()|.
 function M.yq_path()
   local bufnr = vim.api.nvim_get_current_buf()
 
@@ -120,7 +120,7 @@ function M.yq_path()
   return provider.get_path(node, bufnr)
 end
 
---- See docs for matching function in |treescope.namespace|.
+--- See docs for matching function in |treescope.namespace()|.
 function M.namespace()
   local bufnr = vim.api.nvim_get_current_buf()
 

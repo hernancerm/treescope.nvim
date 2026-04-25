@@ -115,6 +115,8 @@ assign_default_config = function()
   --minidoc_afterlines_end
 end
 
+-- TODO: buf_vars to list the exact var names, with the "treescope" prefix.
+
 --- #tag treescope.config.buf_vars
 --- `(string[])`
 --- The valid values are the names of the functions in |treescope-functions|,

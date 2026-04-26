@@ -36,6 +36,10 @@
       (expression_list
         value: (function_definition)))))
 
+; For each depth new queries are needed:
+
+; Depth 1
+;
 ; Case: local things = { field_with_function = function() end }
 (chunk
   (variable_declaration
@@ -45,7 +49,6 @@
           (field
             name: (identifier) @treescope_outermost_function
             value: (function_definition)))))))
-
 ; Case: things = { field_with_function = function() end }
 (chunk
   (assignment_statement
@@ -54,8 +57,14 @@
         (field
           name: (identifier) @treescope_outermost_function
           value: (function_definition))))))
-
-; For each depth new queries are needed:
+; Case: return { field_with_function = function() end }
+(chunk
+  (return_statement
+    (expression_list
+      (table_constructor
+        (field
+          name: (identifier) @treescope_outermost_function
+          value: (function_definition))))))
 
 ; Depth 2
 ;
@@ -73,6 +82,16 @@
 ; Case: things = { { nested_field = function() end } }
 (chunk
   (assignment_statement
+    (expression_list
+      (table_constructor
+        (field
+          value: (table_constructor
+            (field
+              name: (identifier) @treescope_outermost_function
+              value: (function_definition))))))))
+; Case: return { { nested_field = function() end } }
+(chunk
+  (return_statement
     (expression_list
       (table_constructor
         (field
@@ -108,3 +127,16 @@
                 (field
                   name: (identifier) @treescope_outermost_function
                   value: (function_definition))))))))))
+; Case: return { { { deeply_nested_field = function() end } } }
+(chunk
+  (return_statement
+    (expression_list
+      (table_constructor
+        (field
+          value: (table_constructor
+            (field
+              value: (table_constructor
+                (field
+                  name: (identifier) @treescope_outermost_function
+                  value: (function_definition))))))))))
+

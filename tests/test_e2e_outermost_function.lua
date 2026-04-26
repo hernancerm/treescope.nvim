@@ -189,11 +189,19 @@ local lua_test_cases = {
   },
   ["3s4i4l66"] = {
     expected = "nested_field_with_function",
-    note = "nested field with function",
+    note = "nested field with function assigned to local variable",
   },
   ["5a6iblz6"] = {
     expected = "deeply_nested_field_with_function",
-    note = "deeply field with function",
+    note = "deeply nested field with function assigned to local variable",
+  },
+  ["aaaib8zb"] = {
+    expected = "field_with_function",
+    note = "field with function in return table",
+  },
+  ["7aaiblzb"] = {
+    expected = "deeply_nested_field_with_function",
+    note = "deeply nested field with function in return table",
   },
 }
 

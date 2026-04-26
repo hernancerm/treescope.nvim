@@ -98,3 +98,30 @@ local things = {
     }
   }
 }
+
+return {
+  field_with_function = function()
+    return "message"
+    -- cursor-aaaib8zb
+  end,
+  {
+    nested_field_with_function = function()
+      local function hello()
+        return "some"
+      end
+      return "another message"
+    end,
+    {
+      deeply_nested_field_with_function = function()
+        local function hello()
+          local function hi()
+            return "hi"
+            -- cursor-7aaiblzb
+          end
+          return "some"
+        end
+        return "yet another message"
+      end
+    }
+  }
+}

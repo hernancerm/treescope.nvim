@@ -54,3 +54,57 @@
         (field
           name: (identifier) @treescope_outermost_function
           value: (function_definition))))))
+
+; For each depth new queries are needed:
+
+; Depth 2
+;
+; Case: local things = { { nested_field = function() end } }
+(chunk
+  (variable_declaration
+    (assignment_statement
+      (expression_list
+        (table_constructor
+          (field
+            value: (table_constructor
+              (field
+                name: (identifier) @treescope_outermost_function
+                value: (function_definition)))))))))
+; Case: things = { { nested_field = function() end } }
+(chunk
+  (assignment_statement
+    (expression_list
+      (table_constructor
+        (field
+          value: (table_constructor
+            (field
+              name: (identifier) @treescope_outermost_function
+              value: (function_definition))))))))
+
+; Depth 3
+;
+; Case: local things = { { { deeply_nested_field = function() end } } }
+(chunk
+  (variable_declaration
+    (assignment_statement
+      (expression_list
+        (table_constructor
+          (field
+            value: (table_constructor
+              (field
+                value: (table_constructor
+                  (field
+                    name: (identifier) @treescope_outermost_function
+                    value: (function_definition)))))))))))
+; Case: things = { { { deeply_nested_field = function() end } } }
+(chunk
+  (assignment_statement
+    (expression_list
+      (table_constructor
+        (field
+          value: (table_constructor
+            (field
+              value: (table_constructor
+                (field
+                  name: (identifier) @treescope_outermost_function
+                  value: (function_definition))))))))))

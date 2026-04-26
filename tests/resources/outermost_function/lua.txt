@@ -75,5 +75,26 @@ local things = {
   field_with_function = function()
     -- cursor-2sy24v56
     return "message"
-  end
+  end,
+  {
+    nested_field_with_function = function()
+      local function hello()
+        return "some"
+        -- cursor-3s4i4l66
+      end
+      return "another message"
+    end,
+    {
+      deeply_nested_field_with_function = function()
+        local function hello()
+          local function hi()
+            return "hi"
+            -- cursor-5a6iblz6
+          end
+          return "some"
+        end
+        return "yet another message"
+      end
+    }
+  }
 }

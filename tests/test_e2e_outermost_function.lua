@@ -187,6 +187,14 @@ local lua_test_cases = {
     expected = "field_with_function",
     note = "field with function - cursor on identifier",
   },
+  ["3s4i4l66"] = {
+    expected = "nested_field_with_function",
+    note = "nested field with function",
+  },
+  ["5a6iblz6"] = {
+    expected = "deeply_nested_field_with_function",
+    note = "deeply field with function",
+  },
 }
 
 T["e2e_outermost_function"]["lua"] =

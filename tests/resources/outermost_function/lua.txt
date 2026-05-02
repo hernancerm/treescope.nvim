@@ -99,6 +99,86 @@ local things = {
   }
 }
 
+M.foo("bar", {
+  baz1 = function(_, data)
+    -- cursor-116i8l76
+    print("hello")
+  end,
+  {
+    baz2 = function(_, data)
+      -- cursor-316i8l76
+      print("hello")
+    end,
+    {
+      baz3 = function(_, data)
+        -- cursor-516i8l76
+        print("hello")
+      end,
+    }
+  }
+})
+
+foo("bar", {
+  bazz1 = function(_, data)
+    -- cursor-106iab78
+    print("hello")
+  end,
+  {
+    bazz2 = function(_, data)
+      -- cursor-306iab78
+      print("hello")
+    end,
+    {
+      bazz3 = function(_, data)
+        -- cursor-506iab78
+        print("hello")
+      end,
+    }
+  }
+})
+
+local T = new_set({
+  hooks = {
+    post_once1 = function()
+      -- cursor-x1yv8z77
+      child.stop()
+    end,
+    hooks = {
+      post_once2 = function()
+        -- cursor-x2yv8z77
+        child.stop()
+      end,
+      hooks = {
+        post_once3 = function()
+          -- cursor-x3yv8z77
+          child.stop()
+        end,
+      },
+    },
+  },
+})
+
+T1 = new_set({
+  hooks = {
+    post_once1 = function()
+      -- cursor-y1yv8z77
+      child.stop()
+    end,
+    hooks = {
+      post_once2 = function()
+        -- cursor-y2yv8z77
+        child.stop()
+      end,
+      hooks = {
+        post_once3 = function()
+          -- cursor-y3yv8z77
+          child.stop()
+        end,
+      },
+    },
+  },
+})
+
 return {
   field_with_function = function()
     return "message"

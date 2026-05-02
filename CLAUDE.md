@@ -32,37 +32,47 @@ nvim --headless --noplugin -u ./scripts/minimal_init.lua -c "lua MiniTest.run_fi
 
 ### Public API (`lua/treescope/init.lua`)
 
-All three public functions (`outermost_function()`, `yq_path()`, `clojure_namespace()`) follow the same pattern:
-1. Validate buffer and filetype
-2. Ask `provider_locator` for the right provider
-3. Parse Tree-sitter tree and find the cursor node
-4. Delegate to the provider
+Thin delegation layer. Each public function (`outermost_function()`, `yq_path()`, `namespace()`) just calls the matching function in `scopes_service.lua`. `treescope.setup()` registers `CursorMoved` autocmds (via `vars_service`) that keep buf vars like `b:treescope_outermost_function` up to date. After setup, the module is also exported as `_G.Treescope` for statusline integrations.
 
-`treescope.setup()` registers `CursorMoved` autocmds (via `vars_service`) that keep buf vars like `b:treescope_outermost_function` up to date. After setup, the module is also exported as `_G.Treescope` so statusline integrations can call it without a `require()`.
+### Scope implementations (`lua/treescope/scopes_service.lua`)
 
-### Provider system
+All three scopes follow the same pattern: validate buffer, get filetype, get cursor, get parser, parse tree, then delegate. The difference is where they delegate:
 
-`lua/treescope/provider_locator.lua` maps filetypes to provider modules under `lua/treescope/providers/`.
+- `outermost_function` — calls `query_service.outermost_function` directly (no provider involved).
+- `yq_path` and `namespace` — call `provider_locator` to get a provider, then delegate to it.
 
-Provider directories:
-- `providers/outermost_function/` — one file per language (`lua`, `java`, `python`, `clojure`, `javascript`). Each implements the `OutermostFunctionProvider` interface (`is_function(node)` + `get_function_name(node, bufnr)`).
-- `providers/yq_path/` — `yaml`, `json`. Each implements `get_path(node, bufnr)`.
-- `providers/namespace/` — `clojure.lua`, `java.lua`. Each implements `get_namespace(root, bufnr)`.
+### Query system (`lua/treescope/query_service.lua`, `queries/`)
 
-Interface definitions (for type checking only) live in `lua/treescope/interfaces/`.
+`outermost_function` is query-backed for all supported languages. Queries live in `queries/<lang>/textobjects.scm` and start with `;;extends` to extend nvim-treesitter's built-in textobjects queries.
 
-Two filetypes share existing providers rather than having their own files: TypeScript uses the JavaScript provider, and JSONC uses the JSON provider (with language name `"json"`). This is handled in `provider_locator.lua`.
+Each language query uses three capture names:
+- `@treescope_outermost_function` — the name node (used for movement and as the fallback display name).
+- `@treescope_outermost_function.name` — optional; preferred display name when the name is a compound expression (e.g., `M.foo`, `obj:method`).
+- `@treescope_outermost_function.scope` — the full node whose range is tested against the cursor row. **Required.** Absence of both `.scope` and the base capture causes `query_service` to return nil.
+
+`query_service` iterates all matches, finds the innermost `.scope` that contains the cursor row, and returns the text of the `.name` node (or falls back to the base capture node).
+
+Outermost-function semantics are enforced structurally: patterns are anchored to `(chunk ...)` (Lua) or equivalent top-level parents so nested functions are never matched.
+
+### Provider system (`lua/treescope/providers/`, `lua/treescope/provider_locator.lua`)
+
+Used only by `yq_path` and `namespace`. `provider_locator.lua` maps filetypes to modules under `providers/yq_path/` and `providers/namespace/`. Two filetypes share providers: JSONC uses the JSON yq_path provider (with lang `"json"`). Interface type definitions are in `lua/treescope/interfaces/`.
 
 ### Constants (`lua/treescope/const.lua`)
 
-Defines the augroup name and the `ScopeIds` enum (`outermost_function`, `yq_path`, `namespace`). Scope IDs must stay in sync with the public function names on the `treescope` table.
+Defines the augroup name and the `ScopeIds` enum. Scope IDs must stay in sync with the public function names on the `treescope` table.
 
 ### Tests
 
-Tests use [mini.test](https://github.com/echasnovski/mini.test) and run in a child headless Neovim instance. Test files are in `tests/`, resource files (code snippets with cursor markers) are in `tests/resources/`.
+Tests use [mini.test](https://github.com/echasnovski/mini.test) and run in a child headless Neovim instance. Resource files (code snippets) are in `tests/resources/`.
 
-Cursor positions in resource files are marked with comments like `-- cursor-3f7a2b1c`. The marker ID is used as the parametrize key in test tables; `h.set_cursor_from_marker(marker_id, child)` in `tests/helpers.lua` positions the cursor at that marker before each assertion. Markers can include an optional `[keys]` suffix (e.g., `-- cursor-3f7a2b1c[Ww]`) to execute normal-mode keystrokes after positioning.
+Cursor positions are marked with comments like `-- cursor-3f7a2b1c`. `h.set_cursor_from_marker(marker_id, child)` in `tests/helpers.lua` positions the cursor at that marker. Markers can include an optional `[keys]` suffix (e.g., `-- cursor-3f7a2b1c[Ww]`) to execute normal-mode keystrokes after positioning.
 
 ### Docs
 
 `doc/treescope.txt` is auto-generated by `mini.doc` from structured inline comments in `lua/treescope/init.lua`. Do not edit `doc/treescope.txt` directly; edit the source comments and run `make docs`.
+
+## Slash commands
+
+- `/add-outermost-function-query <lang>` — guided workflow for writing a new `textobjects.scm` query for a language.
+- `/check-scm-parens <file>` — checks parenthesis balance in a `.scm` query file.

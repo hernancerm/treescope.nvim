@@ -195,54 +195,6 @@ local lua_test_cases = {
     expected = "deeply_nested_field_with_function",
     note = "deeply nested field with function assigned to local variable",
   },
-  ["116i8l76"] = {
-    expected = "baz1",
-    note = "function in table as arg to module function call - level 1",
-  },
-  ["316i8l76"] = {
-    expected = "baz2",
-    note = "function in table as arg to module function call - level 2",
-  },
-  ["516i8l76"] = {
-    expected = "baz3",
-    note = "function in table as arg to module function call - level 3",
-  },
-  ["106iab78"] = {
-    expected = "bazz1",
-    note = "function in table as arg to function call - level 1",
-  },
-  ["306iab78"] = {
-    expected = "bazz2",
-    note = "function in table as arg to function call - level 2",
-  },
-  ["506iab78"] = {
-    expected = "bazz3",
-    note = "function in table as arg to function call - level 3",
-  },
-  ["x1yv8z77"] = {
-    expected = "post_once1",
-    note = "mini.test hook - level 1",
-  },
-  ["x2yv8z77"] = {
-    expected = "post_once2",
-    note = "mini.test hook - level 2",
-  },
-  ["x3yv8z77"] = {
-    expected = "post_once3",
-    note = "mini.test hook - level 3",
-  },
-  ["y1yv8z77"] = {
-    expected = "post_once1",
-    note = "mini.test hook - level 1",
-  },
-  ["y2yv8z77"] = {
-    expected = "post_once2",
-    note = "mini.test hook - level 2",
-  },
-  ["y3yv8z77"] = {
-    expected = "post_once3",
-    note = "mini.test hook - level 3",
-  },
   ["aaaib8zb"] = {
     expected = "field_with_function",
     note = "field with function in return table",

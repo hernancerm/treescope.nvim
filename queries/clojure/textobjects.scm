@@ -7,8 +7,7 @@
   (list_lit
     (sym_lit (sym_name) @_defn)
     (sym_lit (sym_name) @treescope_outermost_function)
-    (#any-of? @_defn "defn" "deftest" "defmacro")
-  ) @treescope_outermost_function.scope)
+    (#any-of? @_defn "defn" "deftest" "defmacro")))
 
 ; Case: (def name (fn ...))
 (source
@@ -17,5 +16,4 @@
     (sym_lit (sym_name) @treescope_outermost_function)
     (list_lit (sym_lit (sym_name) @_fn))
     (#eq? @_def "def")
-    (#eq? @_fn "fn")
-  ) @treescope_outermost_function.scope)
+    (#eq? @_fn "fn")))

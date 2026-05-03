@@ -183,7 +183,7 @@ end
 --- * typescript
 ---@return { text: string?, goto_prev: function, goto_next: function }
 function treescope.outermost_function()
-  return require("treescope.scopes_service").outermost_function()
+  return require("treescope.scopes.outermost_function").get_value()
 end
 
 --- The "yq path" is a yq filter expression for the cursor position in YAML
@@ -201,7 +201,7 @@ end
 --- * jsonc (json Tree-sitter parser needed)
 ---@return string?
 function treescope.yq_path()
-  return require("treescope.scopes_service").yq_path()
+  return require("treescope.scopes.yq_path").get_value()
 end
 
 --- The "namespace" is the name of the namespace or package declared at the top
@@ -216,7 +216,7 @@ end
 --- * clojure
 ---@return string?
 function treescope.namespace()
-  return require("treescope.scopes_service").namespace()
+  return require("treescope.scopes.namespace").get_value()
 end
 
 return treescope

@@ -186,7 +186,7 @@ end
 --- • typescript
 ---@return treescope.OutermostFunction
 function treescope.outermost_function()
-  return require("treescope.scopes.outermost_function").get_value()
+  return require("treescope.scopes.outermost_function").get_scope()
 end
 
 --- #tag treescope.YqPath
@@ -209,7 +209,7 @@ end
 --- • jsonc (json Tree-sitter parser needed)
 ---@return treescope.YqPath
 function treescope.yq_path()
-  return require("treescope.scopes.yq_path").get_value()
+  return require("treescope.scopes.yq_path").get_scope()
 end
 
 --- #tag treescope.Namespace
@@ -229,7 +229,7 @@ end
 --- • clojure
 ---@return treescope.Namespace
 function treescope.namespace()
-  return require("treescope.scopes.namespace").get_value()
+  return require("treescope.scopes.namespace").get_scope()
 end
 
 return treescope

@@ -180,35 +180,38 @@ end
 
 --- See docs for matching function in |treescope.outermost_function()|.
 ---@return treescope.OutermostFunction
-function M.get_value()
-  local noop = function() end
-  local default = { text = nil, goto_prev = noop, goto_next = noop }
+function M.get_scope()
+  local empty = {
+    text = nil,
+    goto_prev = function() end,
+    goto_next = function() end
+  }
 
   local bufnr = vim.api.nvim_get_current_buf()
   if not vim.api.nvim_buf_is_valid(bufnr) then
-    return default
+    return empty
   end
 
   local filetype = vim.bo[bufnr].filetype
   if not filetype or filetype == "" then
-    return default
+    return empty
   end
 
   local provider_locator = require("treescope.provider_locator")
   local provider, lang =
     provider_locator.get_outermost_function_provider(filetype)
   if not provider or not lang then
-    return default
+    return empty
   end
 
   local win = vim.api.nvim_get_current_win()
   if vim.api.nvim_win_get_buf(win) ~= bufnr then
-    return default
+    return empty
   end
 
   local root = get_root(bufnr, lang)
   if not root then
-    return default
+    return empty
   end
 
   local cursor = vim.api.nvim_win_get_cursor(win)

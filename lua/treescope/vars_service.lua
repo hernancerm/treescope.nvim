@@ -12,11 +12,14 @@ local function create_buf_var_autocmd(scope_id, treescope)
   vim.api.nvim_create_autocmd("CursorMoved", {
     group = "Treescope",
     callback = function()
-      vim.api.nvim_buf_set_var(
-        0,
-        "treescope_" .. scope_id,
-        treescope[scope_id]() or ""
-      )
+      local result = treescope[scope_id]()
+      local value
+      if type(result) == "table" then
+        value = result.text
+      else
+        value = result
+      end
+      vim.api.nvim_buf_set_var(0, "treescope_" .. scope_id, value or "")
     end,
   })
 end

@@ -23,8 +23,8 @@ T["no_parser"]["outermost_function returns nil when parser not installed"] = fun
   child.cmd("enew | set filetype=lua")
   child.api.nvim_buf_set_lines(0, 0, -1, false, { "local x = 1" })
   child.lua("vim.treesitter.get_parser = function() error('no parser') end")
-  local result = child.lua_get("treescope.outermost_function()")
-  h.assert_scope(nil, result)
+  local text = child.lua_get("treescope.outermost_function().text")
+  h.assert_scope(nil, text)
 end
 
 T["no_parser"]["namespace returns nil when parser not installed"] = function()

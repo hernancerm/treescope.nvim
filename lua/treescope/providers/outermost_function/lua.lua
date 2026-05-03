@@ -45,6 +45,39 @@ function M.is_function(node)
 end
 
 ---@param node TSNode
+---@return TSNode
+function M.normalize_outermost_node(node)
+  if node:type() ~= "identifier" then
+    return node
+  end
+  local parent = node:parent()
+  if not parent then
+    return node
+  end
+  -- { foo = function() end }
+  if parent:type() == "field" then
+    local value = parent:field("value")[1]
+    if value and value:type() == "function_definition" then
+      return value
+    end
+  end
+  -- foo = function() end  /  local foo = function() end
+  if parent:type() == "variable_list" then
+    local assign = parent:parent()
+    if assign and assign:type() == "assignment_statement" then
+      local expr_list = assign:named_child(1)
+      if expr_list then
+        local func_def = expr_list:named_child(0)
+        if func_def and func_def:type() == "function_definition" then
+          return func_def
+        end
+      end
+    end
+  end
+  return node
+end
+
+---@param node TSNode
 ---@param bufnr integer
 ---@return string?
 function M.get_function_name(node, bufnr)

@@ -45,7 +45,7 @@
 --- * To have a scope in your statusline, see |treescope-statusline|.
 ---
 --- * To get the scopes using the Lua API, see |treescope-functions|. E.g., to get
----   the outermost function: `require("treescope").outermost_function()`.
+---   the outermost function: `require("treescope").outermost_function().text`.
 
 local treescope = {}
 
@@ -170,6 +170,10 @@ end
 ---   end
 --- end
 --- <
+--- Always returns a table. `.text` holds the name (nil when the cursor is outside
+--- any function). `.goto_prev()` and `.goto_next()` navigate to the previous or
+--- next outermost function boundary, and are no-ops when none exists.
+---
 --- Languages supported:
 --- * lua
 --- * java
@@ -177,7 +181,7 @@ end
 --- * clojure
 --- * javascript
 --- * typescript
----@return string?
+---@return { text: string?, goto_prev: function, goto_next: function }
 function treescope.outermost_function()
   return require("treescope.scopes_service").outermost_function()
 end

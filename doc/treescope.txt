@@ -45,7 +45,7 @@ You need to call the |treescope.setup()| function to initialize the plugin.
 • To have a scope in your statusline, see |treescope-statusline|.
 
 • To get the scopes using the Lua API, see |treescope-functions|. E.g., to get
-  the outermost function: `require("treescope").outermost_function()`.
+  the outermost function: `require("treescope").outermost_function().text`.
 
 ------------------------------------------------------------------------------
                                                               *treescope.config*
@@ -122,6 +122,10 @@ M.foo = function()
   end
 end
 <
+Always returns a table. `.text` holds the name (nil when the cursor is outside
+any function). `.goto_prev()` and `.goto_next()` navigate to the previous or
+next outermost function boundary, and are no-ops when none exists.
+
 Languages supported:
 • lua
 • java
@@ -130,7 +134,7 @@ Languages supported:
 • javascript
 • typescript
 Return ~
-`(string)` `(optional)`
+`({ text: string?, goto_prev: function, goto_next: function })`
 
                                                            *treescope.yq_path()*
                              `treescope.yq_path`()

@@ -43,6 +43,24 @@ function M.is_function(node)
 end
 
 ---@param node TSNode
+---@return TSNode
+function M.normalize_outermost_node(node)
+  if node:type() ~= "identifier" then
+    return node
+  end
+  local parent = node:parent()
+  if not parent or parent:type() ~= "variable_declarator" then
+    return node
+  end
+  -- const foo = () => {}  /  const foo = function() {}
+  local value = parent:field("value")[1]
+  if value and (value:type() == "arrow_function" or value:type() == "function_expression") then
+    return value
+  end
+  return node
+end
+
+---@param node TSNode
 ---@param bufnr integer
 ---@return string?
 function M.get_function_name(node, bufnr)

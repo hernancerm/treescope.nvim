@@ -8,6 +8,10 @@
   name: (dot_index_expression
           field: (identifier) @treescope_outermost_function))
 
+; Case: function obj:foo() end
+(function_declaration
+  name: (method_index_expression method: (identifier) @treescope_outermost_function))
+
 ; Case: foo = function() end
 (assignment_statement
   (variable_list name: (identifier) @treescope_outermost_function)

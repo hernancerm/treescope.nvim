@@ -162,6 +162,7 @@ local function make_goto_fns(bufnr, lang, provider)
     -- Jump to the name match position, not outermost:start(). The node start
     -- points to the first token of the declaration (e.g. "private" in Java),
     -- not the identifier.
+    vim.cmd("normal! m'") -- add entry to jumplist
     vim.api.nvim_win_set_cursor(win, { name_match.row + 1, name_match.col })
   end
 

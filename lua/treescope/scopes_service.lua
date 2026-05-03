@@ -1,7 +1,7 @@
 local M = {}
 
---- See docs for matching function in |treescope.function()|.
-function M.current_function()
+--- See docs for matching function in |treescope.outermost_function()|.
+function M.outermost_function()
   local bufnr = vim.api.nvim_get_current_buf()
 
   if not vim.api.nvim_buf_is_valid(bufnr) then
@@ -38,7 +38,7 @@ function M.current_function()
   end
 
   local query_service = require("treescope.query_service")
-  local result = query_service.current_function(filetype, root, bufnr, row)
+  local result = query_service.outermost_function(filetype, root, bufnr, row)
   return result
 end
 

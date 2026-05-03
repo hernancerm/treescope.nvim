@@ -17,7 +17,7 @@ local T = new_set({
   },
 })
 
-T["e2e_function"] = new_set({})
+T["e2e_outermost_function"] = new_set({})
 
 -- Helper for pre_case hook.
 local function create_language_pre_case(lang, filename, filetype)
@@ -31,7 +31,7 @@ local function create_language_pre_case(lang, filename, filetype)
       child.lua("treescope.setup()")
     end
     -- Open test file and set filetype explicitly.
-    local resource_file = vim.fs.joinpath(h.resources_dir, "function", filename)
+    local resource_file = vim.fs.joinpath(h.resources_dir, "outermost_function", filename)
     child.cmd(string.format("edit %s | set filetype=%s", resource_file, filetype))
   end
 end
@@ -61,7 +61,7 @@ local function create_language_test_set(lang, filename, filetype, test_cases)
   })
   test_set["parametrized"] = function(marker, expected)
     h.set_cursor_from_marker(marker, child)
-    local scope = child.lua_get("treescope['function']()")
+    local scope = child.lua_get("treescope.outermost_function()")
     h.assert_scope(expected, scope)
   end
   return test_set
@@ -86,7 +86,7 @@ local javascript_test_cases = {
   },
 }
 
-T["e2e_function"]["javascript"] =
+T["e2e_outermost_function"]["javascript"] =
   create_language_test_set("javascript", "javascript.txt", "javascript", javascript_test_cases)
 
 local clojure_test_cases = {
@@ -118,7 +118,7 @@ local clojure_test_cases = {
   },
 }
 
-T["e2e_function"]["clojure"] =
+T["e2e_outermost_function"]["clojure"] =
   create_language_test_set("clojure", "clojure.txt", "clojure", clojure_test_cases)
 
 local typescript_test_cases = {
@@ -140,7 +140,7 @@ local typescript_test_cases = {
   },
 }
 
-T["e2e_function"]["typescript"] =
+T["e2e_outermost_function"]["typescript"] =
   create_language_test_set("typescript", "typescript.txt", "typescript", typescript_test_cases)
 
 local lua_test_cases = {
@@ -165,9 +165,9 @@ local lua_test_cases = {
     expected = "my_func",
     note = "function assigned to global variable - cursor on identifier",
   },
-  ["1u2v3w4x"] = { expected = "inner", note = "innermost nested function" },
-  ["5y6z7a8b"] = { expected = "deepest", note = "innermost deeply nested function" },
-  ["9c0d1e2f"] = { expected = "helper", note = "innermost nested local function" },
+  ["1u2v3w4x"] = { expected = "processData", note = "nested function" },
+  ["5y6z7a8b"] = { expected = "outer", note = "deeply nested function" },
+  ["9c0d1e2f"] = { expected = "withLocalNested", note = "nested local function" },
   ["3g4h5i6j"] = { expected = "withTableFilter", note = "anonymous function in table.filter" },
   ["2k3l4m5n"] = { expected = "obj:method", note = "method syntax" },
   ["1h3bfm6m"] = {
@@ -188,12 +188,12 @@ local lua_test_cases = {
     note = "field with function - cursor on identifier",
   },
   ["3s4i4l66"] = {
-    expected = "hello",
-    note = "innermost function inside nested field",
+    expected = "nested_field_with_function",
+    note = "nested field with function assigned to local variable",
   },
   ["5a6iblz6"] = {
-    expected = "hi",
-    note = "innermost function inside deeply nested field",
+    expected = "deeply_nested_field_with_function",
+    note = "deeply nested field with function assigned to local variable",
   },
   ["116i8l76"] = {
     expected = "baz1",
@@ -248,12 +248,12 @@ local lua_test_cases = {
     note = "field with function in return table",
   },
   ["7aaiblzb"] = {
-    expected = "hi",
-    note = "innermost function inside deeply nested field in return table",
+    expected = "deeply_nested_field_with_function",
+    note = "deeply nested field with function in return table",
   },
 }
 
-T["e2e_function"]["lua"] =
+T["e2e_outermost_function"]["lua"] =
   create_language_test_set("lua", "lua.txt", "lua", lua_test_cases)
 
 local java_test_cases = {
@@ -278,7 +278,7 @@ local java_test_cases = {
   },
 }
 
-T["e2e_function"]["java"] =
+T["e2e_outermost_function"]["java"] =
   create_language_test_set("java", "java.txt", "java", java_test_cases)
 
 local python_test_cases = {
@@ -302,7 +302,7 @@ local python_test_cases = {
   ["6i4p8v2w"] = { expected = "methodWithNested", note = "method with nested function definition" },
 }
 
-T["e2e_function"]["python"] =
+T["e2e_outermost_function"]["python"] =
   create_language_test_set("python", "python.txt", "python", python_test_cases)
 
 return T

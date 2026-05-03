@@ -32,26 +32,34 @@ nvim --headless --noplugin -u ./scripts/minimal_init.lua -c "lua MiniTest.run_fi
 
 ### Public API (`lua/treescope/init.lua`)
 
-All three public functions (`outermost_function()`, `yq_path()`, `clojure_namespace()`) follow the same pattern:
-1. Validate buffer and filetype
-2. Ask `provider_locator` for the right provider
-3. Parse Tree-sitter tree and find the cursor node
-4. Delegate to the provider
+All three public functions (`outermost_function()`, `yq_path()`, `namespace()`) are thin wrappers that delegate immediately to the corresponding `scopes/` module (e.g. `require("treescope.scopes.outermost_function").get_value()`).
 
 `treescope.setup()` registers `CursorMoved` autocmds (via `vars_service`) that keep buf vars like `b:treescope_outermost_function` up to date. After setup, the module is also exported as `_G.Treescope` so statusline integrations can call it without a `require()`.
+
+### Scopes layer (`lua/treescope/scopes/`)
+
+Each scope has its own module (`outermost_function.lua`, `yq_path.lua`, `namespace.lua`) that owns the full logic flow:
+1. Validate buffer and filetype
+2. Ask `provider_locator` for the right provider and Tree-sitter language name
+3. Parse the Tree-sitter tree and find the cursor node
+4. Delegate to the provider
 
 ### Provider system
 
 `lua/treescope/provider_locator.lua` maps filetypes to provider modules under `lua/treescope/providers/`.
 
 Provider directories:
-- `providers/outermost_function/` — one file per language (`lua`, `java`, `python`, `clojure`, `javascript`). Each implements the `OutermostFunctionProvider` interface (`is_function(node)` + `get_function_name(node, bufnr)`).
+- `providers/outermost_function/` — one file per language (`lua`, `java`, `python`, `clojure`, `javascript`). Each implements the `OutermostFunctionProvider` interface: `is_function(node)`, `get_function_name(node, bufnr)`, and an optional `normalize_outermost_node(node)` (maps identifier nodes to their canonical function node so all cursor positions within the same function agree on the same TSNode).
 - `providers/yq_path/` — `yaml`, `json`. Each implements `get_path(node, bufnr)`.
 - `providers/namespace/` — `clojure.lua`, `java.lua`. Each implements `get_namespace(root, bufnr)`.
 
 Interface definitions (for type checking only) live in `lua/treescope/interfaces/`.
 
 Two filetypes share existing providers rather than having their own files: TypeScript uses the JavaScript provider, and JSONC uses the JSON provider (with language name `"json"`). This is handled in `provider_locator.lua`.
+
+### Tree-sitter queries (`queries/`)
+
+Each supported `outermost_function` language has a `queries/<lang>/treescope.scm` file that captures function name identifiers with `@treescope_outermost_function`. These captures drive `goto_prev()`/`goto_next()` navigation: the scopes layer queries all captures, resolves each to its outermost function node via the provider, then walks the sorted match list to find the target boundary. All query files use `;;extends` so they extend nvim-treesitter's built-in queries for that language.
 
 ### Constants (`lua/treescope/const.lua`)
 

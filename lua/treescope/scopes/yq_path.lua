@@ -1,6 +1,7 @@
 local M = {}
 
 --- See docs for matching function in |treescope.yq_path()|.
+---@return treescope.YqPath
 function M.get_value()
   local bufnr = vim.api.nvim_get_current_buf()
 
@@ -44,7 +45,9 @@ function M.get_value()
     return nil
   end
 
-  return provider.get_path(node, bufnr)
+  return {
+    text = provider.get_path(node, bufnr)
+  }
 end
 
 return M

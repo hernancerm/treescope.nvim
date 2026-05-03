@@ -158,6 +158,13 @@ end
 --- Each function in this section corresponds to a scope. Each scope can
 --- optionally be exposed as a buf var. See: |treescope.config.buf_vars|.
 
+--- #tag treescope.OutermostFunction
+--- Return value of |treescope.outermost_function()|.
+---@class treescope.OutermostFunction
+---@field text string? Name of outermost function relative to cursor, else nil.
+---@field goto_prev fun() Move cursor to prev outermost function. No-op if none.
+---@field goto_next fun() Move cursor to next outermost function. No-op if none.
+
 --- The "outermost function" is the name of the function or method at the highest
 --- level found from walking the Tree-sitter tree upwards from the cursor
 --- position. For example, "M.foo" is the outermost function given:
@@ -170,21 +177,22 @@ end
 ---   end
 --- end
 --- <
---- Always returns a table. `.text` holds the name (nil when the cursor is outside
---- any function). `.goto_prev()` and `.goto_next()` navigate to the previous or
---- next outermost function boundary, and are no-ops when none exists.
----
 --- Languages supported:
---- * lua
---- * java
---- * python
---- * clojure
---- * javascript
---- * typescript
----@return { text: string?, goto_prev: function, goto_next: function }
+--- • lua
+--- • java
+--- • python
+--- • clojure
+--- • javascript
+--- • typescript
+---@return treescope.OutermostFunction
 function treescope.outermost_function()
   return require("treescope.scopes.outermost_function").get_value()
 end
+
+--- #tag treescope.YqPath
+--- Return value of |treescope.yq_path()|.
+---@class treescope.YqPath
+---@field text string? Name of yq path relative to cursor, else nil.
 
 --- The "yq path" is a yq filter expression for the cursor position in YAML
 --- files. This scope only works in buffers with a `yaml` 'filetype'. For
@@ -196,13 +204,18 @@ end
 ---     name: my-app
 --- <
 --- Languages supported:
---- * yaml
---- * json
---- * jsonc (json Tree-sitter parser needed)
----@return string?
+--- • yaml
+--- • json
+--- • jsonc (json Tree-sitter parser needed)
+---@return treescope.YqPath
 function treescope.yq_path()
   return require("treescope.scopes.yq_path").get_value()
 end
+
+--- #tag treescope.Namespace
+--- Return value of |treescope.namespace()|.
+---@class treescope.Namespace
+---@field text string? Name of the file namespace, regardless of cursor, else nil.
 
 --- The "namespace" is the name of the namespace or package declared at the top
 --- of the present file. For example, "myapp.core" is the namespace given:
@@ -212,9 +225,9 @@ end
 --- ; <Cursor Here>.
 --- <
 --- Languages supported:
---- * java
---- * clojure
----@return string?
+--- • java
+--- • clojure
+---@return treescope.Namespace
 function treescope.namespace()
   return require("treescope.scopes.namespace").get_value()
 end

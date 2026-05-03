@@ -179,6 +179,7 @@ local function make_goto_fns(bufnr, lang, provider)
 end
 
 --- See docs for matching function in |treescope.outermost_function()|.
+---@return treescope.OutermostFunction
 function M.get_value()
   local noop = function() end
   local default = { text = nil, goto_prev = noop, goto_next = noop }
@@ -217,7 +218,11 @@ function M.get_value()
 
   local goto_prev, goto_next = make_goto_fns(bufnr, lang, provider)
 
-  return { text = name, goto_prev = goto_prev, goto_next = goto_next }
+  return {
+    text = name,
+    goto_prev = goto_prev,
+    goto_next = goto_next
+  }
 end
 
 return M

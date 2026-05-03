@@ -1,6 +1,7 @@
 local M = {}
 
 --- See docs for matching function in |treescope.namespace()|.
+---@return treescope.Namespace
 function M.get_value()
   local bufnr = vim.api.nvim_get_current_buf()
 
@@ -33,7 +34,9 @@ function M.get_value()
     return nil
   end
 
-  return provider.get_namespace(root, bufnr)
+  return {
+    text = provider.get_namespace(root, bufnr)
+  }
 end
 
 return M

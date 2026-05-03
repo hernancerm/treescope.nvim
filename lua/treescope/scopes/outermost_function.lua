@@ -1,5 +1,17 @@
 local M = {}
 
+local function get_root(bufnr, lang)
+  local ok, parser = pcall(vim.treesitter.get_parser, bufnr, lang)
+  if not ok or not parser then
+    return nil
+  end
+  local trees = parser:parse()
+  if not trees or #trees == 0 then
+    return nil
+  end
+  return trees[1]:root()
+end
+
 -- row and col are 0-indexed.
 -- Returns: outermost_node (TSNode | nil), name (string | nil)
 local function find_outermost_at(provider, root, bufnr, row, col)
@@ -66,15 +78,7 @@ end
 
 local function make_goto_fns(bufnr, lang, provider)
   local function resolve(direction)
-    local ok, parser = pcall(vim.treesitter.get_parser, bufnr, lang)
-    if not ok or not parser then
-      return
-    end
-    local trees = parser:parse()
-    if not trees or #trees == 0 then
-      return
-    end
-    local root = trees[1]:root()
+    local root = get_root(bufnr, lang)
     if not root then
       return
     end
@@ -136,7 +140,8 @@ local function make_goto_fns(bufnr, lang, provider)
       -- outermost and retry — otherwise goto_next is a no-op (stuck).
       local skip_key = nil
       for _, m in ipairs(all_matches) do
-        local after_cursor = m.row > ref_row or (m.row == ref_row and m.col > ref_col)
+        local after_cursor = m.row > ref_row
+          or (m.row == ref_row and m.col > ref_col)
         if after_cursor and m.outermost then
           local sr, sc = m.outermost:start()
           local key = sr .. ":" .. sc
@@ -200,17 +205,7 @@ function M.get_value()
     return default
   end
 
-  local ok, parser = pcall(vim.treesitter.get_parser, bufnr, lang)
-  if not ok or not parser then
-    return default
-  end
-
-  local trees = parser:parse()
-  if not trees or #trees == 0 then
-    return default
-  end
-
-  local root = trees[1]:root()
+  local root = get_root(bufnr, lang)
   if not root then
     return default
   end

@@ -54,7 +54,12 @@ function M.normalize_outermost_node(node)
   end
   -- const foo = () => {}  /  const foo = function() {}
   local value = parent:field("value")[1]
-  if value and (value:type() == "arrow_function" or value:type() == "function_expression") then
+  if
+    value
+    and (
+      value:type() == "arrow_function" or value:type() == "function_expression"
+    )
+  then
     return value
   end
   return node

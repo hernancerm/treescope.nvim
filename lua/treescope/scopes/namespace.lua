@@ -4,7 +4,7 @@ local M = {}
 ---@return treescope.Namespace
 function M.get_scope()
   local empty = {
-    text = nil
+    text = nil,
   }
 
   local bufnr = vim.api.nvim_get_current_buf()
@@ -36,7 +36,7 @@ function M.get_scope()
   end
 
   return {
-    text = provider.get_namespace(root, bufnr)
+    text = provider.get_namespace(root, bufnr),
   }
 end
 

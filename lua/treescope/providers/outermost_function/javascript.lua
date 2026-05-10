@@ -15,7 +15,9 @@ function M.is_function(node)
   if t == "arrow_function" then
     -- Case: const foo = () => {} or { key: () => {} }
     local parent = node:parent()
-    if not parent then return false end
+    if not parent then
+      return false
+    end
     local pt = parent:type()
     return pt == "variable_declarator" or pt == "pair"
   end
@@ -23,7 +25,9 @@ function M.is_function(node)
   if t == "function_expression" then
     -- Case: const foo = function() {} or { key: function() {} }
     local parent = node:parent()
-    if not parent then return false end
+    if not parent then
+      return false
+    end
     local pt = parent:type()
     return pt == "variable_declarator" or pt == "pair"
   end
@@ -136,7 +140,13 @@ function M.normalize_node(node)
   -- variable_declarator → function literal (cursor was on `=` gap)
   if t == "variable_declarator" then
     local value = node:field("value")[1]
-    if value and (value:type() == "arrow_function" or value:type() == "function_expression") then
+    if
+      value
+      and (
+        value:type() == "arrow_function"
+        or value:type() == "function_expression"
+      )
+    then
       return value
     end
     return node
@@ -147,7 +157,13 @@ function M.normalize_node(node)
       return node
     end
     local value = parent:field("value")[1]
-    if value and (value:type() == "arrow_function" or value:type() == "function_expression") then
+    if
+      value
+      and (
+        value:type() == "arrow_function"
+        or value:type() == "function_expression"
+      )
+    then
       return value
     end
     return node
@@ -160,7 +176,13 @@ function M.normalize_node(node)
       return node
     end
     local value = parent:field("value")[1]
-    if value and (value:type() == "arrow_function" or value:type() == "function_expression") then
+    if
+      value
+      and (
+        value:type() == "arrow_function"
+        or value:type() == "function_expression"
+      )
+    then
       return value
     end
     return node
@@ -169,7 +191,13 @@ function M.normalize_node(node)
   if t == "pair" then
     -- Cursor on `:` in { key: function() {} } or { key: () => {} }
     local value = node:field("value")[1]
-    if value and (value:type() == "arrow_function" or value:type() == "function_expression") then
+    if
+      value
+      and (
+        value:type() == "arrow_function"
+        or value:type() == "function_expression"
+      )
+    then
       return value
     end
     return node

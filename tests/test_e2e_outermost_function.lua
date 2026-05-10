@@ -115,7 +115,7 @@ local javascript_test_cases = {
   ["biac8d3e"] = {
     expected = "someFunction2",
     note = "arrow function assigned to field - cursor in function body",
-  }
+  },
 }
 
 T["e2e_outermost_function"]["javascript"] =

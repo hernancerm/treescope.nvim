@@ -46,7 +46,7 @@ end
 
 ---@param node TSNode
 ---@return TSNode
-function M.normalize_outermost_node(node)
+function M.normalize_node(node)
   if node:type() ~= "identifier" then
     return node
   end

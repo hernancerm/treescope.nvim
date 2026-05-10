@@ -1,5 +1,9 @@
 local M = {}
 
+--- Get root node.
+---@param bufnr integer
+---@param lang string
+---@return TSNode?
 local function get_root(bufnr, lang)
   local ok, parser = pcall(vim.treesitter.get_parser, bufnr, lang)
   if not ok or not parser then
@@ -12,24 +16,30 @@ local function get_root(bufnr, lang)
   return trees[1]:root()
 end
 
--- row and col are 0-indexed.
--- Returns: outermost_node (TSNode | nil), name (string | nil)
-local function find_outermost_at(provider, root, bufnr, row, col)
-  local node = root:named_descendant_for_range(row, col, row, col)
-  if not node then
+---@param provider OutermostFunctionProvider
+---@param root TSNode
+---@param bufnr integer
+---@param row integer 0-indexed.
+---@param col integer 0-indexed.
+---@return TSNode? outermost_function_node
+---@return string? outermost_function_name
+local function find_outermost_function_at(provider, root, bufnr, row, col)
+  -- Get node at row/col position.
+  local pos_node = root:named_descendant_for_range(row, col, row, col)
+  if not pos_node then
     return nil, nil
   end
-
-  local candidate = nil
-  local cur = node
-  while cur do
-    if provider.is_function(cur) then
-      candidate = cur
+  ---@type TSNode?
+  local cur_node = pos_node
+  local outermost_function_node = nil
+  while cur_node do
+    if provider.is_function(cur_node) then
+      outermost_function_node = cur_node
     end
-    cur = cur:parent()
+    cur_node = cur_node:parent()
   end
 
-  if not candidate then
+  if not outermost_function_node then
     return nil, nil
   end
   -- is_function() returns true for identifier nodes in some providers (e.g. a
@@ -39,9 +49,9 @@ local function find_outermost_at(provider, root, bufnr, row, col)
   -- different nodes for the same function. normalize_outermost_node() maps the
   -- identifier to the canonical function node so all positions agree.
   if provider.normalize_outermost_node then
-    candidate = provider.normalize_outermost_node(candidate) or candidate
+    outermost_function_node = provider.normalize_outermost_node(outermost_function_node) or outermost_function_node
   end
-  return candidate, provider.get_function_name(candidate, bufnr)
+  return outermost_function_node, provider.get_function_name(outermost_function_node, bufnr)
 end
 
 -- Returns: list of { row, col, outermost } 0-indexed, sorted ascending.
@@ -62,7 +72,7 @@ local function get_query_matches(root, bufnr, lang, provider)
   for id, node in query:iter_captures(root, bufnr, 0, -1) do
     if query.captures[id] == "treescope_outermost_function" then
       local row, col = node:start()
-      local outermost = find_outermost_at(provider, root, bufnr, row, col)
+      local outermost = find_outermost_function_at(provider, root, bufnr, row, col)
       table.insert(matches, { row = row, col = col, outermost = outermost })
     end
   end
@@ -217,7 +227,7 @@ function M.get_scope()
   local cursor = vim.api.nvim_win_get_cursor(win)
   local row, col = cursor[1] - 1, cursor[2]
 
-  local _, name = find_outermost_at(provider, root, bufnr, row, col)
+  local _, name = find_outermost_function_at(provider, root, bufnr, row, col)
 
   local goto_prev, goto_next = make_goto_fns(bufnr, lang, provider)
 

@@ -188,7 +188,8 @@ end
 ---@param provider OutermostFunctionProvider
 ---@return function set_loclist
 local function make_set_loclist_fn(bufnr, lang, provider)
-  return function()
+  return function(opts)
+    opts = opts or {}
     vim.schedule(function()
       local root = get_root(bufnr, lang)
       if not root then
@@ -223,6 +224,9 @@ local function make_set_loclist_fn(bufnr, lang, provider)
         "r",
         { title = "[Treescope] Outermost functions", items = items }
       )
+      if opts.open then
+        vim.cmd("lopen")
+      end
     end)
   end
 end

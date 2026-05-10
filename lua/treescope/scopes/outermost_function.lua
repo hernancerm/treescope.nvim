@@ -242,6 +242,10 @@ end
 local function make_goto_fns(bufnr, lang, provider)
   local function resolve(direction, opts)
     local count = (opts and opts.count) or 1
+    local set_jump = true
+    if opts ~= nil and opts.set_jump ~= nil then
+      set_jump = opts.set_jump
+    end
     local root = get_root(bufnr, lang)
     if not root then
       return
@@ -277,8 +281,9 @@ local function make_goto_fns(bufnr, lang, provider)
       ref_row, ref_col = name_match.row, name_match.col
     end
 
-    -- Add jumplist item.
-    vim.cmd("normal! m'")
+    if set_jump then
+      vim.cmd("normal! m'")
+    end
 
     -- Jump to the name identifier, not outermost:start(). The node start may
     -- point to the first token of the declaration (e.g. "private" in Java).

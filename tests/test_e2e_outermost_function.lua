@@ -92,6 +92,30 @@ local javascript_test_cases = {
     expected = "js_ar_eq_ts",
     note = "arrow function assigned to variable - cursor on `=`",
   },
+  ["ziacbd3e"] = {
+    expected = "someFunction",
+    note = "function assigned to field - cursor on `=`",
+  },
+  ["zxacbd81"] = {
+    expected = "someFunction",
+    note = "function assigned to field - cursor on identifier",
+  },
+  ["fiacbd3e"] = {
+    expected = "someFunction",
+    note = "function assigned to field - cursor in function body",
+  },
+  ["yiacbd4e"] = {
+    expected = "someFunction2",
+    note = "arrow function assigned to field - cursor on `=`",
+  },
+  ["doacbd88"] = {
+    expected = "someFunction2",
+    note = "arrow function assigned to field - cursor on identifier",
+  },
+  ["biac8d3e"] = {
+    expected = "someFunction2",
+    note = "arrow function assigned to field - cursor in function body",
+  }
 }
 
 T["e2e_outermost_function"]["javascript"] =

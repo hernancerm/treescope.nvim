@@ -48,3 +48,18 @@ const foo = function(x) {
 const js_fn_eq_ts = function(x) { return x; }
 // cursor-eq4f5g6h[WWW]
 const js_ar_eq_ts = (x) => x;
+
+const xyz = {
+  // cursor-ziacbd3e[WW]
+  someFunction = function() {
+    // cursor-zxacbd81[-]
+    // cursor-fiacbd3e
+    console.log("hi")
+  }
+  // cursor-yiacbd4e[WW]
+  someFunction2 = () => {
+    // cursor-doacbd88[-]
+    // cursor-biac8d3e
+    console.log("hi")
+  }
+}

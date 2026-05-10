@@ -164,6 +164,8 @@ end
 ---@field text string? Name of outermost function relative to cursor, else nil.
 ---@field goto_prev fun() Move cursor to prev outermost function. No-op if none.
 ---@field goto_next fun() Move cursor to next outermost function. No-op if none.
+---@field set_loclist fun() Set |location-list| with all the outermost functions
+--- in the current file.
 
 --- The "outermost function" is the name of the function or method at the highest
 --- level found from walking the Tree-sitter tree upwards from the cursor

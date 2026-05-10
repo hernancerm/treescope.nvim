@@ -180,6 +180,53 @@ local function find_next_name_match(
   return nil
 end
 
+--- Return a `set_loclist` function for the given buffer. When called, it defers a
+--- full-file scan to the next event-loop tick and populates the current window's
+--- location list with every outermost function.
+---@param bufnr integer
+---@param lang string
+---@param provider OutermostFunctionProvider
+---@return function set_loclist
+local function make_set_loclist_fn(bufnr, lang, provider)
+  return function()
+    vim.schedule(function()
+      local root = get_root(bufnr, lang)
+      if not root then
+        return
+      end
+      local all_matches = get_query_matches(provider, root, bufnr, lang)
+      local outermost_name_index = build_outermost_name_index(all_matches)
+      local seen = {}
+      local items = {}
+      for _, m in ipairs(all_matches) do
+        if m.outermost then
+          local sr, sc = m.outermost:start()
+          local key = sr .. ":" .. sc
+          if not seen[key] then
+            seen[key] = true
+            local nm = outermost_name_index[key]
+            if nm then
+              local name = provider.get_function_name(nm.outermost, bufnr)
+              table.insert(items, {
+                bufnr = bufnr,
+                lnum = nm.row + 1,
+                col = nm.col + 1,
+                text = name or "(anonymous)",
+              })
+            end
+          end
+        end
+      end
+      vim.fn.setloclist(
+        0,
+        {},
+        "r",
+        { title = "[Treescope] Outermost functions", items = items }
+      )
+    end)
+  end
+end
+
 --- Return `goto_prev` and `goto_next` functions for the given buffer. Each
 --- function moves the cursor to the name identifier of the previous/next
 --- outermost function and pushes an entry onto the jumplist.
@@ -237,6 +284,7 @@ function M.get_scope()
     text = nil,
     goto_prev = function() end,
     goto_next = function() end,
+    set_loclist = function() end,
   }
 
   local bufnr = vim.api.nvim_get_current_buf()
@@ -272,11 +320,13 @@ function M.get_scope()
   local _, name = find_outermost_function_at(provider, root, bufnr, row, col)
 
   local goto_prev, goto_next = make_goto_fns(bufnr, lang, provider)
+  local set_loclist = make_set_loclist_fn(bufnr, lang, provider)
 
   return {
     text = name,
     goto_prev = goto_prev,
     goto_next = goto_next,
+    set_loclist = set_loclist,
   }
 end
 

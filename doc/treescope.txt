@@ -116,6 +116,8 @@ Fields ~
 {text} `(string?)` Name of outermost function relative to cursor, else nil.
 {goto_prev} `(fun())` Move cursor to prev outermost function. No-op if none.
 {goto_next} `(fun())` Move cursor to next outermost function. No-op if none.
+{set_loclist} `(fun())` Set |location-list| with all the outermost functions
+in the current file.
 
                                                 *treescope.outermost_function()*
                         `treescope.outermost_function`()

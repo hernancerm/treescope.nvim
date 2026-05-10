@@ -43,3 +43,8 @@ const foo = function(x) {
   // cursor-6i4p8v2w
   return x * 2;
 }
+
+// cursor-eq1c2d3e[WWW]
+const js_fn_eq_ts = function(x) { return x; }
+// cursor-eq4f5g6h[WWW]
+const js_ar_eq_ts = (x) => x;

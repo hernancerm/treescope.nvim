@@ -11,6 +11,22 @@ function M.is_function(node)
     return true
   end
 
+  -- Case: Cursor on `=` in: { field = function() end }
+  if t == "field" then
+    local value = node:field("value")[1]
+    return value ~= nil and value:type() == "function_definition"
+  end
+
+  -- Case: Cursor on `=` in: local foo = function() end  or  foo = function() end
+  if t == "assignment_statement" then
+    local expr_list = node:named_child(1)
+    if not expr_list then
+      return false
+    end
+    local func_def = expr_list:named_child(0)
+    return func_def ~= nil and func_def:type() == "function_definition"
+  end
+
   if t == "identifier" then
     local parent = node:parent()
     if not parent then
@@ -94,7 +110,27 @@ end
 ---@param node TSNode
 ---@return TSNode
 function M.normalize_node(node)
-  if node:type() ~= "identifier" then
+  local t = node:type()
+  -- field → function_definition (cursor was on `=` gap in table field)
+  if t == "field" then
+    local value = node:field("value")[1]
+    if value and value:type() == "function_definition" then
+      return value
+    end
+    return node
+  end
+  -- assignment_statement → function_definition (cursor was on `=` gap)
+  if t == "assignment_statement" then
+    local expr_list = node:named_child(1)
+    if expr_list then
+      local func_def = expr_list:named_child(0)
+      if func_def and func_def:type() == "function_definition" then
+        return func_def
+      end
+    end
+    return node
+  end
+  if t ~= "identifier" then
     return node
   end
   local parent = node:parent()

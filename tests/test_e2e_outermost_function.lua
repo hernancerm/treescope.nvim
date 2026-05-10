@@ -84,6 +84,14 @@ local javascript_test_cases = {
     expected = "foo",
     note = "function expression assigned to variable - cursor on identifier",
   },
+  ["eq1c2d3e"] = {
+    expected = "js_fn_eq_ts",
+    note = "function expression assigned to variable - cursor on `=`",
+  },
+  ["eq4f5g6h"] = {
+    expected = "js_ar_eq_ts",
+    note = "arrow function assigned to variable - cursor on `=`",
+  },
 }
 
 T["e2e_outermost_function"]["javascript"] =
@@ -137,6 +145,14 @@ local typescript_test_cases = {
   ["5a4b3c2d"] = {
     expected = "foo",
     note = "function expression assigned to variable - cursor on identifier",
+  },
+  ["eq7h8i9j"] = {
+    expected = "ts_fn_eq_ts",
+    note = "function expression assigned to variable - cursor on `=`",
+  },
+  ["eqabc123"] = {
+    expected = "ts_ar_eq_ts",
+    note = "arrow function assigned to variable - cursor on `=`",
   },
 }
 
@@ -202,6 +218,14 @@ local lua_test_cases = {
   ["7aaiblzb"] = {
     expected = "deeply_nested_field_with_function",
     note = "deeply nested field with function in return table",
+  },
+  ["eq1a2b3c"] = {
+    expected = "eq_gap_test",
+    note = "function assigned to variable - cursor on `=`",
+  },
+  ["eqfield1"] = {
+    expected = "field",
+    note = "table field with function - cursor on `=`",
   },
 }
 

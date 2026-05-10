@@ -99,6 +99,11 @@ local things = {
   }
 }
 
+-- cursor-eq1a2b3c[WWW]
+local eq_gap_test = function() return 1 end
+-- cursor-eqfield1[6W]
+local t = { field = function() end }
+
 return {
   field_with_function = function()
     return "message"

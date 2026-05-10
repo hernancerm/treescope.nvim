@@ -43,3 +43,8 @@ const foo = function(x: number): number {
   // cursor-6i4p8v2w
   return x * 2;
 }
+
+// cursor-eq7h8i9j[WWW]
+const ts_fn_eq_ts = function(x: number) { return x; }
+// cursor-eqabc123[WWW]
+const ts_ar_eq_ts = (x: number) => x;

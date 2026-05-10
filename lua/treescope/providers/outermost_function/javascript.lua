@@ -24,6 +24,16 @@ function M.is_function(node)
     return parent and parent:type() == "variable_declarator" or false
   end
 
+  -- Case: Cursor on `=` in: const foo = function() {}  or  const foo = () => {}
+  if t == "variable_declarator" then
+    local value = node:field("value")[1]
+    if not value then
+      return false
+    end
+    local vt = value:type()
+    return vt == "arrow_function" or vt == "function_expression"
+  end
+
   if t == "identifier" then
     -- Case: Cursor on variable name in: const foo = () => {}
     local parent = node:parent()
@@ -82,7 +92,16 @@ end
 ---@param node TSNode
 ---@return TSNode
 function M.normalize_node(node)
-  if node:type() ~= "identifier" then
+  local t = node:type()
+  -- variable_declarator → function literal (cursor was on `=` gap)
+  if t == "variable_declarator" then
+    local value = node:field("value")[1]
+    if value and (value:type() == "arrow_function" or value:type() == "function_expression") then
+      return value
+    end
+    return node
+  end
+  if t ~= "identifier" then
     return node
   end
   local parent = node:parent()

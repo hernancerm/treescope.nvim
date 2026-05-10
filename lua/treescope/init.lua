@@ -166,12 +166,12 @@ end
 --- No-op if none. Keys allowed in opts:
 --- * count (`integer`) Default: 1. Functions to step over. No-op if fewer than
 ---   count functions exist in that direction.
---- * set_jump (`boolean`) Default: true. Whether to push a |jumplist| entry.
+--- * set_jump (`boolean`) Default: false. Whether to push a |jumplist| entry.
 ---@field goto_next fun(opts:table?) Move cursor to next outermost function.
 --- No-op if none. Keys allowed in opts:
 --- * count (`integer`) Default: 1. Functions to step over. No-op if fewer than
 ---   count functions exist in that direction.
---- * set_jump (`boolean`) Default: true. Whether to push a |jumplist| entry.
+--- * set_jump (`boolean`) Default: false. Whether to push a |jumplist| entry.
 ---@field set_loclist fun(opts:table?) Populate |location-list| with all the
 --- outermost functions in the current file. Keys allowed in opts:
 --- * open (`boolean`) Open the location list after populating it.

@@ -242,7 +242,7 @@ end
 local function make_goto_fns(bufnr, lang, provider)
   local function resolve(direction, opts)
     local count = (opts and opts.count) or 1
-    local set_jump = true
+    local set_jump = false
     if opts ~= nil and opts.set_jump ~= nil then
       set_jump = opts.set_jump
     end

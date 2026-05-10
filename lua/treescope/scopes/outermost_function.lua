@@ -56,20 +56,23 @@ local function find_outermost_function_at(provider, root, bufnr, row, col)
     provider.get_function_name(outermost_function_node, bufnr)
 end
 
--- Returns: list of { row, col, outermost } 0-indexed, sorted ascending.
--- `outermost` is the TSNode for the outermost function at the match position,
--- pre-resolved so navigation can group all matches by their outermost without
--- repeated tree walks.
--- Queries capture ALL function names (including nested), so pre-resolving here
--- is important: the name identifier of a field-assigned function (e.g.
--- `foo = function()`) sits outside the function_definition node's byte range,
--- so range-based lookups miss it. Grouping by outermost:start() avoids that.
-local function get_query_matches(root, bufnr, lang, provider)
+--- Returns list of `{ row, col, node }` 0-indexed, sorted ascending. `node` is
+--- the TSNode for the outermost function at the match position, pre-resolved so
+--- navigation can group all matches by their outermost without repeated tree
+--- walks. Queries capture all function names, including nested, so pre-resolving
+--- here is important: the name identifier of a field-assigned function (e.g.,
+--- `foo = function()`) sits outside the function_definition node's byte range,
+--- so range-based lookups miss it. Grouping by `outermost:start()` avoids that.
+---@param provider OutermostFunctionProvider
+---@param root TSNode
+---@param bufnr integer
+---@param lang string
+---@return table[]
+local function get_query_matches(provider, root, bufnr, lang)
   local query = vim.treesitter.query.get(lang, "treescope")
   if not query then
     return {}
   end
-
   local matches = {}
   for id, node in query:iter_captures(root, bufnr, 0, -1) do
     if query.captures[id] == "treescope_outermost_function" then
@@ -79,7 +82,6 @@ local function get_query_matches(root, bufnr, lang, provider)
       table.insert(matches, { row = row, col = col, outermost = outermost })
     end
   end
-
   table.sort(matches, function(a, b)
     if a.row ~= b.row then
       return a.row < b.row
@@ -100,7 +102,7 @@ local function make_goto_fns(bufnr, lang, provider)
     local cursor = vim.api.nvim_win_get_cursor(win)
     local ref_row, ref_col = cursor[1] - 1, cursor[2]
 
-    local all_matches = get_query_matches(root, bufnr, lang, provider)
+    local all_matches = get_query_matches(provider, root, bufnr, lang)
 
     -- For each outermost node, find its own name match: the first match in
     -- all_matches (sorted ascending) that belongs to it. Keyed by

@@ -240,7 +240,8 @@ end
 ---@return function goto_prev
 ---@return function goto_next
 local function make_goto_fns(bufnr, lang, provider)
-  local function resolve(direction)
+  local function resolve(direction, opts)
+    local count = (opts and opts.count) or 1
     local root = get_root(bufnr, lang)
     if not root then
       return
@@ -254,16 +255,26 @@ local function make_goto_fns(bufnr, lang, provider)
     local outermost_name_index = build_outermost_name_index(all_matches)
 
     local name_match
-    if direction == "prev" then
-      name_match =
-        find_prev_name_match(all_matches, outermost_name_index, ref_row, ref_col)
-    else
-      name_match =
-        find_next_name_match(all_matches, outermost_name_index, ref_row, ref_col)
-    end
-
-    if not name_match then
-      return
+    for _ = 1, count do
+      if direction == "prev" then
+        name_match = find_prev_name_match(
+          all_matches,
+          outermost_name_index,
+          ref_row,
+          ref_col
+        )
+      else
+        name_match = find_next_name_match(
+          all_matches,
+          outermost_name_index,
+          ref_row,
+          ref_col
+        )
+      end
+      if not name_match then
+        return
+      end
+      ref_row, ref_col = name_match.row, name_match.col
     end
 
     -- Add jumplist item.
@@ -274,10 +285,10 @@ local function make_goto_fns(bufnr, lang, provider)
     vim.api.nvim_win_set_cursor(win, { name_match.row + 1, name_match.col })
   end
 
-  return function()
-    resolve("prev")
-  end, function()
-    resolve("next")
+  return function(opts)
+    resolve("prev", opts)
+  end, function(opts)
+    resolve("next", opts)
   end
 end
 

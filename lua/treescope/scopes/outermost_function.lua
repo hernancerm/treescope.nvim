@@ -91,6 +91,103 @@ local function get_query_matches(provider, root, bufnr, lang)
   return matches
 end
 
+--- Build a map from each outermost node's start position key ("row:col") to the
+--- first name match that belongs to it. Iterates `all_matches` in ascending order
+--- so the earliest match per outermost is kept. Keyed by position rather than by
+--- range because field-assigned function names (e.g. `foo = function()`) sit
+--- outside the function_definition node's byte range, making range-based lookup
+--- unreliable.
+---@param all_matches table[]
+---@return table<string, table>
+local function build_outermost_name_index(all_matches)
+  local index = {}
+  for _, m in ipairs(all_matches) do
+    if m.outermost then
+      local sr, sc = m.outermost:start()
+      local key = sr .. ":" .. sc
+      if not index[key] then
+        index[key] = m
+      end
+    end
+  end
+  return index
+end
+
+--- Find the name match for the outermost function that ends strictly before the
+--- cursor. Uses the cursor position as the reference boundary rather than
+--- `outermost:start()` so that any match inside the current function body still
+--- qualifies as "before", preventing a no-op when the cursor is in the body of
+--- the first visible function.
+---@param all_matches table[]
+---@param outermost_name_index table<string, table>
+---@param ref_row integer 0-indexed cursor row.
+---@param ref_col integer 0-indexed cursor col.
+---@return table? name_match
+local function find_prev_name_match(
+  all_matches,
+  outermost_name_index,
+  ref_row,
+  ref_col
+)
+  local target_match = nil
+  for _, m in ipairs(all_matches) do
+    if m.row < ref_row or (m.row == ref_row and m.col < ref_col) then
+      target_match = m
+    end
+  end
+  if not target_match or not target_match.outermost then
+    return nil
+  end
+  local sr, sc = target_match.outermost:start()
+  return outermost_name_index[sr .. ":" .. sc]
+end
+
+--- Find the name match for the next outermost function strictly after the cursor.
+--- Uses the cursor as the reference boundary rather than `outermost:end_()` so
+--- the current function is not skipped when the cursor sits before its name (e.g.
+--- on the return type in Java). Skips outermosts whose resolved name match is at
+--- or before the cursor — those are the current function — to avoid a no-op when
+--- a nested function inside the current body is the first match after the cursor.
+---@param all_matches table[]
+---@param outermost_name_index table<string, table>
+---@param ref_row integer 0-indexed cursor row.
+---@param ref_col integer 0-indexed cursor col.
+---@return table? name_match
+local function find_next_name_match(
+  all_matches,
+  outermost_name_index,
+  ref_row,
+  ref_col
+)
+  local skip_key = nil
+  for _, m in ipairs(all_matches) do
+    local after_cursor = m.row > ref_row or (m.row == ref_row and m.col > ref_col)
+    if after_cursor and m.outermost then
+      local sr, sc = m.outermost:start()
+      local key = sr .. ":" .. sc
+      if key ~= skip_key then
+        local nm = outermost_name_index[key]
+        if nm then
+          if nm.row > ref_row or (nm.row == ref_row and nm.col > ref_col) then
+            return nm
+          else
+            skip_key = key
+          end
+        end
+      end
+    end
+  end
+  return nil
+end
+
+--- Return `goto_prev` and `goto_next` functions for the given buffer. Each
+--- function moves the cursor to the name identifier of the previous/next
+--- outermost function and pushes an entry onto the jumplist.
+---@param bufnr integer
+---@param lang string
+---@param provider OutermostFunctionProvider
+---@return function goto_prev
+---@return function goto_next
 local function make_goto_fns(bufnr, lang, provider)
   local function resolve(direction)
     local root = get_root(bufnr, lang)
@@ -103,86 +200,26 @@ local function make_goto_fns(bufnr, lang, provider)
     local ref_row, ref_col = cursor[1] - 1, cursor[2]
 
     local all_matches = get_query_matches(provider, root, bufnr, lang)
+    local outermost_name_index = build_outermost_name_index(all_matches)
 
-    -- For each outermost node, find its own name match: the first match in
-    -- all_matches (sorted ascending) that belongs to it. Keyed by
-    -- "outermost:start_row:start_col" so lookup is O(1).
-    -- Range-based lookup (outermost:start()..outermost:end_()) fails for
-    -- field-assigned functions (e.g. `foo = function()`): the name identifier
-    -- sits outside the function_definition node's byte range.
-    local outermost_name = {}
-    for _, m in ipairs(all_matches) do
-      if m.outermost then
-        local sr, sc = m.outermost:start()
-        local key = sr .. ":" .. sc
-        if not outermost_name[key] then
-          outermost_name[key] = m
-        end
-      end
-    end
-
-    local name_match = nil
-
+    local name_match
     if direction == "prev" then
-      -- Use the cursor as the reference boundary (not outermost:start()). Using
-      -- the node start would place the reference before the name identifier (e.g.
-      -- before "public int" in Java), making the name match never qualify as
-      -- "strictly before", causing a no-op when the cursor is anywhere in the body.
-      local target_match = nil
-      for _, m in ipairs(all_matches) do
-        if m.row < ref_row or (m.row == ref_row and m.col < ref_col) then
-          target_match = m
-        end
-      end
-      if not target_match then
-        return
-      end
-      -- target_match may be a nested function. Use its pre-resolved outermost.
-      local outermost = target_match.outermost
-      if not outermost then
-        return
-      end
-      local sr, sc = outermost:start()
-      name_match = outermost_name[sr .. ":" .. sc]
+      name_match =
+        find_prev_name_match(all_matches, outermost_name_index, ref_row, ref_col)
     else
-      -- Same cursor-as-reference rationale as "prev": using outermost:end_() would
-      -- skip the entire current function when the cursor sits before its name (e.g.
-      -- on the return type in Java).
-      --
-      -- Additionally, a match after the cursor may be a nested function that
-      -- resolves to the same outermost the cursor is already on. In that case the
-      -- resolved name_match is at or before the cursor, so we skip past the whole
-      -- outermost and retry — otherwise goto_next is a no-op (stuck).
-      local skip_key = nil
-      for _, m in ipairs(all_matches) do
-        local after_cursor = m.row > ref_row
-          or (m.row == ref_row and m.col > ref_col)
-        if after_cursor and m.outermost then
-          local sr, sc = m.outermost:start()
-          local key = sr .. ":" .. sc
-          if key ~= skip_key then
-            local nm = outermost_name[key]
-            if nm then
-              if nm.row > ref_row or (nm.row == ref_row and nm.col > ref_col) then
-                name_match = nm
-                break
-              else
-                skip_key = key
-              end
-            end
-          end
-        end
-      end
+      name_match =
+        find_next_name_match(all_matches, outermost_name_index, ref_row, ref_col)
     end
 
     if not name_match then
       return
     end
 
-    -- Jump to the name match position, not outermost:start(). The node start
-    -- points to the first token of the declaration (e.g. "private" in Java),
-    -- not the identifier.
-    vim.cmd("normal! m'") -- add entry to jumplist
+    -- Add jumplist item.
+    vim.cmd("normal! m'")
+
+    -- Jump to the name identifier, not outermost:start(). The node start may
+    -- point to the first token of the declaration (e.g. "private" in Java).
     vim.api.nvim_win_set_cursor(win, { name_match.row + 1, name_match.col })
   end
 

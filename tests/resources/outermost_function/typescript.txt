@@ -48,3 +48,18 @@ const foo = function(x: number): number {
 const ts_fn_eq_ts = function(x: number) { return x; }
 // cursor-eqabc123[WWW]
 const ts_ar_eq_ts = (x: number) => x;
+
+const xyz = {
+  // cursor-a1b2c3d4[Ww]
+  someFunction: function() {
+    // cursor-e5f6g7h8[-]
+    // cursor-i9j0k1l2
+    console.log("hi")
+  },
+  // cursor-m3n4o5p6[Ww]
+  someFunction2: () => {
+    // cursor-q7r8s9t0[-]
+    // cursor-u1v2w3x4
+    console.log("hi")
+  }
+}

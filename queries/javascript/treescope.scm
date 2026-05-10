@@ -27,3 +27,13 @@
   (variable_declarator
     name: (identifier) @treescope_outermost_function
     value: (function_expression)))
+
+; Case: { name: function() {} }
+(pair
+  key: (property_identifier) @treescope_outermost_function
+  value: (function_expression))
+
+; Case: { name: () => {} }
+(pair
+  key: (property_identifier) @treescope_outermost_function
+  value: (arrow_function))

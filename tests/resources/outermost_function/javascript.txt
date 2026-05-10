@@ -50,14 +50,14 @@ const js_fn_eq_ts = function(x) { return x; }
 const js_ar_eq_ts = (x) => x;
 
 const xyz = {
-  // cursor-ziacbd3e[WW]
-  someFunction = function() {
+  // cursor-ziacbd3e[Ww]
+  someFunction: function() {
     // cursor-zxacbd81[-]
     // cursor-fiacbd3e
     console.log("hi")
-  }
-  // cursor-yiacbd4e[WW]
-  someFunction2 = () => {
+  },
+  // cursor-yiacbd4e[Ww]
+  someFunction2: () => {
     // cursor-doacbd88[-]
     // cursor-biac8d3e
     console.log("hi")

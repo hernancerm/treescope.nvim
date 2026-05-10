@@ -94,7 +94,7 @@ local javascript_test_cases = {
   },
   ["ziacbd3e"] = {
     expected = "someFunction",
-    note = "function assigned to field - cursor on `=`",
+    note = "function assigned to field - cursor on `:`",
   },
   ["zxacbd81"] = {
     expected = "someFunction",
@@ -106,7 +106,7 @@ local javascript_test_cases = {
   },
   ["yiacbd4e"] = {
     expected = "someFunction2",
-    note = "arrow function assigned to field - cursor on `=`",
+    note = "arrow function assigned to field - cursor on `:`",
   },
   ["doacbd88"] = {
     expected = "someFunction2",
@@ -177,6 +177,30 @@ local typescript_test_cases = {
   ["eqabc123"] = {
     expected = "ts_ar_eq_ts",
     note = "arrow function assigned to variable - cursor on `=`",
+  },
+  ["a1b2c3d4"] = {
+    expected = "someFunction",
+    note = "function assigned to field - cursor on `:`",
+  },
+  ["e5f6g7h8"] = {
+    expected = "someFunction",
+    note = "function assigned to field - cursor on identifier",
+  },
+  ["i9j0k1l2"] = {
+    expected = "someFunction",
+    note = "function assigned to field - cursor in function body",
+  },
+  ["m3n4o5p6"] = {
+    expected = "someFunction2",
+    note = "arrow function assigned to field - cursor on `:`",
+  },
+  ["q7r8s9t0"] = {
+    expected = "someFunction2",
+    note = "arrow function assigned to field - cursor on identifier",
+  },
+  ["u1v2w3x4"] = {
+    expected = "someFunction2",
+    note = "arrow function assigned to field - cursor in function body",
   },
 }
 

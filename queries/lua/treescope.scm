@@ -19,3 +19,10 @@
 (field
   name: (identifier) @treescope_outermost_function
   value: (function_definition))
+
+; Case: T["key"] = function() end
+; Case: T["base"]["key"] = function() end
+(assignment_statement
+  (variable_list
+    name: (bracket_index_expression) @treescope_outermost_function)
+  (expression_list value: (function_definition)))

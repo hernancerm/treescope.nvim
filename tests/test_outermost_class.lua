@@ -88,4 +88,23 @@ local python_test_cases = {
 T["e2e_outermost_class"]["python"] =
   create_language_test_set("python", "python.txt", "python", python_test_cases)
 
+local javascript_test_cases = {
+  ["3f7a2b1c"] = { expected = nil, note = "top-level" },
+  ["5k9m1p4x"] = { expected = "Simple", note = "inside class body" },
+  ["8l1o3c5a"] = { expected = "Simple", note = "inside method body" },
+  ["2q8r6t9v"] = {
+    expected = "Outer",
+    note = "inside class expression method — class_declaration outermost wins",
+  },
+  ["7w2d4f8h"] = { expected = "Derived", note = "class with extends" },
+  ["4e6g9s2u"] = { expected = "Named", note = "export default class" },
+  ["1n3b5j7c"] = { expected = nil, note = "inside anonymous class expression" },
+}
+
+T["e2e_outermost_class"]["javascript"] =
+  create_language_test_set("javascript", "javascript.txt", "javascript", javascript_test_cases)
+
+T["e2e_outermost_class"]["typescript"] =
+  create_language_test_set("typescript", "typescript.txt", "typescript", javascript_test_cases)
+
 return T

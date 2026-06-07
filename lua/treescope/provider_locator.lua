@@ -54,11 +54,17 @@ end
 ---@return string?
 function M.get_outermost_class_provider(filetype)
   local base = "treescope.providers.outermost_class."
-  local supported_filetypes = { "java", "python" }
+  local supported_filetypes = { "java", "python", "javascript", "typescript" }
   if not vim.tbl_contains(supported_filetypes, filetype) then
     return
   end
-  return require(base .. filetype), filetype
+  local provider
+  if filetype == "typescript" then
+    provider = require(base .. "javascript")
+  else
+    provider = require(base .. filetype)
+  end
+  return provider, filetype
 end
 
 --- Returns provider and Tree-sitter lang for required parser.

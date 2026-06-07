@@ -1,0 +1,32 @@
+// cursor-3f7a2b1c
+
+class Simple {
+  // cursor-5k9m1p4x
+  method() {
+    // cursor-8l1o3c5a
+  }
+}
+
+class Outer {
+  inner = class Inner {
+    method() {
+      // cursor-2q8r6t9v
+    }
+  }
+}
+
+class Derived extends Base {
+  // cursor-7w2d4f8h
+}
+
+export default class Named {
+  method() {
+    // cursor-4e6g9s2u
+  }
+}
+
+const Anon = class {
+  method() {
+    // cursor-1n3b5j7c
+  }
+}

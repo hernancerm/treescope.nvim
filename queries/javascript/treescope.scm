@@ -1,5 +1,3 @@
-;;extends
-
 ; Case: function name() {}
 (function_declaration
   name: (identifier) @treescope_outermost_function)

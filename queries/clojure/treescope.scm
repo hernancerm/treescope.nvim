@@ -1,5 +1,3 @@
-;; extends
-
 ; Case: (defn name ...)
 ; Case: (deftest name ...)
 ; Case: (defmacro name ...)

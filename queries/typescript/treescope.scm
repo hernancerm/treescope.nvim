@@ -1,5 +1,3 @@
-;;extends
-
 ; IMPORTANT: These are **identical** to ../javascript/textobjects.scm
 
 ; Case: function name() {}

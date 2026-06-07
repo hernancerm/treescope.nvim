@@ -44,6 +44,8 @@ Each scope has its own module (`outermost_function.lua`, `yq_path.lua`, `namespa
 3. Parse the Tree-sitter tree and find the cursor node
 4. Delegate to the provider
 
+`scopes/outermost_function.lua` is significantly heavier than the other two: it also builds and returns the `goto_prev`, `goto_next`, and `set_loclist` closures. These use `vim.treesitter.query.get(lang, "treescope")` to iterate all `@treescope_outermost_function` captures, resolve each to its outermost function node via the provider, and walk the sorted list to find the target. `yq_path.lua` and `namespace.lua` are simpler: they return `{ text = ... }` and delegate directly to their provider.
+
 ### Provider system
 
 `lua/treescope/provider_locator.lua` maps filetypes to provider modules under `lua/treescope/providers/`.
@@ -55,7 +57,7 @@ Provider directories:
 
 Interface definitions (for type checking only) live in `lua/treescope/interfaces/`.
 
-Two filetypes share existing providers rather than having their own files: TypeScript uses the JavaScript provider, and JSONC uses the JSON provider (with language name `"json"`). This is handled in `provider_locator.lua`.
+Two filetypes share existing providers rather than having their own files: TypeScript uses the JavaScript provider, and JSONC uses the JSON provider (with language name `"json"`). This is handled in `provider_locator.lua`. TypeScript still has its own `queries/typescript/treescope.scm` because it has a distinct tree-sitter grammar.
 
 ### Tree-sitter queries (`queries/`)
 
@@ -69,7 +71,19 @@ Defines the augroup name and the `ScopeIds` enum (`outermost_function`, `yq_path
 
 Tests use [mini.test](https://github.com/echasnovski/mini.test) and run in a child headless Neovim instance. Test files are in `tests/`, resource files (code snippets with cursor markers) are in `tests/resources/`.
 
-Cursor positions in resource files are marked with comments like `-- cursor-3f7a2b1c`. The marker ID is used as the parametrize key in test tables; `h.set_cursor_from_marker(marker_id, child)` in `tests/helpers.lua` positions the cursor at that marker before each assertion. Markers can include an optional `[keys]` suffix (e.g., `-- cursor-3f7a2b1c[Ww]`) to execute normal-mode keystrokes after positioning.
+Two resource file patterns are used:
+
+- **`outermost_function` and `yq_path`**: one file per language with embedded cursor markers (`-- cursor-3f7a2b1c`). The marker ID is the parametrize key; `h.set_cursor_from_marker(marker_id, child)` positions the cursor before each assertion. Markers can include an optional `[keys]` suffix (e.g., `-- cursor-3f7a2b1c[Ww]`) to execute normal-mode keystrokes after positioning.
+- **`namespace`**: one file per test case in `tests/resources/namespace/<lang>/`. Each file has a single cursor marker and is opened individually per test.
+
+### Adding a new `outermost_function` language
+
+Touch these five places:
+1. `lua/treescope/providers/outermost_function/<lang>.lua` — implement `is_function(node)`, `get_function_name(node, bufnr)`, and optionally `normalize_node(node)`.
+2. `queries/<lang>/treescope.scm` — capture function name identifiers with `@treescope_outermost_function`. Use `;;extends`.
+3. `lua/treescope/provider_locator.lua` — add the filetype to `supported_filetypes` and wire up the provider.
+4. `tests/resources/outermost_function/<lang>.txt` — resource file with cursor markers covering all function patterns.
+5. `tests/test_outermost_function.lua` — test cases table and `create_language_test_set` call.
 
 ### Docs
 

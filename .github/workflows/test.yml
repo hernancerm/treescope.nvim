@@ -20,7 +20,7 @@ jobs:
         with:
           mise_toml: |
             [tools]
-            neovim = "0.11.0"
+            neovim = "0.12.0"
             stylua = "2.4.0"
             node = "22.15.0"
       - name: Install tree-sitter CLI

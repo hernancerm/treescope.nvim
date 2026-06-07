@@ -275,6 +275,22 @@ local lua_test_cases = {
     expected = "field",
     note = "table field with function - cursor on `=`",
   },
+  ["xy1a8b3c"] = {
+    expected = 'T["1 equals 1"]',
+    note = "bracket-indexed function - cursor on identifier",
+  },
+  ["xa1aab34"] = {
+    expected = 'T["1 equals 1"]',
+    note = "bracket-indexed function",
+  },
+  ["xy1a8b3x"] = {
+    expected = 'S["base"]["2 equals 2"]',
+    note = "nested bracket-indexed function - cursor on identifier",
+  },
+  ["iy1abb3a"] = {
+    expected = 'S["base"]["2 equals 2"]',
+    note = "nested bracket-indexed function",
+  },
 }
 
 T["e2e_outermost_function"]["lua"] =

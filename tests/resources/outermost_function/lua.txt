@@ -99,6 +99,24 @@ local things = {
   }
 }
 
+local T = new_set({})
+
+-- cursor-xy1a8b3c[W]
+T["1 equals 1"] = function()
+  -- cursor-xa1aab34
+  require("mini.test").expect.equality(1, 1)
+end
+
+local S = new_set({})
+
+S["base"] = new_set({})
+
+-- cursor-xy1a8b3x[W]
+S["base"]["2 equals 2"] = function()
+  -- cursor-iy1abb3a
+  require("mini.test").expect.equality(2, 2)
+end
+
 -- cursor-eq1a2b3c[WWW]
 local eq_gap_test = function() return 1 end
 -- cursor-eqfield1[6W]

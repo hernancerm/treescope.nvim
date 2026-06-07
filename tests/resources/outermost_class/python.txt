@@ -1,0 +1,21 @@
+# cursor-3f7a2b1c
+
+class SimpleClass:
+    # cursor-5k9m1p4x
+    def method(self):
+        # cursor-8l1o3c5a
+        pass
+
+class OuterClass:
+
+    class InnerClass:
+        # cursor-2q8r6t9v
+        def inner_method(self):
+            # cursor-7w2d4f8h
+            pass
+
+# cursor-1n3b5j7c[W]
+@dataclass
+class Decorated:
+    # cursor-6i4p8v2w
+    x: int

@@ -75,4 +75,17 @@ local java_test_cases = {
 T["e2e_outermost_class"]["java"] =
   create_language_test_set("java", "java.txt", "java", java_test_cases)
 
+local python_test_cases = {
+  ["3f7a2b1c"] = { expected = nil, note = "above all classes" },
+  ["5k9m1p4x"] = { expected = "SimpleClass", note = "inside class body" },
+  ["8l1o3c5a"] = { expected = "SimpleClass", note = "inside method body" },
+  ["2q8r6t9v"] = { expected = "OuterClass", note = "inside nested class body — outermost wins" },
+  ["7w2d4f8h"] = { expected = "OuterClass", note = "inside nested class method — outermost wins" },
+  ["1n3b5j7c"] = { expected = nil, note = "on decorator — outside class_definition" },
+  ["6i4p8v2w"] = { expected = "Decorated", note = "inside decorated class body" },
+}
+
+T["e2e_outermost_class"]["python"] =
+  create_language_test_set("python", "python.txt", "python", python_test_cases)
+
 return T

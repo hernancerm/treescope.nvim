@@ -54,7 +54,7 @@ end
 ---@return string?
 function M.get_outermost_class_provider(filetype)
   local base = "treescope.providers.outermost_class."
-  local supported_filetypes = { "java" }
+  local supported_filetypes = { "java", "python" }
   if not vim.tbl_contains(supported_filetypes, filetype) then
     return
   end

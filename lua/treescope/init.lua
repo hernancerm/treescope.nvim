@@ -200,6 +200,32 @@ function treescope.outermost_function()
   return require("treescope.scopes.outermost_function").get_scope()
 end
 
+--- #tag treescope.OutermostClass
+--- Return value of |treescope.outermost_class()|.
+---@class treescope.OutermostClass
+---@field text string? Name of outermost class relative to cursor, else nil.
+
+--- The "outermost class" is the name of the class at the highest level found from
+--- walking the Tree-sitter tree upwards from the cursor position. For example,
+--- "App" is the outermost class given:
+--- >java
+---   public class App {
+---       public static void main(String[] args) {
+---           // <Cursor Here>.
+---           System.out.println("Hello World");
+---       }
+---   }
+--- <
+--- Languages supported:
+--- • java
+--- • python
+--- • javascript
+--- • typescript
+---@return treescope.OutermostClass
+function treescope.outermost_class()
+  return require("treescope.scopes.outermost_class").get_scope()
+end
+
 --- #tag treescope.YqPath
 --- Return value of |treescope.yq_path()|.
 ---@class treescope.YqPath

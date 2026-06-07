@@ -50,6 +50,19 @@ end
 
 --- Returns provider and Tree-sitter lang for required parser.
 ---@param filetype string
+---@return OutermostClassProvider?
+---@return string?
+function M.get_outermost_class_provider(filetype)
+  local base = "treescope.providers.outermost_class."
+  local supported_filetypes = { "java" }
+  if not vim.tbl_contains(supported_filetypes, filetype) then
+    return
+  end
+  return require(base .. filetype), filetype
+end
+
+--- Returns provider and Tree-sitter lang for required parser.
+---@param filetype string
 ---@return NamespaceProvider?
 ---@return string?
 function M.get_namespace_provider(filetype)

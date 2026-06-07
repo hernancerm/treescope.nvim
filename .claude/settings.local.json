@@ -5,7 +5,8 @@
       "Bash(make testfmt *)",
       "Bash(make testdocs *)",
       "Bash(make fmt *)",
-      "Bash(make docs *)"
+      "Bash(make docs *)",
+      "Bash(make testci *)"
     ]
   }
 }

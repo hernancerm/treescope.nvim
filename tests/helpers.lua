@@ -36,16 +36,14 @@ end
 ---@param marker_id string The string after "cursor-", e.g., "3f7a2b1c".
 ---@param child MiniTest.child The child Neovim instance.
 function h.set_cursor_from_marker(marker_id, child)
-  child.lua(string.format(
-    [[
+  child.lua_func(function(id)
     local bufnr = vim.api.nvim_get_current_buf()
     local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
-    local marker_text = "cursor-%s"
+    local marker_text = "cursor-" .. id
     for line_num, line_content in ipairs(lines) do
       if line_content:find(marker_text, 1, true) then
         local start_pos = line_content:find(marker_text, 1, true)
         local cursor_col = start_pos + #marker_text - 1
-        -- Check for optional [keys] suffix
         local bracket_start = line_content:find("[", start_pos + #marker_text, true)
         local keys = nil
         if bracket_start then
@@ -54,20 +52,15 @@ function h.set_cursor_from_marker(marker_id, child)
             keys = line_content:sub(bracket_start + 1, bracket_end - 1)
           end
         end
-        -- Position cursor at end of marker text (before the '[' if it exists)
-        vim.api.nvim_win_set_cursor(0, {line_num, cursor_col})
-        -- Execute keys in normal mode if present
+        vim.api.nvim_win_set_cursor(0, { line_num, cursor_col })
         if keys then
-          vim.api.nvim_feedkeys(keys, 'n', false)
+          vim.api.nvim_feedkeys(keys, "n", false)
         end
         return
       end
     end
-    error("Marker 'cursor-%s' not found in buffer")
-    ]],
-    marker_id,
-    marker_id
-  ))
+    error("Marker 'cursor-" .. id .. "' not found in buffer")
+  end, marker_id)
 end
 
 --- Ensure a Tree-sitter parser is installed. Returns true if the parser was installed (in this case

@@ -291,6 +291,10 @@ local lua_test_cases = {
     expected = 'S["base"]["2 equals 2"]',
     note = "nested bracket-indexed function",
   },
+  ["vx182b39"] = {
+    expected = "hooks.write_pre",
+    note = "variable list function"
+  }
 }
 
 T["e2e_outermost_function"]["lua"] =

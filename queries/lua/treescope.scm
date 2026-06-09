@@ -26,3 +26,7 @@
   (variable_list
     name: (bracket_index_expression) @treescope_outermost_function)
   (expression_list value: (function_definition)))
+
+; Case: foo.bar = function() end
+(assignment_statement (variable_list) @treescope_outermost_function
+                      (expression_list value: (function_definition)))

@@ -117,6 +117,13 @@ S["base"]["2 equals 2"] = function()
   require("mini.test").expect.equality(2, 2)
 end
 
+local hooks = {}
+
+hooks.write_pre = function(lines)
+  -- cursor-vx182b39
+  print(lines)
+end
+
 -- cursor-eq1a2b3c[WWW]
 local eq_gap_test = function() return 1 end
 -- cursor-eqfield1[6W]

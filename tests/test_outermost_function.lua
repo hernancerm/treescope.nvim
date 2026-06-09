@@ -293,8 +293,8 @@ local lua_test_cases = {
   },
   ["vx182b39"] = {
     expected = "hooks.write_pre",
-    note = "variable list function"
-  }
+    note = "variable list function",
+  },
 }
 
 T["e2e_outermost_function"]["lua"] =

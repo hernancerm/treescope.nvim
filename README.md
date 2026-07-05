@@ -21,37 +21,32 @@ Tree-sitter-powered scope discovery.
 
 ## Installation
 
-Use your favorite package manager. For example, [Lazy.nvim](https://github.com/folke/lazy.nvim):
+Install with your favorite package manager. For example, using Neovim's builtin package manager,
+[vim.pack](https://neovim.io/doc/user/pack/#vim.pack):
 
 ```lua
-{
-  "hernancerm/treescope.nvim",
-  opts = {},
-},
+vim.pack.add({
+  "https://github.com/hernancerm/treescope.nvim",
+})
 ```
 
-The function `require("treescope").setup()` needs to be called before the plugin can be used.
-Lazy.nvim does this automatically using the snippet above.
+Some things to notice:
+
+- `require("treescope").setup()` does **not** need to be called. You may call it to configure the plugin.
+- The plugin sets the Lua global `Treescope`, equivalent to `require("treescope")`.
+- The plugin does **not** create keymaps.
 
 ## Default config
 
 ```lua
-local treescope = require("treescope")
-treescope.setup()
-```
-
-Is equivalent to:
-
-```lua
-local treescope = require("treescope")
-treescope.setup({
+require("treescope").setup({
   buf_vars = {},
 })
 ```
 
 ## Documentation
 
-Please refer to the help file: [treescope.txt](./doc/treescope.txt).
+Please refer to the help file: [treescope.txt](./doc/treescope.txt) (`:help treescope.txt`).
 
 ## Contributing
 

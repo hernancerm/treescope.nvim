@@ -1,4 +1,4 @@
---- *treescope* Tree-sitter-powered scope discovery.
+--- *treescope.txt* Tree-sitter-powered scope discovery.
 ---
 --- MIT License Copyright (c) 2026 Hernán Cervera.
 ---
@@ -11,6 +11,7 @@
 --- 5. Functions                                               |treescope-functions|
 ---
 --- ==============================================================================
+--- #tag treescope
 --- #tag treescope-introduction
 --- Introduction ~
 ---
@@ -31,27 +32,21 @@
 --- #tag treescope-quickstart
 --- Quickstart ~
 ---
---- You need a Tree-sitter parser for the language you want this plugin to work
---- for. This plugin does not support all languages, see supported languages per
---- scope in |treescope-functions|.
----
---- You need to call the |treescope.setup()| function to initialize the plugin.
---- >lua
----   { -- For Lazy.nvim
----     "hernancerm/treescope.nvim",
----     opts = {},
----   }
----<
---- * To have a scope in your statusline, see |treescope-statusline|.
----
---- * To get the scopes using the Lua API, see |treescope-functions|. E.g., to get
----   the outermost function: `require("treescope").outermost_function().text`.
+--- * No need to call |treescope.setup()|, but you may to configure the plugin.
+--- * You need a Tree-sitter parser for the language you want this plugin to work
+---   for. This plugin does not support all languages, see supported languages per
+---   scope in |treescope-functions|.
+--- * The plugin doesn't create keymaps, you need to define them yourself.
+--- * The plugin sets the Lua global `Treescope`, equivalent to
+---   `require("treescope")`.
+--- * To get the scopes see |treescope-functions|. E.g., to get the outermost
+---   function: `require("treescope").outermost_function().text`.
 
 local treescope = {}
 
-treescope.config = {}
+_G.Treescope = treescope
 
-local assign_default_config
+vim.api.nvim_create_augroup("Treescope", { clear = true })
 
 --- #delimiter
 --- #tag treescope.config
@@ -63,25 +58,21 @@ local assign_default_config
 ---@param config table? Merged with default config (|treescope.default_config|).
 --- The former takes priority on duplicate keys.
 function treescope.setup(config)
-  assign_default_config()
-
-  -- Validate config.
-  if config ~= nil then
-    -- Required configuration.
-    vim.validate("config.buf_vars", config.buf_vars, "table", true)
-    -- The validity of each buf var is checked during registration.
-  end
-
-  -- Merged default and user configuration. User config has precedence.
+  config = config or {}
+  -- Merge default and user configuration. User config has precedence.
   treescope.config = vim.tbl_deep_extend(
     "force",
-    vim.deepcopy(treescope.default_config),
-    config or {}
+    vim.deepcopy(treescope.config or treescope.default_config),
+    config
   )
-
-  -- Create clean augroup.
-  vim.api.nvim_create_augroup("Treescope", { clear = true })
-
+  -- Validate config.
+  -- The validity of each buf var is checked during registration.
+  vim.validate(
+    "treescope.config.buf_vars",
+    treescope.config.buf_vars,
+    "table",
+    true
+  )
   -- Register buf vars from config (set auto-update with an autocmd).
   local vars_service = require("treescope.vars_service")
   for _, managed_buf_var in ipairs(treescope.config.buf_vars) do
@@ -97,23 +88,16 @@ function treescope.setup(config)
       )
     end
   end
-
-  _G.Treescope = treescope
 end
 
 --- The merged config (defaults with user overrides) is in `treescope.config`. The
 --- default config is in `treescope.default_config`. Below is the default config:
 ---@eval return MiniDoc.afterlines_to_code(MiniDoc.current.eval_section)
---minidoc_replace_start
-assign_default_config = function()
-  --minidoc_replace_end
-  --minidoc_replace_start {
-  treescope.default_config = {
-    --minidoc_replace_end
-    buf_vars = {},
-  }
-  --minidoc_afterlines_end
-end
+
+treescope.default_config = {
+  buf_vars = {},
+}
+--minidoc_afterlines_end
 
 -- TODO: buf_vars to list the exact var names, with the "treescope" prefix.
 

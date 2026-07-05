@@ -1,4 +1,4 @@
-*treescope* Tree-sitter-powered scope discovery.
+*treescope.txt* Tree-sitter-powered scope discovery.
 
 MIT License Copyright (c) 2026 Hernán Cervera.
 
@@ -11,6 +11,7 @@ Contents:
 5. Functions                                               |treescope-functions|
 
 ==============================================================================
+                                                                     *treescope*
                                                         *treescope-introduction*
 Introduction ~
 
@@ -31,21 +32,15 @@ Solution:
                                                           *treescope-quickstart*
 Quickstart ~
 
-You need a Tree-sitter parser for the language you want this plugin to work
-for. This plugin does not support all languages, see supported languages per
-scope in |treescope-functions|.
-
-You need to call the |treescope.setup()| function to initialize the plugin.
->lua
-  { -- For Lazy.nvim
-    "hernancerm/treescope.nvim",
-    opts = {},
-  }
-
-• To have a scope in your statusline, see |treescope-statusline|.
-
-• To get the scopes using the Lua API, see |treescope-functions|. E.g., to get
-  the outermost function: `require("treescope").outermost_function().text`.
+• No need to call |treescope.setup()|, but you may to configure the plugin.
+• You need a Tree-sitter parser for the language you want this plugin to work
+  for. This plugin does not support all languages, see supported languages per
+  scope in |treescope-functions|.
+• The plugin doesn't create keymaps, you need to define them yourself.
+• The plugin sets the Lua global `Treescope`, equivalent to
+  `require("treescope")`.
+• To get the scopes see |treescope-functions|. E.g., to get the outermost
+  function: `require("treescope").outermost_function().text`.
 
 ------------------------------------------------------------------------------
                                                               *treescope.config*
@@ -63,7 +58,7 @@ The former takes priority on duplicate keys.
 The merged config (defaults with user overrides) is in `treescope.config`. The
 default config is in `treescope.default_config`. Below is the default config:
 >lua
-  {
+  treescope.default_config = {
     buf_vars = {},
   }
 <

@@ -59,6 +59,10 @@ vim.api.nvim_create_augroup("Treescope", { clear = true })
 --- The former takes priority on duplicate keys.
 function treescope.setup(config)
   config = config or {}
+  -- Cleanup.
+  if #vim.api.nvim_get_autocmds({ group = "Treescope" }) > 0 then
+    vim.api.nvim_clear_autocmds({ group = "Treescope" })
+  end
   -- Merge default and user configuration. User config has precedence.
   treescope.config = vim.tbl_deep_extend(
     "force",

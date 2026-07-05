@@ -1,4 +1,4 @@
-name: test
+name: CI
 
 on:
   push:
@@ -25,7 +25,9 @@ jobs:
             node = "22.15.0"
       - name: Install tree-sitter CLI
         run: npm install -g tree-sitter-cli@0.25.10
-      - name: Run all checks
-        run: |
-          nvim --version
-          make testci
+      - name: Check formatting
+        run: make testfmt
+      - name: Check docs are up to date
+        run: make testdocs
+      - name: Run tests
+        run: make test

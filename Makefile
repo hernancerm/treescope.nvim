@@ -26,8 +26,8 @@ test: deps/mini.test deps/nvim-treesitter
 	$(NVIM_CMD) -u ./scripts/minimal_init.lua -c "lua MiniTest.run()"
 
 # Run CI tests.
-.PHONY: testci
-testci: testfmt testdocs test
+.PHONY: ci
+ci: testfmt testdocs test
 
 # Format.
 .PHONY: fmt

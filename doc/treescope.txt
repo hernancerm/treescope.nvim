@@ -143,7 +143,9 @@ Languages supported:
 • python
 • clojure
 • javascript
+• javascriptreact (javascript Tree-sitter parser needed)
 • typescript
+• typescriptreact (tsx Tree-sitter parser needed)
 Return ~
 `(treescope.OutermostFunction)`
 

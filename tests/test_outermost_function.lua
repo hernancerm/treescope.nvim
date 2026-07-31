@@ -207,6 +207,57 @@ local typescript_test_cases = {
 T["e2e_outermost_function"]["typescript"] =
   create_language_test_set("typescript", "typescript.txt", "typescript", typescript_test_cases)
 
+-- Same cases for both React filetypes: they share the JavaScript provider and only differ in the
+-- Tree-sitter parser used (`javascript` for jsx, `tsx` for tsx).
+local function react_test_cases(prefix)
+  return {
+    [prefix .. "a1b2c"] = { expected = nil, note = "top-level" },
+    [prefix .. "d3e4f"] = { expected = "Greeting", note = "component as function declaration" },
+    [prefix .. "g5h6i"] = {
+      expected = "Card",
+      note = "component as arrow function - cursor on identifier",
+    },
+    [prefix .. "j7k8l"] = { expected = "Card", note = "component as arrow function" },
+    [prefix .. "m9n0o"] = { expected = "Card", note = "cursor inside JSX expression" },
+    [prefix .. "p1q2r"] = {
+      expected = "Badge",
+      note = "component with implicit JSX return - cursor on `=`",
+    },
+    [prefix .. "s3t4u"] = { expected = "List", note = "nested arrow function returning JSX" },
+    [prefix .. "v5w6x"] = { expected = "Button", note = "arrow function in JSX attribute" },
+    [prefix .. "y7z8a"] = {
+      expected = "onRender",
+      note = "function assigned to field - cursor on `:`",
+    },
+    [prefix .. "b9c0d"] = {
+      expected = "onRender",
+      note = "function assigned to field - cursor on identifier",
+    },
+    [prefix .. "e1f2g"] = {
+      expected = "onRender",
+      note = "function assigned to field - cursor in function body",
+    },
+    [prefix .. "h3i4j"] = {
+      expected = "onDestroy",
+      note = "arrow function assigned to field - cursor on `:`",
+    },
+    [prefix .. "k5l6m"] = {
+      expected = "onDestroy",
+      note = "arrow function assigned to field - cursor in function body",
+    },
+  }
+end
+
+T["e2e_outermost_function"]["javascriptreact"] = create_language_test_set(
+  "javascript",
+  "javascriptreact.txt",
+  "javascriptreact",
+  react_test_cases("jsx")
+)
+
+T["e2e_outermost_function"]["typescriptreact"] =
+  create_language_test_set("tsx", "typescriptreact.txt", "typescriptreact", react_test_cases("tsx"))
+
 local lua_test_cases = {
   ["1a2b3c4d"] = { expected = nil, note = "top-level" },
   ["5e6f7g8h"] = { expected = "greet", note = "function declaration" },

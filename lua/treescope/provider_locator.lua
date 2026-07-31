@@ -12,18 +12,24 @@ function M.get_outermost_function_provider(filetype)
     "python",
     "clojure",
     "javascript",
+    "javascriptreact",
     "typescript",
+    "typescriptreact",
+  }
+  -- Filetypes with no provider module of their own, and/or whose Tree-sitter
+  -- language name differs from the filetype name (`typescriptreact` → `tsx`).
+  local aliases = {
+    typescript = { provider = "javascript", lang = "typescript" },
+    javascriptreact = { provider = "javascript", lang = "javascript" },
+    typescriptreact = { provider = "javascript", lang = "tsx" },
   }
   if not vim.tbl_contains(supported_filetypes, filetype) then
     return
   end
-  local provider
-  if filetype == "typescript" then
-    provider = require(base .. "javascript")
-  else
-    provider = require(base .. filetype)
-  end
-  return provider, filetype
+  local alias = aliases[filetype]
+  local provider = require(base .. (alias and alias.provider or filetype))
+  local lang = alias and alias.lang or filetype
+  return provider, lang
 end
 
 --- Returns provider and Tree-sitter lang for required parser.

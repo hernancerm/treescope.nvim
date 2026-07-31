@@ -182,7 +182,9 @@ treescope.default_config = {
 --- • python
 --- • clojure
 --- • javascript
+--- • javascriptreact (javascript Tree-sitter parser needed)
 --- • typescript
+--- • typescriptreact (tsx Tree-sitter parser needed)
 ---@return treescope.OutermostFunction
 function treescope.outermost_function()
   return require("treescope.scopes.outermost_function").get_scope()

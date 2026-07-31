@@ -1,0 +1,56 @@
+// cursor-tsxa1b2c
+type Props = { title: string };
+
+function Greeting({ name }: { name: string }): JSX.Element {
+  // cursor-tsxd3e4f
+  return <div>Hello, {name}!</div>;
+}
+
+// cursor-tsxg5h6i[Ww]
+const Card = ({ title }: Props): JSX.Element => {
+  // cursor-tsxj7k8l
+  return (
+    <section>
+      {/* cursor-tsxm9n0o */}
+      <h1>{title}</h1>
+    </section>
+  );
+};
+
+// cursor-tsxp1q2r[WWW]
+const Badge = (props: Props) => <span>{props.title}</span>;
+
+function List({ items }: { items: string[] }) {
+  const renderItem = (item: string) => {
+    // cursor-tsxs3t4u
+    return <li key={item}>{item}</li>;
+  };
+  return <ul>{items.map(renderItem)}</ul>;
+}
+
+function Button() {
+  return (
+    <button
+      onClick={() => {
+        // cursor-tsxv5w6x
+        console.log("clicked");
+      }}
+    >
+      click
+    </button>
+  );
+}
+
+const handlers = {
+  // cursor-tsxy7z8a[Ww]
+  onRender: function () {
+    // cursor-tsxb9c0d[-]
+    // cursor-tsxe1f2g
+    return <p />;
+  },
+  // cursor-tsxh3i4j[Ww]
+  onDestroy: () => {
+    // cursor-tsxk5l6m
+    return null;
+  },
+};

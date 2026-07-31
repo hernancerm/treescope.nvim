@@ -57,7 +57,9 @@ Provider directories:
 
 Interface definitions (for type checking only) live in `lua/treescope/interfaces/`.
 
-Two filetypes share existing providers rather than having their own files: TypeScript uses the JavaScript provider, and JSONC uses the JSON provider (with language name `"json"`). This is handled in `provider_locator.lua`. TypeScript still has its own `queries/typescript/treescope.scm` because it has a distinct tree-sitter grammar.
+Some filetypes share existing providers rather than having their own files: TypeScript, JSX (`javascriptreact`) and TSX (`typescriptreact`) all use the JavaScript provider, and JSONC uses the JSON provider. This is handled by the alias tables in `provider_locator.lua`, which also map the filetype to the tree-sitter language name where the two differ — `javascriptreact` → `javascript`, `typescriptreact` → `tsx`, `jsonc` → `json`. Getting that language name right matters: the scopes layer feeds it to both `vim.treesitter.get_parser()` and `vim.treesitter.query.get()`, so a filetype name that is not a parser name silently yields an empty scope.
+
+TypeScript has its own `queries/typescript/treescope.scm` because it has a distinct tree-sitter grammar. TSX has a distinct grammar too, but its node types are identical for these captures, so `queries/tsx/treescope.scm` is a one-line `; inherits: typescript`. JSX needs no query file: it parses with the `javascript` grammar.
 
 ### Tree-sitter queries (`queries/`)
 

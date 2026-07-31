@@ -1,6 +1,6 @@
 HELP_FILE := ./doc/treescope.txt
 NVIM_CMD := nvim --headless --noplugin
-MINI_DOC_GENERATE_CMD := @$(NVIM_CMD) -u ./scripts/minidoc_init.lua && echo ''
+MINI_DOC_GENERATE_CMD := $(NVIM_CMD) -u ./scripts/minidoc_init.lua
 
 # Neovim plugins versions.
 # These are dev dependencies.
@@ -16,9 +16,7 @@ testfmt:
 # Check docs are up to date.
 .PHONY: testdocs
 testdocs: deps/mini.doc
-	git checkout $(HELP_FILE)
-	@$(MINI_DOC_GENERATE_CMD)
-	git diff --exit-code $(HELP_FILE)
+	STDOUT=true $(MINI_DOC_GENERATE_CMD) | diff $(HELP_FILE) -
 
 # Run mini.test tests.
 .PHONY: test

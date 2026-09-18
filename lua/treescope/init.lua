@@ -158,9 +158,8 @@ treescope.default_config = {
 --- The plugin creates no keymaps. To navigate functions with `]m` and `[m` and
 --- list them with `<Leader>o`:
 --- >
----   -- Python's ftplugin sets buffer-local [m and ]m, which would shadow these.
+---   -- Don't shadow `[m`/`]m`.
 ---   vim.g.no_python_maps = true
----
 ---   vim.keymap.set({ "n", "x", "o" }, "]m", function()
 ---     Treescope.goto_next("function", { count = vim.v.count1, set_jump = true })
 ---   end)

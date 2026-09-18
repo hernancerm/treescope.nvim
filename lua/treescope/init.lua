@@ -205,22 +205,40 @@ treescope.default_config = {
 ---   "namespace"  Namespace or package of the file     no     no
 ---   "yq_path"    yq expression for the position       no     no
 ---
---- Depth applies to scopes that nest. Walking the Tree-sitter tree up from
---- the position visits every enclosing scope, and `depth` picks one of them:
+--- Every scope works with |treescope.get()|. The two columns say what else
+--- the scope supports.
 ---
---- • "outermost" (default): the farthest one, so nested scopes are skipped.
----   This is what you want in a statusline.
---- • "any": the nearest one. In navigation, "any" also means "stop at every
----   scope, nested or not".
+--- Depth column ~
+---
+--- "yes" means the scope can nest, so the `depth` option in |treescope.GetOpts|,
+--- |treescope.ListOpts| and |treescope.GotoOpts| changes the result. Walking
+--- the Tree-sitter tree up from the position visits every enclosing scope of
+--- that id, and `depth` picks which one you get:
+---
+--- • "outermost" (default): the farthest one. Nested scopes are skipped. With
+---   |treescope.get()| this is the top-level function around the cursor, the
+---   value you want in a statusline. With |treescope.list()| and the goto
+---   functions it means only top-level scopes are visited.
+--- • "any": the nearest one. With |treescope.get()| this is the innermost
+---   function around the cursor. With |treescope.list()| and the goto
+---   functions it means every scope is visited, nested or not.
 ---
 --- Depth only counts scopes of the same id. Classes are invisible to
 --- "function": a method inside an inner class is its own outermost function.
 --- Only a function nested in another function is skipped.
 ---
---- Navigation is available for scopes with many instances per file. See
---- |treescope.list()|, |treescope.goto_prev()|, |treescope.goto_next()| and
---- |treescope.set_loclist()|. On other scopes these functions warn and do
---- nothing.
+--- "no" means the scope does not nest, e.g. a file has one namespace. The
+--- `depth` option is accepted and ignored.
+---
+--- Navigation column ~
+---
+--- "yes" means there can be many of the scope per file, so these functions
+--- work: |treescope.list()| returns all of them, |treescope.goto_prev()| and
+--- |treescope.goto_next()| move the cursor, and |treescope.set_loclist()| puts
+--- them in the location list. All four honor `depth`.
+---
+--- "no" means those four functions warn via |vim.notify()| and do nothing.
+--- Only |treescope.get()| is meaningful for such a scope.
 ---
 --- Scope ids are also the valid values of |treescope.config.buf_vars|.
 

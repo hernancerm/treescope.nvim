@@ -5,25 +5,36 @@ local query = [[
     value: (sym_lit
              name: (sym_name) @clj_ns_fn (#eq? @clj_ns_fn "ns"))
     value: (sym_lit
-             name: (sym_name) @clj_ns_value))
+             name: (sym_name) @clj_ns_value)) @clj_ns_form
 ]]
 
 local ts_query = nil
 
 ---@param root TSNode
 ---@param bufnr integer
----@return string?
+---@return TSNode? node
+---@return TSNode? name_node
 function M.get_namespace(root, bufnr)
   if not ts_query then
     ts_query = vim.treesitter.query.parse("clojure", query)
   end
-  local captures = {}
-  for _, node, _ in ts_query:iter_captures(root, bufnr) do
-    table.insert(captures, vim.treesitter.get_node_text(node, bufnr))
-  end
-  if #captures == 2 and captures[1] == "ns" then
-    return captures[2]
+  for _, match in ts_query:iter_matches(root, bufnr, 0, -1, { all = true }) do
+    local form, name
+    for id, nodes in pairs(match) do
+      local capture = ts_query.captures[id]
+      if capture == "clj_ns_form" then
+        form = nodes[1]
+      elseif capture == "clj_ns_value" then
+        name = nodes[1]
+      end
+    end
+    if form and name then
+      return form, name
+    end
   end
 end
+
+---@type NamespaceProvider
+local _ = M
 
 return M

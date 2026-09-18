@@ -8,7 +8,9 @@ Contents:
 2. Quickstart                                             |treescope-quickstart|
 3. Configuration                                       |treescope-configuration|
 4. Statusline integration                                 |treescope-statusline|
-5. Functions                                               |treescope-functions|
+5. Scopes                                                     |treescope-scopes|
+6. Functions                                               |treescope-functions|
+7. Types                                                       |treescope-types|
 
 ==============================================================================
                                                                      *treescope*
@@ -19,14 +21,15 @@ Problem:
 
 • I want to have the cursor "scope" in my statusline, but I do not like the
   typical solution of breadcrumbs as that takes too much space. Most of the
-  time, the meaningful scope to me is the "outermost function".
+  time, the meaningful scope to me is the outermost function.
 
 Solution:
 
-• Get the "outermost function" (|treescope.outermost_function()|) through
-  Tree-sitter, supporting multiple languages. Other scopes are supported too,
-  refer to |treescope-scopes|. Statusline integration is supported via
-  buffer-local variables, refer to |treescope-statusline|.
+• Get the scope through Tree-sitter, supporting multiple languages. A scope is
+  a thing like a function or a class, see |treescope-scopes|. Read it with
+  |treescope.get()|, or navigate between scopes with |treescope.goto_next()|
+  and friends. Statusline integration is supported via buffer-local
+  variables, refer to |treescope-statusline|.
 
 ------------------------------------------------------------------------------
                                                           *treescope-quickstart*
@@ -35,12 +38,14 @@ Quickstart ~
 • No need to call |treescope.setup()|, but you may to configure the plugin.
 • You need a Tree-sitter parser for the language you want this plugin to work
   for. This plugin does not support all languages, see supported languages per
-  scope in |treescope-functions|.
+  scope in |treescope-scopes|.
 • The plugin doesn't create keymaps, you need to define them yourself.
 • The plugin sets the Lua global `Treescope`, equivalent to
   `require("treescope")`.
-• To get the scopes see |treescope-functions|. E.g., to get the outermost
-  function: `require("treescope").outermost_function().text`.
+• To get the outermost function at the cursor:
+  `require("treescope").get("function").text`.
+• To jump to the next function:
+  `require("treescope").goto_next("function")`.
 
 ------------------------------------------------------------------------------
                                                               *treescope.config*
@@ -63,29 +68,35 @@ default config is in `treescope.default_config`. Below is the default config:
   }
 <
                                                      *treescope.config.buf_vars*
-`(string[])`
-The valid values are the names of the functions in |treescope-functions|,
-e.g., "outermost_function". For each item in this list, Treescope creates a
-buf-local var of the form treescope_<item>, e.g., treescope_outermost_function
-given the item "outermost_function".
-
+`((string|table)[])`
+Each item is a scope id (see |treescope-scopes|), or a table `{ scope_id,
+depth = ... }` to use a non-default `depth` (see |treescope.GetOpts|). For
+each item, Treescope creates a buf-local var named treescope_<scope_id>,
+with the depth as a suffix when it is not the default. The value is the
+`text` of the scope, or an empty string. For example:
+>lua
+  buf_vars = {
+    "function",                     -- b:treescope_function
+    { "function", depth = "any" },  -- b:treescope_function_any
+  }
+<
 ------------------------------------------------------------------------------
                                                           *treescope-statusline*
 Statusline integration ~
 
-Let's say you want the scope `outermost_function` in your statusline. First of
-course you need the relevant Tree-sitter parsers installed. Then make sure
-your plugin config includes the desired scope:
+Let's say you want the scope `function` in your statusline. First of course
+you need the relevant Tree-sitter parsers installed. Then make sure your
+plugin config includes the desired scope:
 >lua
   require("treescope").setup({
     buf_vars = {
-      "outermost_function"
+      "function"
     },
   })
 <
 Now you can reference the buf var in 'statusline' like this:
 >lua
-  ${get(b:,'treescope_outermost_function','')}
+  ${get(b:,'treescope_function','')}
 <
 Treescope keeps the value of the buf var updated as the cursor moves. Neovim
 automatically updates the statusline when a buf var referenced in 'statusline'
@@ -96,133 +107,209 @@ the plugin https://github.com/hernancerm/bareline.nvim and quite likely
 also plays well with many other statusline plugins.
 
 ------------------------------------------------------------------------------
-                                                           *treescope-functions*
                                                               *treescope-scopes*
-Functions ~
+Scopes ~
 
-Each function in this section corresponds to a scope. Each scope can
-optionally be exposed as a buf var. See: |treescope.config.buf_vars|.
+A scope is a thing in the file: a function, a class, the namespace, a path.
+Every function in |treescope-functions| takes a scope id as its first
+argument. At a glance:
 
-                                                   *treescope.OutermostFunction*
-Return value of |treescope.outermost_function()|.
-Class ~
-{treescope.OutermostFunction}
-Fields ~
-{text} `(string?)` Name of outermost function relative to cursor, else nil.
-{goto_prev} `(fun(opts:table?))` Move cursor to prev outermost function.
-No-op if none. Keys allowed in opts:
-• count (`integer`) Default: 1. Functions to step over. No-op if fewer than
-  count functions exist in that direction.
-• set_jump (`boolean`) Default: false. Whether to push a |jumplist| entry.
-{goto_next} `(fun(opts:table?))` Move cursor to next outermost function.
-No-op if none. Keys allowed in opts:
-• count (`integer`) Default: 1. Functions to step over. No-op if fewer than
-  count functions exist in that direction.
-• set_jump (`boolean`) Default: false. Whether to push a |jumplist| entry.
-{set_loclist} `(fun(opts:table?))` Populate |location-list| with all the
-outermost functions in the current file. Keys allowed in opts:
-• open (`boolean`) Open the location list after populating it.
+  Scope id     What                                 Depth  Navigation ~
+  "function"   Function or method at the position   yes    yes
+  "class"      Class at the position                yes    yes
+  "namespace"  Namespace or package of the file     no     no
+  "yq_path"    yq expression for the position       no     no
 
-                                                *treescope.outermost_function()*
-                        `treescope.outermost_function`()
-The "outermost function" is the name of the function or method at the highest
-level found from walking the Tree-sitter tree upwards from the cursor
-position. For example, "M.foo" is the outermost function given:
+Depth applies to scopes that nest. Walking the Tree-sitter tree up from
+the position visits every enclosing scope, and `depth` picks one of them:
+
+• "outermost" (default): the farthest one, so nested scopes are skipped.
+  This is what you want in a statusline.
+• "any": the nearest one. In navigation, "any" also means "stop at every
+  scope, nested or not".
+
+Depth only counts scopes of the same id. Classes are invisible to
+"function": a method inside an inner class is its own outermost function.
+Only a function nested in another function is skipped.
+
+Navigation is available for scopes with many instances per file. See
+|treescope.list()|, |treescope.goto_prev()|, |treescope.goto_next()| and
+|treescope.set_loclist()|. On other scopes these functions warn and do
+nothing.
+
+Scope ids are also the valid values of |treescope.config.buf_vars|.
+
+                                                      *treescope-scope-function*
+"function" ~
+
+The function or method enclosing the position. `text` is its name, `node`
+is the whole definition, `name_node` is the name identifier.
+
+With the default depth, "M.foo" is the scope given:
 >lua
-M.foo = function()
-  local bar = function()
-    local function baz()
-      -- <Cursor Here>.
+  M.foo = function()
+    local bar = function()
+      local function baz()
+        -- <Cursor Here>.
+      end
     end
   end
-end
 <
-Languages supported:
-• lua
-• java
-• python
-• clojure
-• javascript
-• javascriptreact (javascript Tree-sitter parser needed)
-• typescript
-• typescriptreact (tsx Tree-sitter parser needed)
-Return ~
-`(treescope.OutermostFunction)`
+With `depth = "any"`, the scope is "baz".
 
-                                                      *treescope.OutermostClass*
-Return value of |treescope.outermost_class()|.
-Class ~
-{treescope.OutermostClass}
-Fields ~
-{text} `(string?)` Name of outermost class relative to cursor, else nil.
+Languages: lua, java, python, clojure, javascript, typescript,
+javascriptreact (uses the javascript parser), typescriptreact (uses the
+tsx parser).
 
-                                                   *treescope.outermost_class()*
-                         `treescope.outermost_class`()
-The "outermost class" is the name of the class at the highest level found from
-walking the Tree-sitter tree upwards from the cursor position. For example,
-"App" is the outermost class given:
+                                                         *treescope-scope-class*
+"class" ~
+
+The class enclosing the position. `text` is its name, `node` is the whole
+declaration, `name_node` is the name identifier.
+
+With the default depth, "App" is the scope given:
 >java
   public class App {
-      public static void main(String[] args) {
-          // <Cursor Here>.
-          System.out.println("Hello World");
+      static class Item {
+          void a() {
+              // <Cursor Here>.
+          }
       }
   }
 <
-Languages supported:
-• java
-• python
-• javascript
-• typescript
-Return ~
-`(treescope.OutermostClass)`
+With `depth = "any"`, the scope is "Item".
 
-                                                              *treescope.YqPath*
-Return value of |treescope.yq_path()|.
-Class ~
-{treescope.YqPath}
-Fields ~
-{text} `(string?)` Name of yq path relative to cursor, else nil.
+Languages: java, python, javascript, typescript.
 
-                                                           *treescope.yq_path()*
-                             `treescope.yq_path`()
-The "yq path" is a yq filter expression for the cursor position in YAML
-files. This scope only works in buffers with a `yaml` 'filetype'. For
-example, ".spring.application.name" is the path given:
->yaml
-spring:
-  application:
-    # <Cursor On Key Below>.
-    name: my-app
-<
-Languages supported:
-• yaml
-• json
-• jsonc (json Tree-sitter parser needed)
-Return ~
-`(treescope.YqPath)`
+                                                     *treescope-scope-namespace*
+"namespace" ~
 
-                                                           *treescope.Namespace*
-Return value of |treescope.namespace()|.
-Class ~
-{treescope.Namespace}
-Fields ~
-{text} `(string?)` Name of the file namespace, regardless of cursor, else nil.
+The namespace or package declared at the top of the file. The position
+does not matter. `text` is the namespace, `node` is the declaration,
+`name_node` is the name inside it.
 
-                                                         *treescope.namespace()*
-                            `treescope.namespace`()
-The "namespace" is the name of the namespace or package declared at the top
-of the present file. For example, "myapp.core" is the namespace given:
+"myapp.core" is the scope given:
 >clojure
-(ns myapp.core)
-(println "Hello World")
-; <Cursor Here>.
+  (ns myapp.core)
+  (println "Hello World")
+  ; <Cursor Here>.
 <
-Languages supported:
-• java
-• clojure
+Languages: clojure, java.
+
+                                                       *treescope-scope-yq_path*
+"yq_path" ~
+
+A yq filter expression for the position. `text` is the expression. `node`
+and `name_node` are nil: the expression is built from every ancestor, so no
+single node owns it.
+
+".spring.application.name" is the scope given:
+>yaml
+  spring:
+    application:
+      # <Cursor On Key Below>.
+      name: my-app
+<
+Languages: yaml, json, jsonc (uses the json parser).
+
+------------------------------------------------------------------------------
+                                                           *treescope-functions*
+Functions ~
+
+                                                               *treescope.get()*
+                      `treescope.get`({scope_id}, {opts})
+Get the scope at a position.
+Parameters ~
+{scope_id} `(string)` See |treescope-scopes|.
+{opts} `(treescope.GetOpts?)`
 Return ~
-`(treescope.Namespace)`
+`(treescope.Scope)` Empty table when there is no scope at the position,
+the filetype is not supported or the parser is missing.
+
+                                                              *treescope.list()*
+                      `treescope.list`({scope_id}, {opts})
+List all the scopes in a buffer, sorted by position.
+Parameters ~
+{scope_id} `(string)` A node scope, see |treescope-scopes|.
+{opts} `(treescope.ListOpts?)`
+Return ~
+`(treescope.Scope[])` Empty when the filetype is not supported or the
+parser is missing.
+
+                                                         *treescope.goto_prev()*
+                   `treescope.goto_prev`({scope_id}, {opts})
+Move the cursor to the previous scope in the current buffer. No-op if none.
+Parameters ~
+{scope_id} `(string)` A node scope, see |treescope-scopes|.
+{opts} `(treescope.GotoOpts?)`
+
+                                                         *treescope.goto_next()*
+                   `treescope.goto_next`({scope_id}, {opts})
+Move the cursor to the next scope in the current buffer. No-op if none.
+Parameters ~
+{scope_id} `(string)` A node scope, see |treescope-scopes|.
+{opts} `(treescope.GotoOpts?)`
+
+                                                       *treescope.set_loclist()*
+                  `treescope.set_loclist`({scope_id}, {opts})
+Populate the |location-list| of the current window with all the scopes in a
+buffer.
+Parameters ~
+{scope_id} `(string)` A node scope, see |treescope-scopes|.
+{opts} `(treescope.SetLoclistOpts?)`
+
+------------------------------------------------------------------------------
+                                                               *treescope-types*
+Types ~
+
+                                                               *treescope.Scope*
+Return value of |treescope.get()| and items of |treescope.list()|.
+Class ~
+{treescope.Scope}
+Fields ~
+{text} `(string?)` Display string, e.g. the function name. Nil for an
+anonymous scope.
+{node} `(TSNode?)` The whole scope, e.g. the function definition. Nil for
+the "yq_path" scope: its path is built from all ancestors.
+{name_node} `(TSNode?)` The name inside `node`, e.g. the identifier. This is
+where navigation lands. Nil when `node` is nil or the scope is anonymous.
+
+                                                             *treescope.GetOpts*
+Class ~
+{treescope.GetOpts}
+Fields ~
+{bufnr} `(integer?)` Default: current buffer.
+{pos} `(integer[]?)` `{row, col}`, 1-indexed row and 0-indexed col like
+|nvim_win_get_cursor()|. Default: cursor of the window showing `bufnr`.
+{depth} "`(outermost)`"|"any"? Default: "outermost". Node scopes only.
+"outermost" is the scope farthest from the position, "any" is the nearest.
+
+                                                            *treescope.ListOpts*
+Class ~
+{treescope.ListOpts}
+Fields ~
+{bufnr} `(integer?)` Default: current buffer.
+{depth} "`(outermost)`"|"any"? Default: "outermost". "outermost" skips
+nested scopes, "any" includes them.
+
+                                                            *treescope.GotoOpts*
+Class ~
+{treescope.GotoOpts}
+Fields ~
+{depth} "`(outermost)`"|"any"? Default: "outermost". "outermost" skips
+nested scopes, "any" stops at them.
+{count} `(integer?)` Default: 1. Scopes to step over. No-op if fewer than
+count scopes exist in that direction.
+{set_jump} `(boolean?)` Default: false. Whether to push a |jumplist| entry.
+
+                                                      *treescope.SetLoclistOpts*
+Class ~
+{treescope.SetLoclistOpts}
+Fields ~
+{bufnr} `(integer?)` Default: current buffer.
+{depth} "`(outermost)`"|"any"? Default: "outermost". "outermost" skips
+nested scopes, "any" includes them.
+{open} `(boolean?)` Default: false. Open the location list after populating.
 
 
  vim:tw=78:ts=8:noet:ft=help:norl:

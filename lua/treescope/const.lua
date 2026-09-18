@@ -1,9 +1,14 @@
 return {
   ---@enum const.ScopeIds
   ScopeIds = {
-    OUTERMOST_FUNCTION = "outermost_function",
-    OUTERMOST_CLASS = "outermost_class",
+    FUNCTION = "function",
+    CLASS = "class",
     NAMESPACE = "namespace",
     YQ_PATH = "yq_path",
+  },
+  ---@enum const.Depth
+  Depth = {
+    OUTERMOST = "outermost",
+    ANY = "any",
   },
 }

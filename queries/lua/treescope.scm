@@ -1,32 +1,32 @@
 ; Case: function foo() end
-(function_declaration name: (identifier) @treescope_outermost_function)
+(function_declaration name: (identifier) @treescope_function)
 
 ; Case: function M.foo() end
 (function_declaration
   name: (dot_index_expression
-          field: (identifier) @treescope_outermost_function))
+          field: (identifier) @treescope_function))
 
 ; Case: function obj:foo() end
 (function_declaration
-  name: (method_index_expression method: (identifier) @treescope_outermost_function))
+  name: (method_index_expression method: (identifier) @treescope_function))
 
 ; Case: foo = function() end
 (assignment_statement
-  (variable_list name: (identifier) @treescope_outermost_function)
+  (variable_list name: (identifier) @treescope_function)
   (expression_list value: (function_definition)))
 
 ; Case: { foo = function() end }
 (field
-  name: (identifier) @treescope_outermost_function
+  name: (identifier) @treescope_function
   value: (function_definition))
 
 ; Case: T["key"] = function() end
 ; Case: T["base"]["key"] = function() end
 (assignment_statement
   (variable_list
-    name: (bracket_index_expression) @treescope_outermost_function)
+    name: (bracket_index_expression) @treescope_function)
   (expression_list value: (function_definition)))
 
 ; Case: foo.bar = function() end
-(assignment_statement (variable_list) @treescope_outermost_function
+(assignment_statement (variable_list) @treescope_function
                       (expression_list value: (function_definition)))

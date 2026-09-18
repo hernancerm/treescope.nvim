@@ -1,37 +1,40 @@
 ; Case: function name() {}
 (function_declaration
-  name: (identifier) @treescope_outermost_function)
+  name: (identifier) @treescope_function)
 
 ; Case: const/let name = () => {}
 (lexical_declaration
   (variable_declarator
-    name: (identifier) @treescope_outermost_function
+    name: (identifier) @treescope_function
     value: (arrow_function)))
 
 ; Case: const/let name = function() {}
 (lexical_declaration
   (variable_declarator
-    name: (identifier) @treescope_outermost_function
+    name: (identifier) @treescope_function
     value: (function_expression)))
 
 ; Case: var name = () => {}
 (variable_declaration
   (variable_declarator
-    name: (identifier) @treescope_outermost_function
+    name: (identifier) @treescope_function
     value: (arrow_function)))
 
 ; Case: var name = function() {}
 (variable_declaration
   (variable_declarator
-    name: (identifier) @treescope_outermost_function
+    name: (identifier) @treescope_function
     value: (function_expression)))
 
 ; Case: { name: function() {} }
 (pair
-  key: (property_identifier) @treescope_outermost_function
+  key: (property_identifier) @treescope_function
   value: (function_expression))
 
 ; Case: { name: () => {} }
 (pair
-  key: (property_identifier) @treescope_outermost_function
+  key: (property_identifier) @treescope_function
   value: (arrow_function))
+
+; Case: class Name {}
+(class_declaration name: (identifier) @treescope_class)

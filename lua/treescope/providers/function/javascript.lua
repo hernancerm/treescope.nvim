@@ -1,10 +1,9 @@
 local M = {}
 
-local ts = vim.treesitter
-
 ---@param node TSNode
+---@param bufnr integer
 ---@return boolean
-function M.is_function(node)
+function M.is_scope_node(node, bufnr)
   local t = node:type()
 
   if t == "function_declaration" then
@@ -85,19 +84,19 @@ end
 
 ---@param node TSNode
 ---@param bufnr integer
----@return string?
-function M.get_function_name(node, bufnr)
+---@return TSNode?
+function M.get_name_node(node, bufnr)
   local t = node:type()
 
   if t == "identifier" then
     -- Case: Cursor on variable name in: const foo = () => {}
-    return ts.get_node_text(node, bufnr)
+    return node
   end
 
   if t == "function_declaration" then
     -- Case: function foo() {}
     local name_node = node:field("name")[1]
-    return name_node and ts.get_node_text(name_node, bufnr)
+    return name_node
   end
 
   if t == "arrow_function" or t == "function_expression" then
@@ -109,25 +108,25 @@ function M.get_function_name(node, bufnr)
     if pt == "variable_declarator" then
       -- Case: const foo = () => {} or const foo = function() {}
       local name_node = parent:field("name")[1]
-      return name_node and ts.get_node_text(name_node, bufnr)
+      return name_node
     end
     if pt == "pair" then
       -- Case: { key: () => {} } or { key: function() {} }
       local key_node = parent:field("key")[1]
-      return key_node and ts.get_node_text(key_node, bufnr)
+      return key_node
     end
     return nil
   end
 
   if t == "property_identifier" then
     -- Case: Cursor on key in: { key: function() {} } or { key: () => {} }
-    return ts.get_node_text(node, bufnr)
+    return node
   end
 
   if t == "pair" then
     -- Case: Cursor on `:` in: { key: function() {} } or { key: () => {} }
     local key_node = node:field("key")[1]
-    return key_node and ts.get_node_text(key_node, bufnr)
+    return key_node
   end
 
   return nil
@@ -206,7 +205,7 @@ function M.normalize_node(node)
   return node
 end
 
----@type OutermostFunctionProvider
+---@type NodeScopeProvider
 local _ = M
 
 return M

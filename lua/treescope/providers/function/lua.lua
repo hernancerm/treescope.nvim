@@ -1,10 +1,9 @@
 local M = {}
 
-local ts = vim.treesitter
-
 ---@param node TSNode
+---@param bufnr integer
 ---@return boolean
-function M.is_function(node)
+function M.is_scope_node(node, bufnr)
   local t = node:type()
 
   if t == "function_declaration" or t == "function_definition" then
@@ -62,21 +61,21 @@ end
 
 ---@param node TSNode
 ---@param bufnr integer
----@return string?
-function M.get_function_name(node, bufnr)
+---@return TSNode?
+function M.get_name_node(node, bufnr)
   local t = node:type()
 
   if t == "identifier" then
     -- Case: Cursor on variable name in: local foo = function() end
     -- or in: foo = function() end
-    return ts.get_node_text(node, bufnr)
+    return node
   end
 
   if t == "function_declaration" then
     -- Case: function foo() end
     local name_node = node:field("name")[1]
     if name_node then
-      return ts.get_node_text(name_node, bufnr)
+      return name_node
     end
   end
 
@@ -89,7 +88,7 @@ function M.get_function_name(node, bufnr)
       if var_list and var_list:type() == "variable_list" then
         local name_node = var_list:named_child(0)
         if name_node then
-          return ts.get_node_text(name_node, bufnr)
+          return name_node
         end
       end
     end
@@ -99,7 +98,7 @@ function M.get_function_name(node, bufnr)
     if field and field:type() == "field" then
       local name_node = field:field("name")[1]
       if name_node then
-        return ts.get_node_text(name_node, bufnr)
+        return name_node
       end
     end
   end
@@ -160,7 +159,7 @@ function M.normalize_node(node)
   return node
 end
 
----@type OutermostFunctionProvider
+---@type NodeScopeProvider
 local _ = M
 
 return M

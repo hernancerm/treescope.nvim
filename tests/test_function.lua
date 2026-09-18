@@ -17,7 +17,7 @@ local T = new_set({
   },
 })
 
-T["e2e_outermost_function"] = new_set({})
+T["e2e_function"] = new_set({})
 
 -- Helper for pre_case hook.
 local function create_language_pre_case(lang, filename, filetype)
@@ -31,7 +31,7 @@ local function create_language_pre_case(lang, filename, filetype)
       child.lua("treescope.setup()")
     end
     -- Open test file and set filetype explicitly.
-    local resource_file = vim.fs.joinpath(h.resources_dir, "outermost_function", filename)
+    local resource_file = vim.fs.joinpath(h.resources_dir, "function", filename)
     child.cmd(string.format("edit %s | set filetype=%s", resource_file, filetype))
   end
 end
@@ -61,7 +61,7 @@ local function create_language_test_set(lang, filename, filetype, test_cases)
   })
   test_set["parametrized"] = function(marker, expected)
     h.set_cursor_from_marker(marker, child)
-    local text = child.lua_get("treescope.outermost_function().text")
+    local text = child.lua_get('treescope.get("function").text')
     h.assert_scope(expected, text)
   end
   return test_set
@@ -118,7 +118,7 @@ local javascript_test_cases = {
   },
 }
 
-T["e2e_outermost_function"]["javascript"] =
+T["e2e_function"]["javascript"] =
   create_language_test_set("javascript", "javascript.txt", "javascript", javascript_test_cases)
 
 local clojure_test_cases = {
@@ -150,7 +150,7 @@ local clojure_test_cases = {
   },
 }
 
-T["e2e_outermost_function"]["clojure"] =
+T["e2e_function"]["clojure"] =
   create_language_test_set("clojure", "clojure.txt", "clojure", clojure_test_cases)
 
 local typescript_test_cases = {
@@ -204,7 +204,7 @@ local typescript_test_cases = {
   },
 }
 
-T["e2e_outermost_function"]["typescript"] =
+T["e2e_function"]["typescript"] =
   create_language_test_set("typescript", "typescript.txt", "typescript", typescript_test_cases)
 
 -- Same cases for both React filetypes: they share the JavaScript provider and only differ in the
@@ -248,14 +248,14 @@ local function react_test_cases(prefix)
   }
 end
 
-T["e2e_outermost_function"]["javascriptreact"] = create_language_test_set(
+T["e2e_function"]["javascriptreact"] = create_language_test_set(
   "javascript",
   "javascriptreact.txt",
   "javascriptreact",
   react_test_cases("jsx")
 )
 
-T["e2e_outermost_function"]["typescriptreact"] =
+T["e2e_function"]["typescriptreact"] =
   create_language_test_set("tsx", "typescriptreact.txt", "typescriptreact", react_test_cases("tsx"))
 
 local lua_test_cases = {
@@ -348,8 +348,7 @@ local lua_test_cases = {
   },
 }
 
-T["e2e_outermost_function"]["lua"] =
-  create_language_test_set("lua", "lua.txt", "lua", lua_test_cases)
+T["e2e_function"]["lua"] = create_language_test_set("lua", "lua.txt", "lua", lua_test_cases)
 
 local java_test_cases = {
   ["3f7a2b1c"] = { expected = nil, note = "top-level" },
@@ -373,8 +372,7 @@ local java_test_cases = {
   },
 }
 
-T["e2e_outermost_function"]["java"] =
-  create_language_test_set("java", "java.txt", "java", java_test_cases)
+T["e2e_function"]["java"] = create_language_test_set("java", "java.txt", "java", java_test_cases)
 
 local python_test_cases = {
   ["3f7a2b1c"] = { expected = nil, note = "top-level" },
@@ -397,7 +395,7 @@ local python_test_cases = {
   ["6i4p8v2w"] = { expected = "methodWithNested", note = "method with nested function definition" },
 }
 
-T["e2e_outermost_function"]["python"] =
+T["e2e_function"]["python"] =
   create_language_test_set("python", "python.txt", "python", python_test_cases)
 
 return T

@@ -1,89 +1,56 @@
 local M = {}
 
---- Returns provider and Tree-sitter lang for required parser.
----@param filetype string
----@return OutermostFunctionProvider?
----@return string?
-function M.get_outermost_function_provider(filetype)
-  local base = "treescope.providers.outermost_function."
-  local supported_filetypes = {
-    "lua",
-    "java",
-    "python",
-    "clojure",
-    "javascript",
-    "javascriptreact",
-    "typescript",
-    "typescriptreact",
-  }
-  -- Filetypes with no provider module of their own, and/or whose Tree-sitter
-  -- language name differs from the filetype name (`typescriptreact` → `tsx`).
-  local aliases = {
-    typescript = { provider = "javascript", lang = "typescript" },
+-- Per scope, the supported filetypes. An empty entry means the provider module
+-- and the Tree-sitter language are both named after the filetype. Otherwise
+-- `provider` names the module and `lang` the Tree-sitter language. Getting
+-- `lang` right matters: it is fed to `vim.treesitter.get_parser()` and to
+-- `vim.treesitter.query.get()`, so a wrong name silently yields an empty scope.
+local registry = {
+  ["function"] = {
+    lua = {},
+    java = {},
+    python = {},
+    clojure = {},
+    javascript = {},
+    typescript = { provider = "javascript" },
     javascriptreact = { provider = "javascript", lang = "javascript" },
     typescriptreact = { provider = "javascript", lang = "tsx" },
-  }
-  if not vim.tbl_contains(supported_filetypes, filetype) then
-    return
-  end
-  local alias = aliases[filetype]
-  local provider = require(base .. (alias and alias.provider or filetype))
-  local lang = alias and alias.lang or filetype
-  return provider, lang
-end
+  },
+  class = {
+    java = {},
+    python = {},
+    javascript = {},
+    typescript = { provider = "javascript" },
+  },
+  yq_path = {
+    yaml = {},
+    json = {},
+    jsonc = { provider = "json", lang = "json" },
+  },
+  namespace = {
+    clojure = {},
+    java = {},
+  },
+}
 
---- Returns provider and Tree-sitter lang for required parser.
----@param filetype string
----@return YqPathProvider?
----@return string?
-function M.get_yq_path_provider(filetype)
-  local base = "treescope.providers.yq_path."
-  local supported_filetypes = { "yaml", "json", "jsonc" }
-  if not vim.tbl_contains(supported_filetypes, filetype) then
+--- Returns the provider and the Tree-sitter language name for {scope_id} in
+--- {filetype}, or nothing when the filetype is not supported.
+---@param scope_id const.ScopeIds
+---@param filetype string?
+---@return table? provider
+---@return string? lang
+function M.get(scope_id, filetype)
+  if not filetype or filetype == "" then
     return
   end
-  local provider
-  local lang
-  if filetype == "jsonc" then
-    provider = require(base .. "json")
-    lang = "json"
-  else
-    provider = require(base .. filetype)
-    lang = filetype
-  end
-  return provider, lang
-end
-
---- Returns provider and Tree-sitter lang for required parser.
----@param filetype string
----@return OutermostClassProvider?
----@return string?
-function M.get_outermost_class_provider(filetype)
-  local base = "treescope.providers.outermost_class."
-  local supported_filetypes = { "java", "python", "javascript", "typescript" }
-  if not vim.tbl_contains(supported_filetypes, filetype) then
+  local entry = registry[scope_id] and registry[scope_id][filetype]
+  if not entry then
     return
   end
-  local provider
-  if filetype == "typescript" then
-    provider = require(base .. "javascript")
-  else
-    provider = require(base .. filetype)
-  end
-  return provider, filetype
-end
-
---- Returns provider and Tree-sitter lang for required parser.
----@param filetype string
----@return NamespaceProvider?
----@return string?
-function M.get_namespace_provider(filetype)
-  local base = "treescope.providers.namespace."
-  local supported_filetypes = { "clojure", "java" }
-  if not vim.tbl_contains(supported_filetypes, filetype) then
-    return
-  end
-  return require(base .. filetype), filetype
+  local provider = require(
+    "treescope.providers." .. scope_id .. "." .. (entry.provider or filetype)
+  )
+  return provider, entry.lang or filetype
 end
 
 return M

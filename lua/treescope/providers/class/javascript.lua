@@ -1,22 +1,21 @@
 local M = {}
 
-local ts = vim.treesitter
-
 ---@param node TSNode
+---@param bufnr integer
 ---@return boolean
-function M.is_class(node)
+function M.is_scope_node(node, bufnr)
   return node:type() == "class_declaration"
 end
 
 ---@param node TSNode
 ---@param bufnr integer
----@return string?
-function M.get_class_name(node, bufnr)
+---@return TSNode?
+function M.get_name_node(node, bufnr)
   local name_node = node:field("name")[1]
-  return name_node and ts.get_node_text(name_node, bufnr)
+  return name_node
 end
 
----@type OutermostClassProvider
+---@type NodeScopeProvider
 local _ = M
 
 return M

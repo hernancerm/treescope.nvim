@@ -3,8 +3,9 @@ local M = {}
 local ts = vim.treesitter
 
 ---@param node TSNode
+---@param bufnr integer
 ---@return boolean
-function M.is_function(node)
+function M.is_scope_node(node, bufnr)
   if node:type() ~= "list_lit" then
     return false
   end
@@ -13,7 +14,7 @@ function M.is_function(node)
   if not first_child or first_child:type() ~= "sym_lit" then
     return false
   end
-  local sym_text = ts.get_node_text(first_child, 0)
+  local sym_text = ts.get_node_text(first_child, bufnr)
 
   -- Case: (defn name ...) or (deftest name ...) or (defmacro name ...)
   if sym_text == "defn" or sym_text == "deftest" or sym_text == "defmacro" then
@@ -32,7 +33,7 @@ function M.is_function(node)
     if not fn_first_child or fn_first_child:type() ~= "sym_lit" then
       return false
     end
-    return ts.get_node_text(fn_first_child, 0) == "fn"
+    return ts.get_node_text(fn_first_child, bufnr) == "fn"
   end
 
   return false
@@ -40,14 +41,14 @@ end
 
 ---@param node TSNode
 ---@param bufnr integer
----@return string?
-function M.get_function_name(node, bufnr)
+---@return TSNode?
+function M.get_name_node(node, bufnr)
   -- Get the first child to determine if it's "defn" or "def".
   local first_child = node:named_child(0)
   if not first_child or first_child:type() ~= "sym_lit" then
     return nil
   end
-  local sym_text = ts.get_node_text(first_child, 0)
+  local sym_text = ts.get_node_text(first_child, bufnr)
 
   -- Case: (defn name ...) or (deftest name ...) or (defmacro name ...)
   if sym_text == "defn" or sym_text == "deftest" or sym_text == "defmacro" then
@@ -55,7 +56,7 @@ function M.get_function_name(node, bufnr)
     if not name_node or name_node:type() ~= "sym_lit" then
       return nil
     end
-    return ts.get_node_text(name_node, bufnr)
+    return name_node
   end
 
   -- Case: (def name (fn ...))
@@ -64,13 +65,13 @@ function M.get_function_name(node, bufnr)
     if not name_node or name_node:type() ~= "sym_lit" then
       return nil
     end
-    return ts.get_node_text(name_node, bufnr)
+    return name_node
   end
 
   return nil
 end
 
----@type OutermostFunctionProvider
+---@type NodeScopeProvider
 local _ = M
 
 return M

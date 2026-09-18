@@ -4,11 +4,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this plugin does
 
-`treescope.nvim` is a Neovim plugin that uses Tree-sitter to expose cursor scope information via a Lua API and optional buffer variables. The three scopes are:
+`treescope.nvim` is a Neovim plugin that uses Tree-sitter to expose "scopes" via a Lua API and optional buffer variables. A scope is a thing in the file, identified by a scope id:
 
-- `outermost_function` — name of the outermost function/method enclosing the cursor
-- `yq_path` — yq filter expression for the cursor position in YAML/JSON files
-- `namespace` — the namespace/package declared at the top of the file (Clojure `ns`, Java `package`)
+- `function`: the function/method enclosing the cursor
+- `class`: the class enclosing the cursor
+- `namespace`: the namespace/package declared at the top of the file (Clojure `ns`, Java `package`)
+- `yq_path`: yq filter expression for the cursor position in YAML/JSON files
+
+`function` and `class` are "node scopes": found by walking the tree up from a position. They honor `depth` (`"outermost"`, the default, or `"any"` for the nearest) and support navigation. `namespace` and `yq_path` are read-only via `get()`.
 
 ## Commands
 
@@ -16,77 +19,82 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 make test      # Run all tests (headless Neovim + mini.test)
 make testfmt   # Check formatting with stylua
 make testdocs  # Check docs are up to date
-make testci    # Run all CI checks (fmt + docs + tests)
+make ci        # Run all CI checks (fmt + docs + tests)
 make fmt       # Format code with stylua
 make docs      # Regenerate doc/treescope.txt from inline comments
 ```
 
-Dependencies (`deps/lua/`) are downloaded on first `make test` / `make docs`. Tree-sitter parsers are downloaded automatically during tests via nvim-treesitter and cached in `deps/parsers/`.
+Dependencies (`deps/`) are downloaded on first `make test` / `make docs`. Tree-sitter parsers are downloaded automatically during tests via nvim-treesitter and cached in `deps/parsers/`.
 
 To run a single test file:
 ```sh
-nvim --headless --noplugin -u ./scripts/minimal_init.lua -c "lua MiniTest.run_file('tests/test_e2e_outermost_function.lua')"
+nvim --headless --noplugin -u ./scripts/minimal_init.lua -c "lua MiniTest.run_file('tests/test_function.lua')"
 ```
 
 ## Architecture
 
 ### Public API (`lua/treescope/init.lua`)
 
-All three public functions (`outermost_function()`, `yq_path()`, `namespace()`) are thin wrappers that delegate immediately to the corresponding `scopes/` module (e.g. `require("treescope.scopes.outermost_function").get_value()`).
+Five functions, each taking a scope id first: `get(id, opts)`, `list(id, opts)`, `goto_prev(id, opts)`, `goto_next(id, opts)`, `set_loclist(id, opts)`. There is no per-scope sugar.
 
-`treescope.setup()` registers `CursorMoved` autocmds (via `vars_service`) that keep buf vars like `b:treescope_outermost_function` up to date. After setup, the module is also exported as `_G.Treescope` so statusline integrations can call it without a `require()`.
+`get()` and `list()` return `treescope.Scope` tables: `{ text, node, name_node }`. `name_node` is where navigation lands (the identifier, not the definition start, so Java does not land on `private`).
+
+`init.lua` owns the generic flow: validate the scope id, locate the provider, parse, resolve the position, then delegate to the scope module. `list()` is the navigation primitive: `goto_*` and `set_loclist` are built on it. Calling navigation on a scope whose module has no `list` warns via `vim.notify`.
+
+`treescope.setup()` registers `CursorMoved` autocmds (via `vars_service`) that keep buf vars like `b:treescope_function` set to `get(id).text`. A `buf_vars` entry can be a table `{ id, depth = "any" }`, which yields `b:treescope_function_any`. After setup, the module is also exported as `_G.Treescope`.
 
 ### Scopes layer (`lua/treescope/scopes/`)
 
-Each scope has its own module (`outermost_function.lua`, `yq_path.lua`, `namespace.lua`) that owns the full logic flow:
-1. Validate buffer and filetype
-2. Ask `provider_locator` for the right provider and Tree-sitter language name
-3. Parse the Tree-sitter tree and find the cursor node
-4. Delegate to the provider
+One module per scope id. Contract: `get(ctx, row, col, depth) -> Scope`, and optionally `list(ctx, depth) -> Scope[]`. `ctx` is `{ bufnr, lang, provider, root }`, built by `init.lua`. A scope without `list` does not support navigation, nothing else is needed to opt out.
 
-`scopes/outermost_function.lua` is significantly heavier than the other two: it also builds and returns the `goto_prev`, `goto_next`, and `set_loclist` closures. These use `vim.treesitter.query.get(lang, "treescope")` to iterate all `@treescope_outermost_function` captures, resolve each to its outermost function node via the provider, and walk the sorted list to find the target. `yq_path.lua` and `namespace.lua` are simpler: they return `{ text = ... }` and delegate directly to their provider.
+`function.lua` and `class.lua` are two-liners over `lua/treescope/node_scope.lua`, which holds the shared upward walk and the query-driven `list()`. They differ only in the capture name they pass (`treescope_function`, `treescope_class`).
 
 ### Provider system
 
-`lua/treescope/provider_locator.lua` maps filetypes to provider modules under `lua/treescope/providers/`.
+`lua/treescope/provider_locator.lua` is a single `registry` table: scope id, then filetype, then an optional `provider` module name and Tree-sitter `lang`. An empty entry means both are named after the filetype. Getting `lang` right matters: it is fed to both `vim.treesitter.get_parser()` and `vim.treesitter.query.get()`, so a wrong name silently yields an empty scope. Current aliases: `typescript` and the React filetypes use the JavaScript provider (`javascriptreact` → lang `javascript`, `typescriptreact` → lang `tsx`), `jsonc` uses the JSON provider with lang `json`.
 
-Provider directories:
-- `providers/outermost_function/` — one file per language (`lua`, `java`, `python`, `clojure`, `javascript`). Each implements the `OutermostFunctionProvider` interface: `is_function(node)`, `get_function_name(node, bufnr)`, and an optional `normalize_outermost_node(node)` (maps identifier nodes to their canonical function node so all cursor positions within the same function agree on the same TSNode).
-- `providers/yq_path/` — `yaml`, `json`. Each implements `get_path(node, bufnr)`.
-- `providers/namespace/` — `clojure.lua`, `java.lua`. Each implements `get_namespace(root, bufnr)`.
+Provider directories under `lua/treescope/providers/`:
+- `function/`, `class/`: implement `NodeScopeProvider`: `is_scope_node(node, bufnr)`, `get_name_node(node, bufnr)`, optional `normalize_node(node)`. `normalize_node` maps stand-in nodes (e.g. the identifier in Lua's `foo = function() end`, which sits outside the definition's range) to the canonical definition node so all cursor positions agree on the same TSNode.
+- `yq_path/`: `get_path(node, bufnr) -> string?`.
+- `namespace/`: `get_namespace(root, bufnr) -> node?, name_node?`.
 
 Interface definitions (for type checking only) live in `lua/treescope/interfaces/`.
 
-Some filetypes share existing providers rather than having their own files: TypeScript, JSX (`javascriptreact`) and TSX (`typescriptreact`) all use the JavaScript provider, and JSONC uses the JSON provider. This is handled by the alias tables in `provider_locator.lua`, which also map the filetype to the tree-sitter language name where the two differ — `javascriptreact` → `javascript`, `typescriptreact` → `tsx`, `jsonc` → `json`. Getting that language name right matters: the scopes layer feeds it to both `vim.treesitter.get_parser()` and `vim.treesitter.query.get()`, so a filetype name that is not a parser name silently yields an empty scope.
-
-TypeScript has its own `queries/typescript/treescope.scm` because it has a distinct tree-sitter grammar. TSX has a distinct grammar too, but its node types are identical for these captures, so `queries/tsx/treescope.scm` is a one-line `; inherits: typescript`. JSX needs no query file: it parses with the `javascript` grammar.
-
 ### Tree-sitter queries (`queries/`)
 
-Each supported `outermost_function` language has a `queries/<lang>/treescope.scm` file that captures function name identifiers with `@treescope_outermost_function`. These captures drive `goto_prev()`/`goto_next()` navigation: the scopes layer queries all captures, resolves each to its outermost function node via the provider, then walks the sorted match list to find the target boundary. All query files use `;;extends` so they extend nvim-treesitter's built-in queries for that language.
+`queries/<lang>/treescope.scm` captures name identifiers with `@treescope_function` and `@treescope_class`. These drive `list()`, and therefore all navigation: each capture is resolved to its scope node through the provider (honoring `depth`), then deduplicated by node start and sorted by name position. TypeScript has its own file because its grammar differs; `queries/tsx/treescope.scm` is a one-line `; inherits: typescript`. JSX needs no query file: it parses with the `javascript` grammar.
 
 ### Constants (`lua/treescope/const.lua`)
 
-Defines the augroup name and the `ScopeIds` enum (`outermost_function`, `yq_path`, `namespace`). Scope IDs must stay in sync with the public function names on the `treescope` table.
+`ScopeIds` (`function`, `class`, `namespace`, `yq_path`) and `Depth` (`outermost`, `any`). Scope ids must match the module names under `scopes/` and the directory names under `providers/`.
 
 ### Tests
 
-Tests use [mini.test](https://github.com/echasnovski/mini.test) and run in a child headless Neovim instance. Test files are in `tests/`, resource files (code snippets with cursor markers) are in `tests/resources/`.
+Tests use [mini.test](https://github.com/echasnovski/mini.test) and run in a child headless Neovim instance. Test files are in `tests/`, resource files (code snippets with cursor markers) are in `tests/resources/<scope_id>/`.
 
 Two resource file patterns are used:
 
-- **`outermost_function` and `yq_path`**: one file per language with embedded cursor markers (`-- cursor-3f7a2b1c`). The marker ID is the parametrize key; `h.set_cursor_from_marker(marker_id, child)` positions the cursor before each assertion. Markers can include an optional `[keys]` suffix (e.g., `-- cursor-3f7a2b1c[Ww]`) to execute normal-mode keystrokes after positioning.
+- **`function`, `class` and `yq_path`**: one file per language with embedded cursor markers (`-- cursor-3f7a2b1c`). The marker ID is the parametrize key; `h.set_cursor_from_marker(marker_id, child)` positions the cursor before each assertion. Markers can include an optional `[keys]` suffix (e.g., `-- cursor-3f7a2b1c[Ww]`) to execute normal-mode keystrokes after positioning.
 - **`namespace`**: one file per test case in `tests/resources/namespace/<lang>/`. Each file has a single cursor marker and is opened individually per test.
 
-### Adding a new `outermost_function` language
+`tests/test_navigation.lua` covers `list()`, `depth`, `goto_*`, `set_loclist` and the explicit `bufnr`/`pos` options, reusing the `function` and `class` resource files.
+
+### Adding a new language to a node scope
 
 Touch these five places:
-1. `lua/treescope/providers/outermost_function/<lang>.lua` — implement `is_function(node)`, `get_function_name(node, bufnr)`, and optionally `normalize_node(node)`.
-2. `queries/<lang>/treescope.scm` — capture function name identifiers with `@treescope_outermost_function`. Use `;;extends`.
-3. `lua/treescope/provider_locator.lua` — add the filetype to `supported_filetypes` and wire up the provider.
-4. `tests/resources/outermost_function/<lang>.txt` — resource file with cursor markers covering all function patterns.
-5. `tests/test_outermost_function.lua` — test cases table and `create_language_test_set` call.
+1. `lua/treescope/providers/<scope_id>/<lang>.lua`: implement `NodeScopeProvider`.
+2. `queries/<lang>/treescope.scm`: capture name identifiers with `@treescope_<scope_id>`.
+3. `lua/treescope/provider_locator.lua`: add the filetype under the scope id in `registry`.
+4. `tests/resources/<scope_id>/<lang>.txt`: resource file with cursor markers covering all patterns.
+5. `tests/test_<scope_id>.lua`: test cases table and `create_language_test_set` call.
+
+### Adding a new scope
+
+1. Add the id to `const.ScopeIds`.
+2. Add `lua/treescope/scopes/<id>.lua` with `get()`. For a node scope, copy `scopes/function.lua` and change the capture name; `list()` and navigation come for free once queries capture `@treescope_<id>`.
+3. Add providers under `lua/treescope/providers/<id>/` and the filetypes to `registry` in `provider_locator.lua`.
+4. Document the scope under `treescope-scopes` in `init.lua` and run `make docs`.
 
 ### Docs
 
-`doc/treescope.txt` is auto-generated by `mini.doc` from structured inline comments in `lua/treescope/init.lua`. Do not edit `doc/treescope.txt` directly; edit the source comments and run `make docs`.
+`doc/treescope.txt` is auto-generated by `mini.doc` from structured inline comments in `lua/treescope/init.lua`. Do not edit `doc/treescope.txt` directly; edit the source comments and run `make docs`. Private helpers in `init.lua` must carry `---@private` or they end up in the help file.

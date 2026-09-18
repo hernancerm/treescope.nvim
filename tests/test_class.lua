@@ -17,7 +17,7 @@ local T = new_set({
   },
 })
 
-T["e2e_outermost_class"] = new_set({})
+T["e2e_class"] = new_set({})
 
 local function create_language_pre_case(lang, filename, filetype)
   return function()
@@ -27,7 +27,7 @@ local function create_language_pre_case(lang, filename, filetype)
       child.lua([[treescope = require("treescope")]])
       child.lua("treescope.setup()")
     end
-    local resource_file = vim.fs.joinpath(h.resources_dir, "outermost_class", filename)
+    local resource_file = vim.fs.joinpath(h.resources_dir, "class", filename)
     child.cmd(string.format("edit %s | set filetype=%s", resource_file, filetype))
   end
 end
@@ -54,7 +54,7 @@ local function create_language_test_set(lang, filename, filetype, test_cases)
   })
   test_set["parametrized"] = function(marker, expected)
     h.set_cursor_from_marker(marker, child)
-    local text = child.lua_get("treescope.outermost_class().text")
+    local text = child.lua_get('treescope.get("class").text')
     h.assert_scope(expected, text)
   end
   return test_set
@@ -72,8 +72,7 @@ local java_test_cases = {
   },
 }
 
-T["e2e_outermost_class"]["java"] =
-  create_language_test_set("java", "java.txt", "java", java_test_cases)
+T["e2e_class"]["java"] = create_language_test_set("java", "java.txt", "java", java_test_cases)
 
 local python_test_cases = {
   ["3f7a2b1c"] = { expected = nil, note = "above all classes" },
@@ -85,7 +84,7 @@ local python_test_cases = {
   ["6i4p8v2w"] = { expected = "Decorated", note = "inside decorated class body" },
 }
 
-T["e2e_outermost_class"]["python"] =
+T["e2e_class"]["python"] =
   create_language_test_set("python", "python.txt", "python", python_test_cases)
 
 local javascript_test_cases = {
@@ -101,10 +100,10 @@ local javascript_test_cases = {
   ["1n3b5j7c"] = { expected = nil, note = "inside anonymous class expression" },
 }
 
-T["e2e_outermost_class"]["javascript"] =
+T["e2e_class"]["javascript"] =
   create_language_test_set("javascript", "javascript.txt", "javascript", javascript_test_cases)
 
-T["e2e_outermost_class"]["typescript"] =
+T["e2e_class"]["typescript"] =
   create_language_test_set("typescript", "typescript.txt", "typescript", javascript_test_cases)
 
 return T

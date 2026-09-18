@@ -61,7 +61,7 @@ local function create_language_test_set(lang, filename, filetype, test_cases)
   })
   test_set["parametrized"] = function(marker, expected)
     h.set_cursor_from_marker(marker, child)
-    local text = child.lua_get("treescope.yq_path().text")
+    local text = child.lua_get('treescope.get("yq_path").text')
     h.assert_scope(expected, text)
   end
   return test_set

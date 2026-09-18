@@ -63,3 +63,21 @@ const xyz = {
     console.log("hi")
   }
 }
+
+// cursor-vt1a2b3c[W]
+describe("cart", () => {
+  // cursor-vt2b3c4d
+  // cursor-vt3c4d5e[W]
+  it("adds an item", () => {
+    // cursor-vt4d5e6f
+    const helper = (): void => {
+      // cursor-vt5e6f7g
+    };
+  });
+  describe.skip("checkout", () => {
+    // cursor-vt6f7g8h[3W]
+    test.only("pays", async function (): Promise<void> {
+      // cursor-vt7g8h9i
+    }, 10000);
+  });
+});

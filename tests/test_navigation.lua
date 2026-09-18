@@ -226,4 +226,41 @@ T["is_supported"]["accepts bufnr"] = function()
   eq(child.lua_get([[treescope.is_supported("function", { bufnr = ... })]], { bufnr }), true)
 end
 
+T["vitest"] = new_set({
+  hooks = {
+    pre_case = function()
+      open("javascript", "function", "javascript.txt")
+    end,
+  },
+})
+
+T["vitest"]["get with depth any returns the test title"] = function()
+  h.set_cursor_from_marker("vt4d5e6f", child)
+  eq(child.lua_get([[treescope.get("function", { depth = "any" }).text]]), "adds an item")
+  h.set_cursor_from_marker("vt7g8h9i", child)
+  eq(child.lua_get([[treescope.get("function", { depth = "any" }).text]]), "pays")
+  h.set_cursor_from_marker("vt3c4d5e", child)
+  eq(child.lua_get([[treescope.get("function", { depth = "any" }).text]]), "adds an item")
+end
+
+T["vitest"]["list includes suites and tests"] = function()
+  local all = texts("function", { depth = "any" })
+  eq(vim.list_slice(all, #all - 4, #all), {
+    "cart",
+    "adds an item",
+    "helper",
+    "checkout",
+    "pays",
+  })
+  local outermost = texts("function")
+  eq(outermost[#outermost], "cart")
+end
+
+T["vitest"]["goto lands on the title"] = function()
+  h.set_cursor_from_marker("vt2b3c4d", child)
+  child.lua([[treescope.goto_next("function", { depth = "any" })]])
+  local row, col = unpack(cursor())
+  eq(child.api.nvim_buf_get_lines(0, row - 1, row, false)[1]:sub(col + 1, col + 12), "adds an item")
+end
+
 return T

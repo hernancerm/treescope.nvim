@@ -55,6 +55,7 @@ One module per scope id. Contract: `get(ctx, row, col, depth) -> Scope`, and opt
 
 Provider directories under `lua/treescope/providers/`:
 - `function/`, `class/`: implement `NodeScopeProvider`: `is_scope_node(node, bufnr)`, `get_name_node(node, bufnr)`, optional `normalize_node(node)`. `normalize_node` maps stand-in nodes (e.g. the identifier in Lua's `foo = function() end`, which sits outside the definition's range) to the canonical definition node so all cursor positions agree on the same TSNode.
+  The JavaScript provider also treats `describe`/`it`/`test`/`suite` callbacks as functions named by their title string, so vitest and jest files work with `depth = "any"` for the test under the cursor.
 - `yq_path/`: `get_path(node, bufnr) -> string?`.
 - `namespace/`: `get_namespace(root, bufnr) -> node?, name_node?`.
 

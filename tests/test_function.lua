@@ -116,6 +116,13 @@ local javascript_test_cases = {
     expected = "someFunction2",
     note = "arrow function assigned to field - cursor in function body",
   },
+  ["vt1a2b3c"] = { expected = "cart", note = "vitest describe - cursor on call" },
+  ["vt2b3c4d"] = { expected = "cart", note = "vitest describe - cursor in body" },
+  ["vt3c4d5e"] = { expected = "cart", note = "vitest it - cursor on call, outermost is describe" },
+  ["vt4d5e6f"] = { expected = "cart", note = "vitest it - cursor in body, outermost is describe" },
+  ["vt5e6f7g"] = { expected = "cart", note = "helper inside it, outermost is describe" },
+  ["vt6f7g8h"] = { expected = "cart", note = "test.only title - outermost is describe" },
+  ["vt7g8h9i"] = { expected = "cart", note = "test.only body - outermost is describe" },
 }
 
 T["e2e_function"]["javascript"] =
@@ -202,6 +209,13 @@ local typescript_test_cases = {
     expected = "someFunction2",
     note = "arrow function assigned to field - cursor in function body",
   },
+  ["vt1a2b3c"] = { expected = "cart", note = "vitest describe - cursor on call" },
+  ["vt2b3c4d"] = { expected = "cart", note = "vitest describe - cursor in body" },
+  ["vt3c4d5e"] = { expected = "cart", note = "vitest it - cursor on call, outermost is describe" },
+  ["vt4d5e6f"] = { expected = "cart", note = "vitest it - cursor in body, outermost is describe" },
+  ["vt5e6f7g"] = { expected = "cart", note = "helper inside it, outermost is describe" },
+  ["vt6f7g8h"] = { expected = "cart", note = "test.only title - outermost is describe" },
+  ["vt7g8h9i"] = { expected = "cart", note = "test.only body - outermost is describe" },
 }
 
 T["e2e_function"]["typescript"] =

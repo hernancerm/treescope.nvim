@@ -243,6 +243,19 @@ treescope.default_config = {
 --- <
 --- With `depth = "any"`, the scope is "baz".
 ---
+--- In JavaScript and TypeScript, the callbacks of `describe`, `it`, `test` and
+--- `suite` (and their `.only`, `.skip` and `.todo` forms) are functions named
+--- by their title. So in a vitest, jest or mocha file:
+--- >typescript
+---   describe("cart", () => {
+---     it("adds an item", () => {
+---       // <Cursor Here>.
+---     });
+---   });
+--- <
+--- the default depth gives "cart" and `depth = "any"` gives "adds an item".
+--- Handy to run the test under the cursor, e.g. `vitest run <file> -t <text>`.
+---
 --- Languages: lua, java, python, clojure, javascript, typescript,
 --- javascriptreact (uses the javascript parser), typescriptreact (uses the
 --- tsx parser).

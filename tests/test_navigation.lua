@@ -206,4 +206,24 @@ T["set_loclist"]["lists classes"] = function()
   eq(child.fn.getloclist(0, { title = 0 }).title, "[Treescope] class")
 end
 
+T["is_supported"] = new_set({})
+
+T["is_supported"]["true for a supported filetype"] = function()
+  open("lua", "function", "lua.txt")
+  eq(child.lua_get([[treescope.is_supported("function")]]), true)
+  eq(child.lua_get([[treescope.is_supported("class")]]), false)
+end
+
+T["is_supported"]["false for an unsupported filetype"] = function()
+  child.cmd("enew | set filetype=text")
+  eq(child.lua_get([[treescope.is_supported("function")]]), false)
+end
+
+T["is_supported"]["accepts bufnr"] = function()
+  open("lua", "function", "lua.txt")
+  local bufnr = child.api.nvim_get_current_buf()
+  child.cmd("enew | set filetype=text")
+  eq(child.lua_get([[treescope.is_supported("function", { bufnr = ... })]], { bufnr }), true)
+end
+
 return T

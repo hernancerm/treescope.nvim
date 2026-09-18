@@ -37,6 +37,29 @@ Some things to notice:
 - The plugin sets the Lua global `Treescope`, equivalent to `require("treescope")`.
 - The plugin does **not** create keymaps.
 
+## Keymaps
+
+The plugin creates no keymaps. A minimal setup to navigate functions with `]m` and `[m`, and list
+them with `<Leader>o`:
+
+```lua
+-- Python's ftplugin sets buffer-local [m and ]m, which would shadow these.
+vim.g.no_python_maps = true
+
+vim.keymap.set({ "n", "x", "o" }, "]m", function()
+  Treescope.goto_next("function", { count = vim.v.count1, set_jump = true })
+end)
+vim.keymap.set({ "n", "x", "o" }, "[m", function()
+  Treescope.goto_prev("function", { count = vim.v.count1, set_jump = true })
+end)
+-- Mnemonic: o for outline.
+vim.keymap.set("n", "<Leader>o", function()
+  Treescope.set_loclist("function", { open = true })
+end)
+```
+
+See `:help treescope-keymaps` for keeping Vim's built-in `]m` as a fallback in unsupported filetypes.
+
 ## Default config
 
 ```lua

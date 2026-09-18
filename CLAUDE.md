@@ -35,7 +35,7 @@ nvim --headless --noplugin -u ./scripts/minimal_init.lua -c "lua MiniTest.run_fi
 
 ### Public API (`lua/treescope/init.lua`)
 
-Five functions, each taking a scope id first: `get(id, opts)`, `list(id, opts)`, `goto_prev(id, opts)`, `goto_next(id, opts)`, `set_loclist(id, opts)`. There is no per-scope sugar.
+Six functions, each taking a scope id first: `get(id, opts)`, `list(id, opts)`, `goto_prev(id, opts)`, `goto_next(id, opts)`, `set_loclist(id, opts)`, `is_supported(id, opts)`. There is no per-scope sugar.
 
 `get()` and `list()` return `treescope.Scope` tables: `{ text, node, name_node }`. `name_node` is where navigation lands (the identifier, not the definition start, so Java does not land on `private`).
 

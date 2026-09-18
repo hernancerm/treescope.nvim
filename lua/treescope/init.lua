@@ -8,9 +8,10 @@
 --- 2. Quickstart                                             |treescope-quickstart|
 --- 3. Configuration                                       |treescope-configuration|
 --- 4. Statusline integration                                 |treescope-statusline|
---- 5. Scopes                                                     |treescope-scopes|
---- 6. Functions                                               |treescope-functions|
---- 7. Types                                                       |treescope-types|
+--- 5. Keymaps                                                   |treescope-keymaps|
+--- 6. Scopes                                                     |treescope-scopes|
+--- 7. Functions                                               |treescope-functions|
+--- 8. Types                                                       |treescope-types|
 ---
 --- ==============================================================================
 --- #tag treescope
@@ -149,6 +150,47 @@ treescope.default_config = {
 --- This setup works nicely without a statusline plugin, it also works well with
 --- the plugin https://github.com/hernancerm/bareline.nvim and quite likely
 --- also plays well with many other statusline plugins.
+
+--- #delimiter
+--- #tag treescope-keymaps
+--- Keymaps ~
+
+--- The plugin creates no keymaps. To navigate functions with `]m` and `[m` and
+--- list them with `<Leader>o`:
+--- >
+---   -- Python's ftplugin sets buffer-local [m and ]m, which would shadow these.
+---   vim.g.no_python_maps = true
+---
+---   vim.keymap.set({ "n", "x", "o" }, "]m", function()
+---     Treescope.goto_next("function", { count = vim.v.count1, set_jump = true })
+---   end)
+---   vim.keymap.set({ "n", "x", "o" }, "[m", function()
+---     Treescope.goto_prev("function", { count = vim.v.count1, set_jump = true })
+---   end)
+---   -- Mnemonic: o for outline.
+---   vim.keymap.set("n", "<Leader>o", function()
+---     Treescope.set_loclist("function", { open = true })
+---   end)
+--- <
+--- `count` makes `3]m` work and `set_jump` makes `<C-o>` go back. Mapping in
+--- "x" and "o" modes makes `d]m` work.
+---
+--- Vim has a built-in |]m| motion for Java-like languages. The maps above
+--- replace it everywhere, so in a filetype Treescope does not support, `]m`
+--- does nothing. To keep the built-in as a fallback:
+--- >
+---   local function map_motion(lhs, goto_fn)
+---     vim.keymap.set({ "n", "x", "o" }, lhs, function()
+---       if Treescope.is_supported("function") then
+---         goto_fn("function", { count = vim.v.count1, set_jump = true })
+---       else
+---         vim.cmd.normal({ vim.v.count1 .. lhs, bang = true })
+---       end
+---     end)
+---   end
+---   map_motion("]m", Treescope.goto_next)
+---   map_motion("[m", Treescope.goto_prev)
+--- <
 
 --- #delimiter
 --- #tag treescope-scopes
@@ -372,6 +414,27 @@ local function notify_not_navigable(scope_id)
   )
 end
 
+--- Whether a scope is supported in a buffer, i.e. Treescope has a provider
+--- for the buffer's 'filetype'. Does not check that the Tree-sitter parser
+--- is installed. Useful to fall back to a built-in motion in a keymap, see
+--- |treescope-keymaps|.
+---@param scope_id string See |treescope-scopes|.
+---@param opts treescope.IsSupportedOpts?
+---@return boolean
+function treescope.is_supported(scope_id, opts)
+  get_scope_module(scope_id)
+  local bufnr = (opts and opts.bufnr) or 0
+  if bufnr == 0 then
+    bufnr = vim.api.nvim_get_current_buf()
+  end
+  if not vim.api.nvim_buf_is_valid(bufnr) then
+    return false
+  end
+  local provider =
+    require("treescope.provider_locator").get(scope_id, vim.bo[bufnr].filetype)
+  return provider ~= nil
+end
+
 --- Get the scope at a position.
 ---@param scope_id string See |treescope-scopes|.
 ---@param opts treescope.GetOpts?
@@ -514,6 +577,10 @@ end
 --- the "yq_path" scope: its path is built from all ancestors.
 ---@field name_node TSNode? The name inside `node`, e.g. the identifier. This is
 --- where navigation lands. Nil when `node` is nil or the scope is anonymous.
+
+--- #tag treescope.IsSupportedOpts
+---@class treescope.IsSupportedOpts
+---@field bufnr integer? Default: current buffer.
 
 --- #tag treescope.GetOpts
 ---@class treescope.GetOpts

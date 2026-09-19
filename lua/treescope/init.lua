@@ -355,7 +355,7 @@ end
 
 ---@private
 ---@class treescope.Ctx
----@field bufnr integer
+---@field buf integer
 ---@field lang string
 ---@field provider table
 ---@field root TSNode
@@ -367,19 +367,19 @@ end
 ---@param opts table?
 ---@return treescope.Ctx?
 local function get_ctx(scope_id, opts)
-  local bufnr = (opts and opts.bufnr) or 0
-  if bufnr == 0 then
-    bufnr = vim.api.nvim_get_current_buf()
+  local buf = (opts and opts.buf) or 0
+  if buf == 0 then
+    buf = vim.api.nvim_get_current_buf()
   end
-  if not vim.api.nvim_buf_is_valid(bufnr) then
+  if not vim.api.nvim_buf_is_valid(buf) then
     return
   end
   local provider, lang =
-    require("treescope.provider_locator").get(scope_id, vim.bo[bufnr].filetype)
+    require("treescope.provider_locator").get(scope_id, vim.bo[buf].filetype)
   if not provider or not lang then
     return
   end
-  local ok, parser = pcall(vim.treesitter.get_parser, bufnr, lang)
+  local ok, parser = pcall(vim.treesitter.get_parser, buf, lang)
   if not ok or not parser then
     return
   end
@@ -391,23 +391,23 @@ local function get_ctx(scope_id, opts)
   if not root then
     return
   end
-  return { bufnr = bufnr, lang = lang, provider = provider, root = root }
+  return { buf = buf, lang = lang, provider = provider, root = root }
 end
 
 ---@private
 --- Position to resolve, 0-indexed. Defaults to the cursor of the current window
---- when it shows {bufnr}, else to the cursor of any window showing {bufnr}.
----@param bufnr integer
+--- when it shows {buf}, else to the cursor of any window showing {buf}.
+---@param buf integer
 ---@param opts table?
 ---@return integer? row
 ---@return integer? col
-local function get_pos(bufnr, opts)
+local function get_pos(buf, opts)
   if opts and opts.pos then
     return opts.pos[1] - 1, opts.pos[2]
   end
   local win = vim.api.nvim_get_current_win()
-  if vim.api.nvim_win_get_buf(win) ~= bufnr then
-    win = vim.fn.bufwinid(bufnr)
+  if vim.api.nvim_win_get_buf(win) ~= buf then
+    win = vim.fn.bufwinid(buf)
     if win == -1 then
       return
     end
@@ -453,15 +453,15 @@ end
 ---@return boolean
 function treescope.is_supported(scope_id, opts)
   get_scope_module(scope_id)
-  local bufnr = (opts and opts.bufnr) or 0
-  if bufnr == 0 then
-    bufnr = vim.api.nvim_get_current_buf()
+  local buf = (opts and opts.buf) or 0
+  if buf == 0 then
+    buf = vim.api.nvim_get_current_buf()
   end
-  if not vim.api.nvim_buf_is_valid(bufnr) then
+  if not vim.api.nvim_buf_is_valid(buf) then
     return false
   end
   local provider =
-    require("treescope.provider_locator").get(scope_id, vim.bo[bufnr].filetype)
+    require("treescope.provider_locator").get(scope_id, vim.bo[buf].filetype)
   return provider ~= nil
 end
 
@@ -477,7 +477,7 @@ function treescope.get(scope_id, opts)
   if not ctx then
     return {}
   end
-  local row, col = get_pos(ctx.bufnr, opts)
+  local row, col = get_pos(ctx.buf, opts)
   if not row or not col then
     return {}
   end
@@ -571,13 +571,13 @@ end
 ---@param opts treescope.SetLoclistOpts?
 function treescope.set_loclist(scope_id, opts)
   opts = opts or {}
-  local bufnr = opts.bufnr or vim.api.nvim_get_current_buf()
+  local buf = opts.buf or vim.api.nvim_get_current_buf()
   local scopes = treescope.list(scope_id, opts)
   local items = {}
   for _, scope in ipairs(scopes) do
     local row, col = get_scope_pos(scope)
     table.insert(items, {
-      bufnr = bufnr,
+      bufnr = buf,
       lnum = row + 1,
       col = col + 1,
       text = scope.text or "(anonymous)",
@@ -610,19 +610,19 @@ end
 
 --- #tag treescope.IsSupportedOpts
 ---@class treescope.IsSupportedOpts
----@field bufnr integer? Default: current buffer.
+---@field buf integer? Default: current buffer.
 
 --- #tag treescope.GetOpts
 ---@class treescope.GetOpts
----@field bufnr integer? Default: current buffer.
+---@field buf integer? Default: current buffer.
 ---@field pos integer[]? `{row, col}`, 1-indexed row and 0-indexed col like
---- |nvim_win_get_cursor()|. Default: cursor of the window showing `bufnr`.
+--- |nvim_win_get_cursor()|. Default: cursor of the window showing `buf`.
 ---@field depth "outermost"|"any"? Default: "outermost". Node scopes only.
 --- "outermost" is the scope farthest from the position, "any" is the nearest.
 
 --- #tag treescope.ListOpts
 ---@class treescope.ListOpts
----@field bufnr integer? Default: current buffer.
+---@field buf integer? Default: current buffer.
 ---@field depth "outermost"|"any"? Default: "outermost". "outermost" skips
 --- nested scopes, "any" includes them.
 
@@ -636,7 +636,7 @@ end
 
 --- #tag treescope.SetLoclistOpts
 ---@class treescope.SetLoclistOpts
----@field bufnr integer? Default: current buffer.
+---@field buf integer? Default: current buffer.
 ---@field depth "outermost"|"any"? Default: "outermost". "outermost" skips
 --- nested scopes, "any" includes them.
 ---@field open boolean? Default: false. Open the location list after populating.

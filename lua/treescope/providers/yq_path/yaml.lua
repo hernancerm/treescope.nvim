@@ -2,7 +2,7 @@ local M = {}
 
 -- Extract text from a scalar node.
 -- Handles nested flow_node -> plain_scalar -> string_scalar.
-local function extract_scalar_text(node, bufnr)
+local function extract_scalar_text(node, buf)
   if not node then
     return nil
   end
@@ -22,7 +22,7 @@ local function extract_scalar_text(node, bufnr)
   end
 
   -- Extract text from the actual scalar node.
-  local text = vim.treesitter.get_node_text(node, bufnr)
+  local text = vim.treesitter.get_node_text(node, buf)
 
   -- Remove surrounding quotes if present (YAML quoted strings).
   if text then
@@ -72,9 +72,9 @@ local function get_sequence_item_index(sequence_item_node)
 end
 
 ---@param node TSNode
----@param bufnr integer
+---@param buf integer
 ---@return string?
-function M.get_path(node, bufnr)
+function M.get_path(node, buf)
   -- Walk up the tree collecting path segments.
   local segments = {}
   ---@type TSNode?
@@ -88,7 +88,7 @@ function M.get_path(node, bufnr)
       -- Extract key name.
       local key_fields = current:field("key")
       if key_fields and key_fields[1] then
-        local key_text = extract_scalar_text(key_fields[1], bufnr)
+        local key_text = extract_scalar_text(key_fields[1], buf)
         if key_text then
           local formatted_key = format_key(key_text)
           if pending_index ~= nil then

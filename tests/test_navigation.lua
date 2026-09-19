@@ -107,13 +107,13 @@ T["get"]["depth any returns nearest class"] = function()
   eq(child.lua_get([[treescope.get("class", { depth = "any" }).text]]), "InnerClass")
 end
 
-T["get"]["accepts explicit bufnr and pos"] = function()
+T["get"]["accepts explicit buf and pos"] = function()
   open("lua", "function", "lua.txt")
-  local bufnr = child.api.nvim_get_current_buf()
+  local buf = child.api.nvim_get_current_buf()
   child.cmd("enew")
   eq(child.lua_get([[treescope.get("function").text]]), vim.NIL)
   eq(
-    child.lua_get([[treescope.get("function", { bufnr = ..., pos = { 37, 0 } }).text]], { bufnr }),
+    child.lua_get([[treescope.get("function", { buf = ..., pos = { 37, 0 } }).text]], { buf }),
     "outer"
   )
 end
@@ -219,11 +219,11 @@ T["is_supported"]["false for an unsupported filetype"] = function()
   eq(child.lua_get([[treescope.is_supported("function")]]), false)
 end
 
-T["is_supported"]["accepts bufnr"] = function()
+T["is_supported"]["accepts buf"] = function()
   open("lua", "function", "lua.txt")
-  local bufnr = child.api.nvim_get_current_buf()
+  local buf = child.api.nvim_get_current_buf()
   child.cmd("enew | set filetype=text")
-  eq(child.lua_get([[treescope.is_supported("function", { bufnr = ... })]], { bufnr }), true)
+  eq(child.lua_get([[treescope.is_supported("function", { buf = ... })]], { buf }), true)
 end
 
 T["vitest"] = new_set({

@@ -45,7 +45,7 @@ Six functions, each taking a scope id first: `get(id, opts)`, `list(id, opts)`, 
 
 ### Scopes layer (`lua/treescope/scopes/`)
 
-One module per scope id. Contract: `get(ctx, row, col, depth) -> Scope`, and optionally `list(ctx, depth) -> Scope[]`. `ctx` is `{ bufnr, lang, provider, root }`, built by `init.lua`. A scope without `list` does not support navigation, nothing else is needed to opt out.
+One module per scope id. Contract: `get(ctx, row, col, depth) -> Scope`, and optionally `list(ctx, depth) -> Scope[]`. `ctx` is `{ buf, lang, provider, root }`, built by `init.lua`. A scope without `list` does not support navigation, nothing else is needed to opt out.
 
 `function.lua` and `class.lua` are two-liners over `lua/treescope/node_scope.lua`, which holds the shared upward walk and the query-driven `list()`. They differ only in the capture name they pass (`treescope_function`, `treescope_class`).
 
@@ -54,10 +54,10 @@ One module per scope id. Contract: `get(ctx, row, col, depth) -> Scope`, and opt
 `lua/treescope/provider_locator.lua` is a single `registry` table: scope id, then filetype, then an optional `provider` module name and Tree-sitter `lang`. An empty entry means both are named after the filetype. Getting `lang` right matters: it is fed to both `vim.treesitter.get_parser()` and `vim.treesitter.query.get()`, so a wrong name silently yields an empty scope. Current aliases: `typescript` and the React filetypes use the JavaScript provider (`javascriptreact` → lang `javascript`, `typescriptreact` → lang `tsx`), `jsonc` uses the JSON provider with lang `json`.
 
 Provider directories under `lua/treescope/providers/`:
-- `function/`, `class/`: implement `NodeScopeProvider`: `is_scope_node(node, bufnr)`, `get_name_node(node, bufnr)`, optional `normalize_node(node)`. `normalize_node` maps stand-in nodes (e.g. the identifier in Lua's `foo = function() end`, which sits outside the definition's range) to the canonical definition node so all cursor positions agree on the same TSNode.
+- `function/`, `class/`: implement `NodeScopeProvider`: `is_scope_node(node, buf)`, `get_name_node(node, buf)`, optional `normalize_node(node)`. `normalize_node` maps stand-in nodes (e.g. the identifier in Lua's `foo = function() end`, which sits outside the definition's range) to the canonical definition node so all cursor positions agree on the same TSNode.
   The JavaScript provider also treats `describe`/`it`/`test`/`suite` callbacks as functions named by their title string, so vitest and jest files work with `depth = "any"` for the test under the cursor.
-- `yq_path/`: `get_path(node, bufnr) -> string?`.
-- `namespace/`: `get_namespace(root, bufnr) -> node?, name_node?`.
+- `yq_path/`: `get_path(node, buf) -> string?`.
+- `namespace/`: `get_namespace(root, buf) -> node?, name_node?`.
 
 Interface definitions (for type checking only) live in `lua/treescope/interfaces/`.
 
@@ -78,7 +78,7 @@ Two resource file patterns are used:
 - **`function`, `class` and `yq_path`**: one file per language with embedded cursor markers (`-- cursor-3f7a2b1c`). The marker ID is the parametrize key; `h.set_cursor_from_marker(marker_id, child)` positions the cursor before each assertion. Markers can include an optional `[keys]` suffix (e.g., `-- cursor-3f7a2b1c[Ww]`) to execute normal-mode keystrokes after positioning.
 - **`namespace`**: one file per test case in `tests/resources/namespace/<lang>/`. Each file has a single cursor marker and is opened individually per test.
 
-`tests/test_navigation.lua` covers `list()`, `depth`, `goto_*`, `set_loclist` and the explicit `bufnr`/`pos` options, reusing the `function` and `class` resource files.
+`tests/test_navigation.lua` covers `list()`, `depth`, `goto_*`, `set_loclist` and the explicit `buf`/`pos` options, reusing the `function` and `class` resource files.
 
 ### Adding a new language to a node scope
 

@@ -8,12 +8,12 @@ local M = {}
 
 ---@param node TSNode
 ---@param provider NodeScopeProvider
----@param bufnr integer
+---@param buf integer
 ---@return treescope.Scope
-local function to_scope(node, provider, bufnr)
-  local name_node = provider.get_name_node(node, bufnr)
+local function to_scope(node, provider, buf)
+  local name_node = provider.get_name_node(node, buf)
   return {
-    text = name_node and vim.treesitter.get_node_text(name_node, bufnr),
+    text = name_node and vim.treesitter.get_node_text(name_node, buf),
     node = node,
     name_node = name_node,
   }
@@ -31,7 +31,7 @@ local function find_node_at(ctx, row, col, depth)
   local cur = ctx.root:named_descendant_for_range(row, col, row, col)
   local found = nil
   while cur do
-    if ctx.provider.is_scope_node(cur, ctx.bufnr) then
+    if ctx.provider.is_scope_node(cur, ctx.buf) then
       found = cur
       if depth == const.Depth.ANY then
         break
@@ -55,7 +55,7 @@ function M.get(ctx, row, col, depth)
   if not node then
     return {}
   end
-  return to_scope(node, ctx.provider, ctx.bufnr)
+  return to_scope(node, ctx.provider, ctx.buf)
 end
 
 --- All scopes in the buffer, sorted by name position. Each `@{capture}` in the
@@ -74,7 +74,7 @@ function M.list(ctx, capture, depth)
   end
   local seen = {}
   local scopes = {}
-  for id, node in query:iter_captures(ctx.root, ctx.bufnr, 0, -1) do
+  for id, node in query:iter_captures(ctx.root, ctx.buf, 0, -1) do
     if query.captures[id] == capture then
       local row, col = node:start()
       local scope_node = find_node_at(ctx, row, col, depth)
@@ -83,7 +83,7 @@ function M.list(ctx, capture, depth)
         local key = sr .. ":" .. sc
         if not seen[key] then
           seen[key] = true
-          table.insert(scopes, to_scope(scope_node, ctx.provider, ctx.bufnr))
+          table.insert(scopes, to_scope(scope_node, ctx.provider, ctx.buf))
         end
       end
     end

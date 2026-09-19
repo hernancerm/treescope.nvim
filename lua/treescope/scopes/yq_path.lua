@@ -10,7 +10,7 @@ function M.get(ctx, row, col)
     return {}
   end
   -- The path is built from all ancestors, so no single node owns it.
-  return { text = ctx.provider.get_path(node, ctx.bufnr) }
+  return { text = ctx.provider.get_path(node, ctx.buf) }
 end
 
 return M

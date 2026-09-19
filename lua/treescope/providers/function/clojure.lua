@@ -3,9 +3,9 @@ local M = {}
 local ts = vim.treesitter
 
 ---@param node TSNode
----@param bufnr integer
+---@param buf integer
 ---@return boolean
-function M.is_scope_node(node, bufnr)
+function M.is_scope_node(node, buf)
   if node:type() ~= "list_lit" then
     return false
   end
@@ -14,7 +14,7 @@ function M.is_scope_node(node, bufnr)
   if not first_child or first_child:type() ~= "sym_lit" then
     return false
   end
-  local sym_text = ts.get_node_text(first_child, bufnr)
+  local sym_text = ts.get_node_text(first_child, buf)
 
   -- Case: (defn name ...) or (deftest name ...) or (defmacro name ...)
   if sym_text == "defn" or sym_text == "deftest" or sym_text == "defmacro" then
@@ -33,22 +33,22 @@ function M.is_scope_node(node, bufnr)
     if not fn_first_child or fn_first_child:type() ~= "sym_lit" then
       return false
     end
-    return ts.get_node_text(fn_first_child, bufnr) == "fn"
+    return ts.get_node_text(fn_first_child, buf) == "fn"
   end
 
   return false
 end
 
 ---@param node TSNode
----@param bufnr integer
+---@param buf integer
 ---@return TSNode?
-function M.get_name_node(node, bufnr)
+function M.get_name_node(node, buf)
   -- Get the first child to determine if it's "defn" or "def".
   local first_child = node:named_child(0)
   if not first_child or first_child:type() ~= "sym_lit" then
     return nil
   end
-  local sym_text = ts.get_node_text(first_child, bufnr)
+  local sym_text = ts.get_node_text(first_child, buf)
 
   -- Case: (defn name ...) or (deftest name ...) or (defmacro name ...)
   if sym_text == "defn" or sym_text == "deftest" or sym_text == "defmacro" then

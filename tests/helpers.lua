@@ -37,8 +37,8 @@ end
 ---@param child MiniTest.child The child Neovim instance.
 function h.set_cursor_from_marker(marker_id, child)
   child.lua_func(function(id)
-    local bufnr = vim.api.nvim_get_current_buf()
-    local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+    local buf = vim.api.nvim_get_current_buf()
+    local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
     local marker_text = "cursor-" .. id
     for line_num, line_content in ipairs(lines) do
       if line_content:find(marker_text, 1, true) then

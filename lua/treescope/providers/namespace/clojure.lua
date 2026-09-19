@@ -11,14 +11,14 @@ local query = [[
 local ts_query = nil
 
 ---@param root TSNode
----@param bufnr integer
+---@param buf integer
 ---@return TSNode? node
 ---@return TSNode? name_node
-function M.get_namespace(root, bufnr)
+function M.get_namespace(root, buf)
   if not ts_query then
     ts_query = vim.treesitter.query.parse("clojure", query)
   end
-  for _, match in ts_query:iter_matches(root, bufnr, 0, -1, { all = true }) do
+  for _, match in ts_query:iter_matches(root, buf, 0, -1, { all = true }) do
     local form, name
     for id, nodes in pairs(match) do
       local capture = ts_query.captures[id]

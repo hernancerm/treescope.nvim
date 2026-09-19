@@ -1,9 +1,9 @@
 local M = {}
 
 ---@param node TSNode
----@param bufnr integer
+---@param buf integer
 ---@return boolean
-function M.is_scope_node(node, bufnr)
+function M.is_scope_node(node, buf)
   local t = node:type()
 
   if t == "function_declaration" or t == "function_definition" then
@@ -60,9 +60,9 @@ function M.is_scope_node(node, bufnr)
 end
 
 ---@param node TSNode
----@param bufnr integer
+---@param buf integer
 ---@return TSNode?
-function M.get_name_node(node, bufnr)
+function M.get_name_node(node, buf)
   local t = node:type()
 
   if t == "identifier" then

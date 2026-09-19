@@ -2,12 +2,12 @@ local M = {}
 
 -- Extract the key text from a JSON pair node's key field.
 -- The key is always a string node; strip the surrounding double quotes.
-local function extract_key_text(pair_node, bufnr)
+local function extract_key_text(pair_node, buf)
   local key_fields = pair_node:field("key")
   if not key_fields or not key_fields[1] then
     return nil
   end
-  local text = vim.treesitter.get_node_text(key_fields[1], bufnr)
+  local text = vim.treesitter.get_node_text(key_fields[1], buf)
   if not text then
     return nil
   end
@@ -55,9 +55,9 @@ local function get_array_item_index(node)
 end
 
 ---@param node TSNode
----@param bufnr integer
+---@param buf integer
 ---@return string?
-function M.get_path(node, bufnr)
+function M.get_path(node, buf)
   -- Walk up the tree collecting path segments.
   local segments = {}
   ---@type TSNode?
@@ -68,7 +68,7 @@ function M.get_path(node, bufnr)
     local node_type = current:type()
 
     if node_type == "pair" then
-      local key_text = extract_key_text(current, bufnr)
+      local key_text = extract_key_text(current, buf)
       if key_text then
         local formatted_key = format_key(key_text)
         if pending_index ~= nil then

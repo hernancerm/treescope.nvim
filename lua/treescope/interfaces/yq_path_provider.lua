@@ -4,6 +4,6 @@
 local YqPathProvider = {}
 
 ---@param node TSNode
----@param bufnr integer
+---@param buf integer
 ---@return string?
-function YqPathProvider.get_path(node, bufnr) end
+function YqPathProvider.get_path(node, buf) end

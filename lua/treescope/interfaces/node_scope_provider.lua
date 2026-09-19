@@ -9,16 +9,16 @@ local NodeScopeProvider = {}
 --- test true when they sit outside the definition's byte range, e.g. `foo` in
 --- Lua's `foo = function() end`. `normalize_node` maps those to the definition.
 ---@param node TSNode
----@param bufnr integer
+---@param buf integer
 ---@return boolean
-function NodeScopeProvider.is_scope_node(node, bufnr) end
+function NodeScopeProvider.is_scope_node(node, buf) end
 
 --- Node whose text is the scope's name, e.g. the identifier. Called with a node
 --- already passed through `normalize_node`.
 ---@param node TSNode
----@param bufnr integer
+---@param buf integer
 ---@return TSNode?
-function NodeScopeProvider.get_name_node(node, bufnr) end
+function NodeScopeProvider.get_name_node(node, buf) end
 
 --- Optional. Maps stand-in nodes to the canonical scope node so all cursor
 --- positions within the same scope agree on the same TSNode.

@@ -361,15 +361,15 @@ where navigation lands. Nil when `node` is nil or the scope is anonymous.
 Class ~
 {treescope.IsSupportedOpts}
 Fields ~
-{bufnr} `(integer?)` Default: current buffer.
+{buf} `(integer?)` Default: current buffer.
 
                                                              *treescope.GetOpts*
 Class ~
 {treescope.GetOpts}
 Fields ~
-{bufnr} `(integer?)` Default: current buffer.
+{buf} `(integer?)` Default: current buffer.
 {pos} `(integer[]?)` `{row, col}`, 1-indexed row and 0-indexed col like
-|nvim_win_get_cursor()|. Default: cursor of the window showing `bufnr`.
+|nvim_win_get_cursor()|. Default: cursor of the window showing `buf`.
 {depth} "`(outermost)`"|"any"? Default: "outermost". Node scopes only.
 "outermost" is the scope farthest from the position, "any" is the nearest.
 
@@ -377,7 +377,7 @@ Fields ~
 Class ~
 {treescope.ListOpts}
 Fields ~
-{bufnr} `(integer?)` Default: current buffer.
+{buf} `(integer?)` Default: current buffer.
 {depth} "`(outermost)`"|"any"? Default: "outermost". "outermost" skips
 nested scopes, "any" includes them.
 
@@ -395,7 +395,7 @@ count scopes exist in that direction.
 Class ~
 {treescope.SetLoclistOpts}
 Fields ~
-{bufnr} `(integer?)` Default: current buffer.
+{buf} `(integer?)` Default: current buffer.
 {depth} "`(outermost)`"|"any"? Default: "outermost". "outermost" skips
 nested scopes, "any" includes them.
 {open} `(boolean?)` Default: false. Open the location list after populating.

@@ -3,6 +3,7 @@ return {
   ScopeIds = {
     FUNCTION = "function",
     CLASS = "class",
+    CODE_FENCE = "code_fence",
     NAMESPACE = "namespace",
     YQ_PATH = "yq_path",
   },

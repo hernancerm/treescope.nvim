@@ -199,11 +199,12 @@ treescope.default_config = {
 --- Every function in |treescope-functions| takes a scope id as its first
 --- argument. At a glance:
 ---
----   Scope id     What                                 Depth  Navigation ~
----   "function"   Function or method at the position   yes    yes
----   "class"      Class at the position                yes    yes
----   "namespace"  Namespace or package of the file     no     no
----   "yq_path"    yq expression for the position       no     no
+---   Scope id      What                                 Depth  Navigation ~
+---   "function"    Function or method at the position   yes    yes
+---   "class"       Class at the position                yes    yes
+---   "code_fence"  Markdown code fence at the position  no     yes
+---   "namespace"   Namespace or package of the file     no     no
+---   "yq_path"     yq expression for the position       no     no
 ---
 --- Every scope works with |treescope.get()|. The two columns say what else
 --- the scope supports.
@@ -296,6 +297,30 @@ treescope.default_config = {
 --- With `depth = "any"`, the scope is "Item".
 ---
 --- Languages: java, python, javascript, typescript.
+
+--- #tag treescope-scope-code_fence
+--- "code_fence" ~
+---
+--- The Markdown code fence enclosing the position. `text` is the language taken
+--- from the info string, `node` is the fence content and `name_node` is the
+--- language itself.
+---
+--- Unlike every other scope, `node` is the inside of the thing rather than the
+--- whole of it: the fence delimiters are syntax, and running or editing a fence
+--- always means its content. The position may sit on a delimiter line and still
+--- resolve, so this works with the cursor anywhere in the three lines:
+--- >markdown
+---   ```python
+---   x = 1
+---   ```
+--- <
+--- Fences do not nest, so `depth` makes no difference.
+---
+--- A fence with no info string is anonymous: `text` and `name_node` are nil,
+--- while `node` is still its content. An empty fence has no content node, so it
+--- is no scope at all and |treescope.get()| gives an empty table.
+---
+--- Languages: markdown.
 
 --- #tag treescope-scope-namespace
 --- "namespace" ~

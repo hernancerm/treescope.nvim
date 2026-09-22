@@ -22,6 +22,9 @@ local registry = {
     javascript = {},
     typescript = { provider = "javascript" },
   },
+  code_fence = {
+    markdown = {},
+  },
   yq_path = {
     yaml = {},
     json = {},

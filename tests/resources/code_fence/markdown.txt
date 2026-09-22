@@ -1,0 +1,30 @@
+<!-- cursor-1a2b3c4d -->
+
+```python
+# cursor-2b3c4d5e
+# cursor-3c4d5e6f[kk]
+x = 1
+# cursor-4d5e6f7g[jj]
+y = 2
+```
+
+```lua
+-- cursor-5e6f7g8h
+local y = 2
+```
+
+```python {.numberLines}
+# cursor-6f7g8h9i
+x = 1
+```
+
+```
+cursor-7g8h9i0j
+```
+
+```python
+```
+
+<!-- cursor-8h9i0j1k[kk] -->
+
+Trailing prose so the buffer does not end on a fence.

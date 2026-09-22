@@ -15,7 +15,7 @@ nvim --headless --noplugin -u ./scripts/minimal_init.lua -c "lua MiniTest.run_fi
 - `lang` in `provider_locator.lua` feeds both `vim.treesitter.get_parser()` and `vim.treesitter.query.get()`. A wrong name silently yields an empty scope.
 - Scope ids in `const.ScopeIds` must match the module names under `scopes/` and the directory names under `providers/`.
 
-## Adding a language to a node scope (`function`, `class`)
+## Adding a language to a node scope (`function`, `class`, `code_fence`)
 
 1. `lua/treescope/providers/<scope_id>/<lang>.lua`: implement `NodeScopeProvider`.
 2. `queries/<lang>/treescope.scm`: capture name identifiers with `@treescope_<scope_id>`.

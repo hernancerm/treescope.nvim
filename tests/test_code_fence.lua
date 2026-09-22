@@ -97,13 +97,23 @@ end
 -- a scope's `node` is the inside of the thing, so it is worth pinning down.
 T["node"] = new_set({ hooks = { pre_case = open } })
 
+--- `node_lines` rather than the raw text: whether `code_fence_content` ends at
+--- the closing delimiter's row or at the last content character varies by
+--- Tree-sitter build, and that trailing newline is not what these tests pin down.
 local function scope_at(marker)
   h.set_cursor_from_marker(marker, child)
   return child.lua_func(function()
     local scope = treescope.get("code_fence")
+    if scope.node == nil then
+      return { node_type = vim.NIL, node_lines = vim.NIL, name_node_type = vim.NIL }
+    end
+    local lines = vim.split(vim.treesitter.get_node_text(scope.node, 0), "\n")
+    if lines[#lines] == "" then
+      table.remove(lines)
+    end
     return {
-      node_type = scope.node and scope.node:type() or vim.NIL,
-      node_text = scope.node and vim.treesitter.get_node_text(scope.node, 0) or vim.NIL,
+      node_type = scope.node:type(),
+      node_lines = lines,
       name_node_type = scope.name_node and scope.name_node:type() or vim.NIL,
     }
   end)
@@ -112,14 +122,18 @@ end
 T["node"]["is the fence content"] = function()
   local scope = scope_at("2b3c4d5e")
   eq(scope.node_type, "code_fence_content")
-  eq(
-    scope.node_text,
-    "# cursor-2b3c4d5e\n# cursor-3c4d5e6f[kk]\nx = 1\n# cursor-4d5e6f7g[jj]\ny = 2\n"
-  )
+  -- Not a ``` line among them: the content, not the whole block.
+  eq(scope.node_lines, {
+    "# cursor-2b3c4d5e",
+    "# cursor-3c4d5e6f[kk]",
+    "x = 1",
+    "# cursor-4d5e6f7g[jj]",
+    "y = 2",
+  })
 end
 
 T["node"]["is the same content from a delimiter line"] = function()
-  eq(scope_at("3c4d5e6f").node_text, scope_at("2b3c4d5e").node_text)
+  eq(scope_at("3c4d5e6f").node_lines, scope_at("2b3c4d5e").node_lines)
 end
 
 T["node"]["name_node is the language"] = function()
@@ -129,7 +143,7 @@ end
 T["node"]["an anonymous fence still has content"] = function()
   local scope = scope_at("7g8h9i0j")
   eq(scope.node_type, "code_fence_content")
-  eq(scope.node_text, "cursor-7g8h9i0j\n")
+  eq(scope.node_lines, { "cursor-7g8h9i0j" })
   eq(scope.name_node_type, vim.NIL)
 end
 

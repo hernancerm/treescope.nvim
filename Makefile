@@ -9,7 +9,7 @@ MINI_TEST_GIT_COMMIT := v0.17.0
 NVIM_TREESITTER_GIT_COMMIT := 2f5d4c3f3c675962242096bcc8e586d76dd72eb2
 
 # Check formatting.
-.PHONY: testmft
+.PHONY: testfmt
 testfmt:
 	stylua --check lua/ scripts/ tests/
 

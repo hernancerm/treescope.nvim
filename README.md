@@ -6,6 +6,8 @@
 
 Tree-sitter-powered scope discovery.
 
+https://github.com/user-attachments/assets/2be6c366-d564-4033-a648-58bcfa3e8850
+
 ## Features
 
 - Programmatically retrieve scopes relative to the cursor position, powered by Tree-sitter.

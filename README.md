@@ -10,7 +10,7 @@ Tree-sitter-powered scope discovery.
 
 - Programmatically retrieve scopes relative to the cursor position, powered by Tree-sitter.
 - Supported scopes: function, class, code_fence, namespace and yq_path.
-- Navigate between functions or classes (`goto_prev`, `goto_next`, location list).
+- Navigate between functions, classes or code fences (`goto_prev`, `goto_next`, location list).
 - Easy integration of scopes in statusline via buf vars.
 
 ## Requirements

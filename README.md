@@ -42,8 +42,8 @@ Some things to notice:
 
 ## Keymaps
 
-The plugin creates no keymaps. A minimal setup to navigate functions with `]m` and `[m`, and list
-them with `<Leader>o`:
+The plugin does not create keymaps. The plugin can be used as a tiny lib, in which case no keymaps
+are required. However, I recommend these keymaps related to navigating among functions and methods:
 
 ```lua
 -- Don't shadow `[m`/`]m`.
@@ -59,8 +59,6 @@ vim.keymap.set("n", "<Leader>o", function()
   Treescope.set_loclist("function", { open = true })
 end)
 ```
-
-See `:help treescope-keymaps` for keeping Vim's built-in `]m` as a fallback in unsupported filetypes.
 
 ## Default config
 

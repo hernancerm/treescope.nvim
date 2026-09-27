@@ -15,7 +15,7 @@ Tree-sitter-powered scope discovery.
 
 ## Requirements
 
-- Neovim >= 0.11.0
+- Neovim >= 0.12.0
 - Tree-sitter parsers (depends on scope used and specific language). For example, if using the
   function scope for lua, then the lua parser is required. The help file
   ([treescope.txt](./doc/treescope.txt)) documents the supported langs per scope.

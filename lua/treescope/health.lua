@@ -2,10 +2,10 @@ local M = {}
 
 function M.check()
   vim.health.start("treescope")
-  if vim.fn.has("nvim-0.11") == 1 then
-    vim.health.ok("Neovim >= 0.11")
+  if vim.fn.has("nvim-0.12") == 1 then
+    vim.health.ok("Neovim >= 0.12")
   else
-    vim.health.error("Neovim >= 0.11 is required")
+    vim.health.error("Neovim >= 0.12 is required")
   end
 
   vim.health.start("treescope: Tree-sitter parsers")

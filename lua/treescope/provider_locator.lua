@@ -36,6 +36,19 @@ local registry = {
   },
 }
 
+--- Per scope id, the supported filetypes mapped to their Tree-sitter language.
+---@return table<const.ScopeIds, table<string, string>>
+function M.get_supported()
+  local supported = {}
+  for scope_id, filetypes in pairs(registry) do
+    supported[scope_id] = {}
+    for filetype, entry in pairs(filetypes) do
+      supported[scope_id][filetype] = entry.lang or filetype
+    end
+  end
+  return supported
+end
+
 --- Returns the provider and the Tree-sitter language name for {scope_id} in
 --- {filetype}, or nothing when the filetype is not supported.
 ---@param scope_id const.ScopeIds

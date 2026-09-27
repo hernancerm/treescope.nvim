@@ -40,6 +40,7 @@ Quickstart ~
 • You need a Tree-sitter parser for the language you want this plugin to work
   for. This plugin does not support all languages, see supported languages per
   scope in |treescope-scopes|.
+• Run `:checkhealth treescope` to see which parsers are missing.
 • The plugin doesn't create keymaps, you need to define them yourself.
 • The plugin sets the Lua global `Treescope`, equivalent to
   `require("treescope")`.

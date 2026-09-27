@@ -19,6 +19,7 @@ Tree-sitter-powered scope discovery.
 - Tree-sitter parsers (depends on scope used and specific language). For example, if using the
   function scope for lua, then the lua parser is required. The help file
   ([treescope.txt](./doc/treescope.txt)) documents the supported langs per scope.
+  Run `:checkhealth treescope` to see which parsers are missing.
 
 ## Installation
 

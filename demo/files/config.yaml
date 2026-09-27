@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: shop
+  datasource:
+    url: jdbc:postgresql://localhost:5432/shop
+    username: admin
+server:
+  port: 8080

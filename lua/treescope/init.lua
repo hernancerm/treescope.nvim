@@ -144,7 +144,7 @@ treescope.default_config = {
 --- <
 --- Now you can reference the buf var in 'statusline' like this:
 --- >
----   ${get(b:,'treescope_function','')}
+---   %{get(b:,'treescope_function','')}
 --- <
 --- Treescope keeps the value of the buf var updated as the cursor moves. Neovim
 --- automatically updates the statusline when a buf var referenced in 'statusline'

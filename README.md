@@ -6,7 +6,7 @@
 
 Tree-sitter-powered scope discovery.
 
-https://github.com/user-attachments/assets/2be6c366-d564-4033-a648-58bcfa3e8850
+https://github.com/user-attachments/assets/c1aee6b4-40ee-40e2-8aca-df086c52e09a
 
 ## Features
 

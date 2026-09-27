@@ -8,6 +8,12 @@
 nvim --headless --noplugin -u ./scripts/minimal_init.lua -c "lua MiniTest.run_file('tests/test_function.lua')"
 ```
 
+Print the `:InspectTree` output for a snippet:
+
+```sh
+printf 'function f() return 1 end\n' | nvim --headless -n -u ./scripts/minimal_init.lua -c 'set ft=lua' -c 'lua vim.treesitter.inspect_tree(); io.write(table.concat(vim.api.nvim_buf_get_lines(0,0,-1,false),"\n").."\n")' -c 'qa!' -
+```
+
 ## Gotchas
 
 - `doc/treescope.txt` is generated from comments in `lua/treescope/init.lua`. Edit those, then run `make docs`.

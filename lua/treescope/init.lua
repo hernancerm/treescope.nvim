@@ -97,6 +97,8 @@ function treescope.setup(config)
           .. vim.inspect(entry)
           .. ". Allowed scope ids: "
           .. vim.fn.join(vars_service.get_valid_scope_ids(), ", ")
+          .. ". Allowed depths: "
+          .. vim.fn.join(vim.tbl_values(const.Depth), ", ")
       )
     end
   end

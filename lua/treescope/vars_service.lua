@@ -7,7 +7,7 @@ local M = {}
 ---@field depth const.Depth
 
 --- Parse a `config.buf_vars` entry: a scope id string, or a table
---- `{ scope_id, depth = ... }`. Returns nil on an invalid scope id.
+--- `{ scope_id, depth = ... }`. Returns nil on an invalid scope id or depth.
 ---@param entry string|table
 ---@return treescope.BufVar?
 function M.parse_buf_var(entry)
@@ -24,7 +24,11 @@ function M.parse_buf_var(entry)
   if not scope_id then
     return nil
   end
-  return { scope_id = scope_id, depth = depth or const.Depth.OUTERMOST }
+  depth = depth or const.Depth.OUTERMOST
+  if not vim.tbl_contains(vim.tbl_values(const.Depth), depth) then
+    return nil
+  end
+  return { scope_id = scope_id, depth = depth }
 end
 
 --- Buf var name. The depth is a suffix only when it is not the default, so
@@ -45,7 +49,12 @@ function M.register_buf_var(buf_var, treescope)
   assert(buf_var, "buf_var is required")
   assert(treescope, "treescope is required")
   local name = M.get_buf_var_name(buf_var)
-  vim.api.nvim_create_autocmd("CursorMoved", {
+  vim.api.nvim_create_autocmd({
+    "BufEnter",
+    "CursorMoved",
+    "TextChanged",
+    "InsertLeave",
+  }, {
     group = "Treescope",
     callback = function()
       local text = treescope.get(buf_var.scope_id, { depth = buf_var.depth }).text

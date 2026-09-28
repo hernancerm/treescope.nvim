@@ -9,7 +9,6 @@ local T = new_set({
     pre_case = function()
       child.restart({ "-u", "scripts/minimal_init.lua" })
       child.lua([[treescope = require("treescope")]])
-      child.lua("treescope.setup()")
     end,
     post_once = function()
       child.stop()

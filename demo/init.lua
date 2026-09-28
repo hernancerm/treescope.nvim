@@ -7,8 +7,6 @@ vim.opt.rtp:prepend(repo)
 -- Stock Neovim ships few parsers (e.g. no python). These are the ones `make test` installs.
 vim.opt.rtp:append(vim.fs.joinpath(repo, "deps", "parsers"))
 
-require("treescope").setup({ buf_vars = { "function" } })
-
 -- The stock statusline, with the function right before the ruler.
 vim.o.statusline =
-  vim.o.statusline:gsub("%%=", "%%=%%{get(b:,'treescope_function','')}  ", 1)
+  vim.o.statusline:gsub("%%=", "%%=%%{v:lua.Treescope.get_text('function')}  ", 1)

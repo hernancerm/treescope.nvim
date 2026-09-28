@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `get_text()`: the scope text as a string, empty when there is none. Meant for the statusline:
+  `%{v:lua.Treescope.get_text('function')}`.
+
+### Removed
+
+- **Breaking:** `setup()` and `config.buf_vars`. Replace `%{get(b:,'treescope_function','')}` with
+  `%{v:lua.Treescope.get_text('function')}` in 'statusline', and delete the `setup()` call.
+
 ### Fixed
 
 - The statusline example in the help file used `${...}` instead of `%{...}`.

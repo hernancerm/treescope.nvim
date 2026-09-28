@@ -1,1 +1,1 @@
-require("treescope").setup()
+require("treescope")

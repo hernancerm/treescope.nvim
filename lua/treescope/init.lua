@@ -6,12 +6,11 @@
 ---
 --- 1. Introduction                                         |treescope-introduction|
 --- 2. Quickstart                                             |treescope-quickstart|
---- 3. Configuration                                       |treescope-configuration|
---- 4. Statusline integration                                 |treescope-statusline|
---- 5. Keymaps                                                   |treescope-keymaps|
---- 6. Scopes                                                     |treescope-scopes|
---- 7. Functions                                               |treescope-functions|
---- 8. Types                                                       |treescope-types|
+--- 3. Statusline integration                                 |treescope-statusline|
+--- 4. Keymaps                                                   |treescope-keymaps|
+--- 5. Scopes                                                     |treescope-scopes|
+--- 6. Functions                                               |treescope-functions|
+--- 7. Types                                                       |treescope-types|
 ---
 --- ==============================================================================
 --- #tag treescope
@@ -29,14 +28,12 @@
 --- * Get the scope through Tree-sitter, supporting multiple languages. A scope is
 ---   a thing like a function or a class, see |treescope-scopes|. Read it with
 ---   |treescope.get()|, or navigate between scopes with |treescope.goto_next()|
----   and friends. Statusline integration is supported via buffer-local
----   variables, refer to |treescope-statusline|.
+---   and friends. To show it in the statusline, see |treescope-statusline|.
 
 --- #delimiter
 --- #tag treescope-quickstart
 --- Quickstart ~
 ---
---- * No need to call |treescope.setup()|, but you may to configure the plugin.
 --- * You need a Tree-sitter parser for the language you want this plugin to work
 ---   for. This plugin does not support all languages, see supported languages per
 ---   scope in |treescope-scopes|.
@@ -55,104 +52,21 @@ local treescope = {}
 
 _G.Treescope = treescope
 
-vim.api.nvim_create_augroup("Treescope", { clear = true })
-
---- #delimiter
---- #tag treescope.config
---- #tag treescope.default_config
---- #tag treescope-configuration
---- Configuration ~
-
---- Module setup.
----@param config table? Merged with default config (|treescope.default_config|).
---- The former takes priority on duplicate keys.
-function treescope.setup(config)
-  config = config or {}
-  -- Cleanup.
-  if #vim.api.nvim_get_autocmds({ group = "Treescope" }) > 0 then
-    vim.api.nvim_clear_autocmds({ group = "Treescope" })
-  end
-  -- Merge default and user configuration. User config has precedence.
-  treescope.config = vim.tbl_deep_extend(
-    "force",
-    vim.deepcopy(treescope.config or treescope.default_config),
-    config
-  )
-  -- Validate config.
-  -- The validity of each buf var is checked during registration.
-  vim.validate(
-    "treescope.config.buf_vars",
-    treescope.config.buf_vars,
-    "table",
-    true
-  )
-  -- Register buf vars from config (set auto-update with an autocmd).
-  local vars_service = require("treescope.vars_service")
-  for _, entry in ipairs(treescope.config.buf_vars) do
-    local buf_var = vars_service.parse_buf_var(entry)
-    if buf_var ~= nil then
-      vars_service.register_buf_var(buf_var, treescope)
-    else
-      error(
-        "Invalid value in config.buf_vars: "
-          .. vim.inspect(entry)
-          .. ". Allowed scope ids: "
-          .. vim.fn.join(vars_service.get_valid_scope_ids(), ", ")
-          .. ". Allowed depths: "
-          .. vim.fn.join(vim.tbl_values(const.Depth), ", ")
-      )
-    end
-  end
-end
-
---- The merged config (defaults with user overrides) is in `treescope.config`. The
---- default config is in `treescope.default_config`. Below is the default config:
----@eval return MiniDoc.afterlines_to_code(MiniDoc.current.eval_section)
-
-treescope.default_config = {
-  buf_vars = {},
-}
---minidoc_afterlines_end
-
---- #tag treescope.config.buf_vars
---- `((string|table)[])`
---- Each item is a scope id (see |treescope-scopes|), or a table `{ scope_id,
---- depth = ... }` to use a non-default `depth` (see |treescope.GetOpts|). For
---- each item, Treescope creates a buf-local var named treescope_<scope_id>,
---- with the depth as a suffix when it is not the default. The value is the
---- `text` of the scope, or an empty string. For example:
---- >
----   buf_vars = {
----     "function",                     -- b:treescope_function
----     { "function", depth = "any" },  -- b:treescope_function_any
----   }
---- <
-
 --- #delimiter
 --- #tag treescope-statusline
 --- Statusline integration ~
 
---- Let's say you want the scope `function` in your statusline. First of course
---- you need the relevant Tree-sitter parsers installed. Then make sure your
---- plugin config includes the desired scope:
+--- Call |treescope.get_text()| from 'statusline' with |v:lua|. For example,
+--- to show the outermost function:
 --- >
----   require("treescope").setup({
----     buf_vars = {
----       "function"
----     },
----   })
+---   %{v:lua.Treescope.get_text('function')}
 --- <
---- Now you can reference the buf var in 'statusline' like this:
---- >
----   %{get(b:,'treescope_function','')}
---- <
---- Treescope keeps the value of the buf var updated as the cursor moves. Neovim
---- automatically updates the statusline when a buf var referenced in 'statusline'
---- changes, so there is no need for any custom refresh logic.
+--- The value is computed on each statusline redraw, e.g. when the cursor moves.
+--- That costs about 0.1 ms.
 ---
---- This setup works nicely without a statusline plugin, it also works well with
---- the plugin https://github.com/hernancerm/bareline.nvim and quite likely
---- also plays well with many other statusline plugins.
+--- This works without a statusline plugin, and also with
+--- https://github.com/hernancerm/bareline.nvim and likely other statusline
+--- plugins.
 
 --- #delimiter
 --- #tag treescope-keymaps
@@ -243,8 +157,6 @@ treescope.default_config = {
 ---
 --- "no" means those four functions warn via |vim.notify()| and do nothing.
 --- Only |treescope.get()| is meaningful for such a scope.
----
---- Scope ids are also the valid values of |treescope.config.buf_vars|.
 
 --- #tag treescope-scope-function
 --- "function" ~
@@ -366,7 +278,7 @@ treescope.default_config = {
 local function get_scope_module(scope_id)
   vim.validate("scope_id", scope_id, function(id)
     return vim.tbl_contains(vim.tbl_values(const.ScopeIds), id)
-  end, "one of: " .. vim.fn.join(vim.tbl_values(const.ScopeIds), ", "))
+  end, "one of: " .. table.concat(vim.tbl_values(const.ScopeIds), ", "))
   return require("treescope.scopes." .. scope_id)
 end
 
@@ -377,7 +289,7 @@ local function get_depth(opts)
   local depth = (opts and opts.depth) or const.Depth.OUTERMOST
   vim.validate("opts.depth", depth, function(d)
     return vim.tbl_contains(vim.tbl_values(const.Depth), d)
-  end, "one of: " .. vim.fn.join(vim.tbl_values(const.Depth), ", "))
+  end, "one of: " .. table.concat(vim.tbl_values(const.Depth), ", "))
   return depth
 end
 
@@ -510,6 +422,15 @@ function treescope.get(scope_id, opts)
     return {}
   end
   return scope_module.get(ctx, row, col, depth)
+end
+
+--- Get the text of the scope at a position. For the statusline, see
+--- |treescope-statusline|.
+---@param scope_id string See |treescope-scopes|.
+---@param opts treescope.GetOpts?
+---@return string Empty when |treescope.get()| gives no `text`.
+function treescope.get_text(scope_id, opts)
+  return treescope.get(scope_id, opts).text or ""
 end
 
 --- List all the scopes in a buffer, sorted by position.

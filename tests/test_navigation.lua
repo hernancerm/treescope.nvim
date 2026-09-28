@@ -8,7 +8,6 @@ local eq = mini_test.expect.equality
 local function restart()
   child.restart({ "-u", "scripts/minimal_init.lua" })
   child.lua([[treescope = require("treescope")]])
-  child.lua("treescope.setup()")
 end
 
 local T = new_set({

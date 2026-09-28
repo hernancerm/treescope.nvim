@@ -13,7 +13,7 @@ https://github.com/user-attachments/assets/c1aee6b4-40ee-40e2-8aca-df086c52e09a
 - Programmatically retrieve scopes relative to the cursor position, powered by Tree-sitter.
 - Supported scopes: function, class, code_fence, namespace and yq_path.
 - Navigate between functions, classes or code fences (`goto_prev`, `goto_next`, loclist).
-- Easy integration of scopes in statusline via buf vars.
+- Easy integration of scopes in the statusline.
 
 ## Requirements
 
@@ -36,7 +36,7 @@ vim.pack.add({
 
 Some things to notice:
 
-- `require("treescope").setup()` does **not** need to be called. You may call it to configure the plugin.
+- The plugin does **not** have a `setup()` function.
 - The plugin sets the Lua global `Treescope`, equivalent to `require("treescope")`.
 - The plugin does **not** create keymaps.
 
@@ -62,24 +62,11 @@ end)
 
 ## Statusline
 
-Statusline integration is done through buf vars, see `|treescope.config.buf_vars|`. Minimal example
-showing the outermost function as the only item in the statusline and nothing when there is none:
+Call `Treescope.get_text()` from the statusline. Minimal example showing the outermost function as
+the only item in the statusline, and nothing when there is none:
 
 ```lua
-require("treescope").setup({
-  buf_vars = {
-    "function"
-  },
-})
-vim.o.statusline = "%{get(b:,'treescope_function','')}"
-```
-
-## Default config
-
-```lua
-require("treescope").setup({
-  buf_vars = {},
-})
+vim.o.statusline = "%{v:lua.Treescope.get_text('function')}"
 ```
 
 ## Documentation

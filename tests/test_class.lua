@@ -9,7 +9,6 @@ local T = new_set({
     pre_case = function()
       child.restart({ "-u", "scripts/minimal_init.lua" })
       child.lua([[treescope = require("treescope")]])
-      child.lua("treescope.setup()")
     end,
     post_once = function()
       child.stop()
@@ -25,7 +24,6 @@ local function create_language_pre_case(lang, filename, filetype)
     if parser_was_installed then
       child.restart({ "-u", "scripts/minimal_init.lua" })
       child.lua([[treescope = require("treescope")]])
-      child.lua("treescope.setup()")
     end
     local resource_file = vim.fs.joinpath(h.resources_dir, "class", filename)
     child.cmd(string.format("edit %s | set filetype=%s", resource_file, filetype))

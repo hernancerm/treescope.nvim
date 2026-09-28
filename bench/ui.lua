@@ -1,6 +1,5 @@
 -- Config for the real-UI run, see `bench/ui.sh`. The statusline calls `get()`
--- directly and times each call. It also counts the autocmd events that
--- recompute a buf var, to compare both ways of feeding the statusline.
+-- directly and times each call.
 
 local root = vim.env.BENCH_ROOT
 vim.opt.rtp:append(root)
@@ -16,7 +15,7 @@ local phases = {}
 
 local function current()
   if not phases[phase] then
-    phases[phase] = { durations = {}, autocmds = 0 }
+    phases[phase] = { durations = {} }
   end
   return phases[phase]
 end
@@ -36,22 +35,11 @@ function _G.BenchDump()
   local lines = {}
   for _, name in ipairs({ "move", "insert" }) do
     local p = phases[name]
-    table.insert(
-      lines,
-      ("%-6s statusline evals %4d, buf var recomputes %4d"):format(name, #p.durations, p.autocmds)
-    )
+    table.insert(lines, ("%-6s statusline evals %4d"):format(name, #p.durations))
     table.insert(lines, "  get(): " .. stats(p.durations))
   end
   vim.fn.writefile(lines, vim.env.BENCH_OUT)
 end
-
--- Same events as the buf var autocmd in `vars_service.lua`.
-vim.api.nvim_create_autocmd({ "BufEnter", "CursorMoved", "TextChanged", "InsertLeave" }, {
-  callback = function()
-    local p = current()
-    p.autocmds = p.autocmds + 1
-  end,
-})
 
 vim.api.nvim_create_autocmd("FileType", {
   callback = function(ev)

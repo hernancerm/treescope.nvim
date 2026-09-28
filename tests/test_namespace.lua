@@ -9,7 +9,6 @@ local T = new_set({
     pre_case = function()
       child.restart({ "-u", "scripts/minimal_init.lua" })
       child.lua([[treescope = require("treescope")]])
-      child.lua("treescope.setup()")
     end,
     post_once = function()
       child.stop()
@@ -28,7 +27,6 @@ local function create_language_pre_case(lang, subdir, test_cases)
     if parser_was_installed then
       child.restart({ "-u", "scripts/minimal_init.lua" })
       child.lua([[treescope = require("treescope")]])
-      child.lua("treescope.setup()")
     end
     -- Open test file and set filetype explicitly.
     local marker = mini_test.current.case.args[1]

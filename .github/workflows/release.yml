@@ -1,0 +1,81 @@
+name: Release
+
+run-name: Release ${{ inputs.version }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (MAJOR.MINOR.PATCH, no leading v)'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+
+  release:
+    name: release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v6.0.2
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Reject an already released version
+        run: |
+          if git rev-parse -q --verify "refs/tags/${{ inputs.version }}" > /dev/null
+          then
+            echo "error: tag ${{ inputs.version }} already exists" >&2
+            exit 1
+          fi
+      - name: Install Mise, Neovim and tools
+        # https://github.com/jdx/mise-action
+        uses: jdx/mise-action@v4
+        with:
+          mise_toml: |
+            [tools]
+            neovim = "0.12.0"
+            stylua = "2.4.0"
+            node = "22.15.0"
+      - name: Install tree-sitter CLI
+        run: npm install -g tree-sitter-cli@0.25.10
+      - name: Open the changelog section
+        run: .github/scripts/prepare-release.sh '${{ inputs.version }}'
+      - name: Run CI checks
+        run: make ci
+      - name: Commit and tag
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add CHANGELOG.md
+          git commit -m "chore(release): ${VERSION}"
+          git tag "${VERSION}"
+          git push origin main
+          git push origin "${VERSION}"
+      - name: Write the release notes
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          .github/scripts/print-changelog-section.sh "${VERSION}" > notes.md
+          cat notes.md
+      # GitHub attaches the source code archives to every release.
+      - name: Create the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ inputs.version }}
+        run: |
+          gh release create "${VERSION}" \
+            --title "${VERSION}" \
+            --notes-file notes.md \
+            --verify-tag

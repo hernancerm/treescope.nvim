@@ -11,7 +11,7 @@ NVIM_TREESITTER_GIT_COMMIT := 2f5d4c3f3c675962242096bcc8e586d76dd72eb2
 # Check formatting.
 .PHONY: testfmt
 testfmt:
-	stylua --check lua/ scripts/ tests/
+	stylua --check lua/ scripts/ tests/ bench/
 
 # Check docs are up to date.
 .PHONY: testdocs
@@ -27,10 +27,28 @@ test: deps/mini.test deps/nvim-treesitter
 .PHONY: ci
 ci: testfmt testdocs test
 
+# Benchmark `get()`. Not part of `ci`: timings vary by machine and load.
+# Set BENCH_FILE to time another file.
+BENCH_FILE ?= deps/bench/nested.lua
+
+.PHONY: bench-prepare
+bench-prepare: deps/mini.test deps/nvim-treesitter
+	$(NVIM_CMD) -u ./scripts/minimal_init.lua -l bench/prepare.lua deps/bench/nested.lua
+
+# Headless loop.
+.PHONY: bench
+bench: bench-prepare
+	$(NVIM_CMD) -u ./scripts/minimal_init.lua -l bench/get.lua $(BENCH_FILE)
+
+# Real UI in tmux, with the statusline calling `get()`.
+.PHONY: bench-ui
+bench-ui: bench-prepare
+	bench/ui.sh $(BENCH_FILE)
+
 # Format.
 .PHONY: fmt
 fmt:
-	stylua lua/ scripts/ tests/
+	stylua lua/ scripts/ tests/ bench/
 
 # Update docs.
 .PHONY: docs

@@ -1,5 +1,3 @@
-# Recorded by `record.sh`. See https://github.com/charmbracelet/vhs.
-
 Output demo.mp4
 
 Set Shell zsh
@@ -11,7 +9,7 @@ Set Padding 10
 Set WindowBar Colorful
 Set WindowBarSize 50
 Set BorderRadius 20
-Set TypingSpeed 50ms
+Set TypingSpeed 60ms
 
 # `-n` skips the swap file, so a leftover one never pops up a prompt.
 Hide
@@ -27,9 +25,11 @@ Type "/append"
 Enter
 Sleep 1s
 Type ':=Treescope.get("class").text'
+Sleep 0.8s
 Enter
 Sleep 2s
 Type ':=Treescope.get("function").text'
+Sleep 0.8s
 Enter
 Sleep 2.5s
 
@@ -40,14 +40,12 @@ Sleep 1.5s
 Type "/apple"
 Enter
 Sleep 1s
-# The prefix makes `Up` recall the "function" line from app.py.
-Type ':=Treescope.get("f'
-Sleep 0.5s
-Up
+Type ':=Treescope.get("function").text'
 Sleep 0.8s
 Enter
 Sleep 2s
 Type ':=Treescope.get("function", { depth = "any" }).text'
+Sleep 0.8s
 Enter
 Sleep 3s
 
@@ -59,6 +57,7 @@ Type "/println"
 Enter
 Sleep 1s
 Type ':=Treescope.get("namespace").text'
+Sleep 0.8s
 Enter
 Sleep 2.5s
 
@@ -70,6 +69,7 @@ Type "/url"
 Enter
 Sleep 1s
 Type ':=Treescope.get("yq_path").text'
+Sleep 0.8s
 Enter
 Sleep 2.5s
 
@@ -81,6 +81,7 @@ Type "/cart.add"
 Enter
 Sleep 1s
 Type ':=Treescope.get("code_fence").text'
+Sleep 0.8s
 Enter
 
 Sleep 3s

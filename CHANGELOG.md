@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-09-28
+
 ### Added
 
 - `get_text()`: the scope text as a string, empty when there is none. Meant for the statusline:
@@ -35,5 +37,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Buf vars with the current scope, for use in the statusline.
 - `:checkhealth treescope` to report missing parsers.
 
-[Unreleased]: https://github.com/hernancerm/treescope.nvim/compare/0.1.0...HEAD
+[Unreleased]: https://github.com/hernancerm/treescope.nvim/compare/0.2.0...HEAD
+[0.2.0]: https://github.com/hernancerm/treescope.nvim/compare/0.1.0...0.2.0
 [0.1.0]: https://github.com/hernancerm/treescope.nvim/releases/tag/0.1.0

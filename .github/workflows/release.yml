@@ -63,12 +63,11 @@ jobs:
           git tag "${VERSION}"
           git push origin main
           git push origin "${VERSION}"
+      # Takes the newest version section, which is the one just prepared.
       - name: Write the release notes
-        env:
-          VERSION: ${{ inputs.version }}
-        run: |
-          .github/scripts/print-changelog-section.sh "${VERSION}" > notes.md
-          cat notes.md
+        uses: ffurrer2/extract-release-notes@273da39a24fb7db106a35526c8162815faffd31d # v3.1.0
+        with:
+          release_notes_file: notes.md
       # GitHub attaches the source code archives to every release.
       - name: Create the release
         env:

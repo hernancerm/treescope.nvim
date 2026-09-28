@@ -34,18 +34,24 @@ Solution:
                                                           *treescope-quickstart*
 Quickstart ~
 
+• The plugin does not have a `setup()` function.
 • You need a Tree-sitter parser for the language you want this plugin to work
   for. This plugin does not support all languages, see supported languages per
-  scope in |treescope-scopes|.
-• Run `:checkhealth treescope` to see which parsers are missing.
+  scope in |treescope-scopes|. Check your setup with `:checkhealth treescope`.
+• The plugin sets `Treescope`, a Lua global equal to `require("treescope")`.
 • The plugin doesn't create keymaps, you need to define them yourself.
-• The plugin sets the Lua global `Treescope`, equivalent to
-  `require("treescope")`.
-• To get the outermost function at the cursor:
-  `require("treescope").get("function").text`.
-• To jump to the next function:
-  `require("treescope").goto_next("function")`.
 
+Common API usage:
+
+Get the outermost function at the cursor:
+>lua
+  require("treescope").get("function").text
+<
+Jump to the next/prev function:
+>lua
+  require("treescope").goto_next("function")
+  require("treescope").goto_prev("function")
+<
 ------------------------------------------------------------------------------
                                                           *treescope-statusline*
 Statusline integration ~
